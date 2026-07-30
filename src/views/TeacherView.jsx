@@ -11,7 +11,7 @@ import ReadingPassage from '../components/test/ReadingPassage';
 import QuestionPanel from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import {
-  saveTest, getAllTests, deleteTest, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured
+  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured
 } from '../lib/supabase';
 import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
@@ -368,6 +368,18 @@ export default function TeacherView({ onSwitchStudent }) {
                 </h2>
                 <p className="text-[10px] text-gray-400 mt-0.5">Bao gồm đề đã tải lên &amp; đề mẫu demo</p>
               </div>
+              <button
+                className="text-[10px] font-bold text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 transition-colors flex-shrink-0"
+                title="Xóa 2 đề mẫu demo mặc định khỏi danh sách"
+                onClick={() => {
+                  if (window.confirm('Bạn có muốn xóa toàn bộ 2 đề thi mẫu mặc định (Demo) khỏi hệ thống?')) {
+                    clearAllMockTests();
+                    loadTests();
+                  }
+                }}
+              >
+                🗑️ Xóa đề mẫu
+              </button>
             </div>
 
             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">

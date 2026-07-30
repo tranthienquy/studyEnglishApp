@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles } from 'lucide-react';
+import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles, Trash2 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import useAppStore from '../stores/useAppStore';
-import { getAllTests } from '../lib/supabase';
+import { getAllTests, deleteTest } from '../lib/supabase';
 
 export default function TestSelectView({ onSwitchTeacher }) {
   const { student, startTest, setView } = useAppStore();
@@ -23,6 +23,18 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
   function handleSelectTest(test) {
     startTest(student, test);
+  }
+
+  async function handleDeleteTest(e, test) {
+    e.stopPropagation();
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa đề thi "${test.title}" khỏi hệ thống?`)) return;
+    try {
+      if (test.id) await deleteTest(test.id);
+      if (test.code && test.code !== test.id) await deleteTest(test.code);
+      setTests(prev => prev.filter(x => (x.id || x.code) !== (test.id || test.code)));
+    } catch (err) {
+      console.error('Lỗi khi xóa đề thi:', err);
+    }
   }
 
   function countTotalQuestions(test) {
@@ -99,12 +111,21 @@ export default function TestSelectView({ onSwitchTeacher }) {
                   className="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
                 >
                   <div>
-                    {/* Top Row: Badge + Date */}
+                    {/* Top Row: Badge + Date + Delete Trash Button */}
                     <div className="flex items-center justify-between mb-4">
                       <span className="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-600 tracking-wide uppercase">
                         {t.subject || 'TIẾNG ANH'}
                       </span>
-                      <span className="text-xs text-gray-400 font-medium">{dateStr}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400 font-medium">{dateStr}</span>
+                        <button
+                          className="p-1 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                          title="Xóa đề thi này"
+                          onClick={(e) => handleDeleteTest(e, t)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Test Title */}

@@ -236,6 +236,16 @@ export async function deleteTest(idOrCode) {
   }
 }
 
+// ---- Clear all default mock demo tests ----
+export function clearAllMockTests() {
+  const deleted = getDeletedTestIds();
+  MOCK_TESTS.forEach(m => {
+    if (m.id && !deleted.includes(String(m.id))) deleted.push(String(m.id));
+    if (m.code && !deleted.includes(String(m.code))) deleted.push(String(m.code));
+  });
+  localStorage.setItem('readingpro_deleted_tests', JSON.stringify(deleted));
+}
+
 function formatTestFromDB(dbRow) {
   const questions = dbRow.questions_json || [];
 

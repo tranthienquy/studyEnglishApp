@@ -20,6 +20,7 @@ export default function App() {
       {view === 'login'       && <LoginView onSwitchTeacher={() => setIsTeacher(true)} />}
       {view === 'test-select'  && <TestSelectView onSwitchTeacher={() => setIsTeacher(true)} />}
       {view === 'test'         && <TestView />}
+      {view === 'review'       && <TestView isReviewMode={true} />}
       {view === 'result'       && <ResultView />}
     </>
   );

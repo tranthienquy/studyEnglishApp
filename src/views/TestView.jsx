@@ -8,7 +8,7 @@ import QuestionPanel from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import Leaderboard from '../components/teacher/Leaderboard';
 
-export default function TestView() {
+export default function TestView({ isReviewMode = false }) {
   const { currentTest, student, submitTest, answers } = useAppStore();
   const startTimeRef = useRef(Date.now());
 
@@ -72,16 +72,37 @@ export default function TestView() {
             </div>
           </div>
 
-          {/* Timer */}
-          <Timer onExpire={handleSubmit} />
+          {!isReviewMode ? (
+            <>
+              {/* Timer */}
+              <Timer onExpire={handleSubmit} />
 
-          {/* Submit Button (Electric Royal Blue) */}
-          <button
-            className="btn btn-sm bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-indigo-500/20 gap-1.5"
-            onClick={() => setShowSubmitConfirm(true)}
-          >
-            <span>Nộp Bài</span> <Send size={13} />
-          </button>
+              {/* Submit Button (Electric Royal Blue) */}
+              <button
+                className="btn btn-sm bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-indigo-500/20 gap-1.5"
+                onClick={() => setShowSubmitConfirm(true)}
+              >
+                <span>Nộp Bài</span> <Send size={13} />
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Static Time Spent */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-bold text-sm">
+                <Clock size={14} />
+                {Math.floor((useAppStore.getState().timeSpent || 0) / 60).toString().padStart(2, '0')}:
+                {((useAppStore.getState().timeSpent || 0) % 60).toString().padStart(2, '0')}
+              </div>
+
+              {/* Back to Result Button */}
+              <button
+                className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-emerald-500/20 gap-1.5"
+                onClick={() => useAppStore.getState().setView('result')}
+              >
+                <span>Kết Quả</span> <Trophy size={13} />
+              </button>
+            </>
+          )}
 
           {/* Leaderboard Button */}
           <button
@@ -136,6 +157,7 @@ export default function TestView() {
             sections={sections}
             activeTab={activeTab}
             onSubmit={() => setShowSubmitConfirm(true)}
+            isReview={isReviewMode}
           />
         </div>
       </main>

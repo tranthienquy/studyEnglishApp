@@ -16,7 +16,6 @@ export default function ResultView() {
   const { result, currentTest, resetTest, setView } = useAppStore();
   const [aiFeedback, setAiFeedback] = useState('');
   const [loadingFeedback, setLoadingFeedback] = useState(true);
-  const [showReview, setShowReview] = useState(false);
 
   useEffect(() => {
     if (!result) return;
@@ -113,9 +112,9 @@ export default function ResultView() {
           <div className="grid grid-cols-2 gap-3">
             <button
               className="btn bg-slate-900 hover:bg-slate-800 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5"
-              onClick={() => setShowReview(!showReview)}
+              onClick={() => setView('review')}
             >
-              <Eye size={14} /> {showReview ? 'Ẩn lời giải' : 'Xem lời giải chi tiết'}
+              <Eye size={14} /> Xem lại bài làm chi tiết
             </button>
             <button
               className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 shadow-md shadow-indigo-500/25"
@@ -126,31 +125,7 @@ export default function ResultView() {
           </div>
         </div>
 
-        {/* Detailed Review Section */}
-        {showReview && (
-          <div className="bg-white rounded-3xl p-6 shadow-2xl border border-white/80 overflow-hidden animate-slide-up">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
-              <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                <Star size={16} className="text-indigo-600" /> Đáp án &amp; Lời giải chi tiết
-              </h2>
-            </div>
 
-            {currentTest?.sections?.map((sec, i) => (
-              <div key={sec.id} className="mb-4 last:mb-0">
-                <div className="px-3 py-1.5 bg-indigo-50 rounded-lg mb-2">
-                  <p className="text-xs font-bold text-indigo-600 uppercase tracking-wide">Phần {i + 1}</p>
-                </div>
-                <div className="max-h-[50vh] overflow-y-auto pr-1">
-                  <QuestionPanel
-                    sections={currentTest.sections}
-                    activeTab={i}
-                    isReview={true}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Back navigation */}
         <div className="flex justify-center gap-3 pt-2">

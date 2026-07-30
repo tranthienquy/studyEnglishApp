@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Clock, Star, ChevronUp } from 'lucide-react';
+import { Trophy, Medal, Clock, Star, Crown, Flame, Award, User, Sparkles } from 'lucide-react';
 import { MOCK_LEADERBOARD } from '../../lib/mockData';
 import { getLeaderboard } from '../../lib/supabase';
 import useAppStore from '../../stores/useAppStore';

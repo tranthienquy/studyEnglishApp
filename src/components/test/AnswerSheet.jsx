@@ -9,7 +9,7 @@ import Leaderboard from '../teacher/Leaderboard';
  * Hiển thị grid câu hỏi và nút nộp bài
  */
 export default function QuestionNavigator({ sections, onSubmit }) {
-  const { answers, flagged, currentTest } = useAppStore();
+  const { answers, flaggedArray = [], currentTest } = useAppStore();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
@@ -19,9 +19,9 @@ export default function QuestionNavigator({ sections, onSubmit }) {
   const unansweredCount = totalCount - answeredCount;
   const pct = totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0;
 
-  function getDotClass(q) {
+  const getDotClass = (q) => {
     const isAnswered = !!answers[q.id];
-    const isFlagged  = flagged.has(q.id);
+    const isFlagged  = flaggedArray.includes(q.id);
     if (isFlagged)  return 'q-dot flagged';
     if (isAnswered) return 'q-dot answered';
     return 'q-dot unanswered';
@@ -45,7 +45,7 @@ export default function QuestionNavigator({ sections, onSubmit }) {
           <div className="flex justify-between text-xs text-gray-400 mt-1.5">
             <span>✅ Đã làm: <strong className="text-brand-500">{answeredCount}</strong></span>
             <span>⬜ Còn lại: <strong>{unansweredCount}</strong></span>
-            <span>⚑ Ghim: <strong className="text-amber-500">{flagged.size}</strong></span>
+            <span>⚑ Ghim: <strong className="text-amber-500">{flaggedArray.length}</strong></span>
           </div>
         </div>
 
@@ -74,9 +74,9 @@ export default function QuestionNavigator({ sections, onSubmit }) {
                   <div
                     key={q.id}
                     className={getDotClass(q)}
-                    title={`Câu ${q.no}${flagged.has(q.id) ? ' (đã ghim)' : ''}`}
+                    title={`Câu ${q.no}${flaggedArray.includes(q.id) ? ' (đã ghim)' : ''}`}
                   >
-                    {flagged.has(q.id) ? <Flag size={9} /> : q.no}
+                    {flaggedArray.includes(q.id) ? <Flag size={9} /> : q.no}
                   </div>
                 ))}
               </div>

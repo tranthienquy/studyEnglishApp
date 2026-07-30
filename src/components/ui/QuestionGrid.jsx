@@ -3,7 +3,7 @@ import { Flag } from 'lucide-react';
 import useAppStore from '../../stores/useAppStore';
 
 export default function QuestionGrid({ questions, currentQ, onSelect }) {
-  const { answers, flagged } = useAppStore();
+  const { answers, flaggedArray = [] } = useAppStore();
 
   return (
     <div className="p-4">
@@ -31,7 +31,7 @@ export default function QuestionGrid({ questions, currentQ, onSelect }) {
       <div className="grid grid-cols-5 gap-2">
         {questions.map((q, i) => {
           const isAnswered = !!answers[q.id];
-          const isFlagged  = flagged.has(q.id);
+          const isFlagged  = flaggedArray.includes(q.id);
           const isCurrent  = currentQ === q.id;
 
           let dotClass = 'q-dot ';
@@ -60,7 +60,7 @@ export default function QuestionGrid({ questions, currentQ, onSelect }) {
         <div className="flex justify-between text-xs text-gray-500">
           <span>Đã làm: <strong className="text-brand-500">{Object.keys(answers).length}</strong></span>
           <span>Chưa làm: <strong className="text-gray-400">{questions.length - Object.keys(answers).length}</strong></span>
-          <span>Ghim: <strong className="text-amber-500">{flagged.size}</strong></span>
+          <span>Ghim: <strong className="text-amber-500">{flaggedArray.length}</strong></span>
         </div>
         <div className="mt-2 h-1.5 bg-gray-200/50 rounded-full overflow-hidden">
           <div

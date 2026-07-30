@@ -83,6 +83,23 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
     setTranslating(false);
   };
 
+  // ── Highlighted HTML state per section tab ──
+  const [highlightedPassages, setHighlightedPassages] = useState({});
+
+  const savePassageHtml = () => {
+    setTimeout(() => {
+      const bodyEl = passageRef.current?.querySelector('.rp-body');
+      if (bodyEl) {
+        setHighlightedPassages(prev => ({
+          ...prev,
+          [activeTab]: bodyEl.innerHTML
+        }));
+      }
+    }, 0);
+  };
+
+  const currentPassageHtml = highlightedPassages[activeTab] ?? section.passage;
+
   const COLOR_MAP = {
     yellow: '#FDE68A',
     green:  '#A7F3D0',
@@ -102,6 +119,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
             parent.insertBefore(mark.firstChild, mark);
           }
           parent.removeChild(mark);
+          savePassageHtml();
         }
       }
     }
@@ -121,6 +139,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
     if (activeTool === 'eraser') {
       if (passageRef.current) {
         const marks = passageRef.current.querySelectorAll('.custom-highlight, mark');
+        let erased = false;
         marks.forEach(mark => {
           if (sel.containsNode(mark, true)) {
             const parent = mark.parentNode;
@@ -129,9 +148,11 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
                 parent.insertBefore(mark.firstChild, mark);
               }
               parent.removeChild(mark);
+              erased = true;
             }
           }
         });
+        if (erased) savePassageHtml();
       }
       sel.removeAllRanges();
       return;
@@ -159,6 +180,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
           mark.appendChild(fragment);
           range.insertNode(mark);
         }
+        savePassageHtml();
       } catch (err) {
         console.warn('Highlighting error:', err);
       }
@@ -178,7 +200,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       const translated = await translateWithGoogle(text);
       setTooltip(prev => ({ ...prev, loading: false, text: translated }));
     }
-  }, [activeTool, activeColor]);
+  }, [activeTool, activeColor, activeTab]);
 
   return (
     <div className="rp-panel">
@@ -222,7 +244,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
         <div
           className="rp-body"
           style={{ fontSize: `${zoom}%` }}
-          dangerouslySetInnerHTML={{ __html: section.passage }}
+          dangerouslySetInnerHTML={{ __html: currentPassageHtml }}
         />
 
         {/* Translated passage block */}

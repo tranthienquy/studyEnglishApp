@@ -1079,17 +1079,92 @@ body::after {
   overflow: hidden;
 }
 
-/* ---- Tabs ---- */
-.rp-tab-bar {
+/* ---- Unified Header Bar (tabs + tools in one row) ---- */
+.rp-header-bar {
   display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  padding: 10px 14px 0;
-  background: rgba(255,255,255,0.35);
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  height: 52px;
+  min-height: 52px;
+  background: rgba(255,255,255,0.92);
   border-bottom: 1.5px solid rgba(0,0,0,0.07);
-  overflow-x: auto;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Left: Panel title */
+.rp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   flex-shrink: 0;
 }
+.rp-header-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rp-header-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Center: Section tabs inline */
+.rp-tabs-inline {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 4px;
+}
+.rp-tabs-inline::-webkit-scrollbar { display: none; }
+
+.rp-tab-inline {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.rp-tab-inline:hover {
+  background: rgba(99,102,241,0.08);
+  color: #4F46E5;
+}
+.rp-tab-inline-active {
+  background: #4F46E5 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-color: transparent;
+  box-shadow: 0 1px 4px rgba(79,70,229,0.3);
+}
+
+/* Right: Tools inline */
+.rp-tools-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+
 
 .rp-tab-bar::-webkit-scrollbar { height: 2px; }
 
@@ -1484,7 +1559,9 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 0 16px;
+  height: 52px;
+  min-height: 52px;
   border-bottom: 1.5px solid rgba(0,0,0,0.06);
   background: rgba(255,255,255,0.6);
 }
@@ -2310,7 +2387,9 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 14px 16px 10px;
+  padding: 0 16px;
+  height: 52px;
+  min-height: 52px;
   border-bottom: 1px solid rgba(0,0,0,0.07);
   flex-shrink: 0;
 }

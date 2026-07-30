@@ -131,44 +131,53 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
 
   return (
     <div className="rp-panel">
-      {/* ── Tab bar ── */}
-      <div className="rp-tab-bar">
-        {sections.map((sec, i) => (
-          <button
-            key={i}
-            className={`rp-tab ${activeTab === i ? 'rp-tab-active' : ''}`}
-            onClick={() => onTabChange(i)}
-          >
-            <BookOpen size={14} />
-            <span>Phần {i + 1}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* ── Toolbar row ── */}
-      <div className="rp-toolbar">
-        {/* Zoom controls */}
-        <div className="rp-zoom-group">
-          <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z - 10))} title="Thu nhỏ">
-            <ZoomOut size={14} />
-          </button>
-          <span className="rp-zoom-pct">{zoom}%</span>
-          <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z + 10))} title="Phóng to">
-            <ZoomIn size={14} />
-          </button>
+      {/* ── Unified Header: title + tabs + tools all in one row ── */}
+      <div className="rp-header-bar">
+        {/* Left: Panel title */}
+        <div className="rp-header-left">
+          <div className="rp-header-icon">
+            <BookOpen size={14} className="text-indigo-600" />
+          </div>
+          <h2 className="rp-header-title">PHẦN ĐỌC</h2>
         </div>
 
-        <div className="rp-divider" />
+        {/* Center: Section tabs */}
+        <div className="rp-tabs-inline">
+          {sections.map((sec, i) => (
+            <button
+              key={i}
+              className={`rp-tab-inline ${activeTab === i ? 'rp-tab-inline-active' : ''}`}
+              onClick={() => onTabChange(i)}
+            >
+              <span>Phần {i + 1}</span>
+            </button>
+          ))}
+        </div>
 
-        {/* Highlight tool */}
-        <div className="rp-tool-group">
+        {/* Right: Tools */}
+        <div className="rp-tools-inline">
+          {/* Zoom */}
+          <div className="rp-zoom-group">
+            <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z - 10))} title="Thu nhỏ">
+              <ZoomOut size={13} />
+            </button>
+            <span className="rp-zoom-pct">{zoom}%</span>
+            <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z + 10))} title="Phóng to">
+              <ZoomIn size={13} />
+            </button>
+          </div>
+
+          <div className="rp-divider" />
+
+          {/* Highlight */}
           <button
             className={`rp-tool-btn ${activeTool === 'highlight' ? 'active' : ''}`}
             onClick={() => setActiveTool(activeTool === 'highlight' ? null : 'highlight')}
             style={activeTool === 'highlight' ? { borderColor: HIGHLIGHT_COLORS[activeColor], color: '#d97706' } : {}}
+            title="Bút dạ quang"
           >
             <Highlighter size={13} />
-            <span>Bút dạ quang</span>
+            <span>Dạ quang</span>
           </button>
           {activeTool === 'highlight' && (
             <div className="rp-color-dots">
@@ -183,27 +192,29 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
               ))}
             </div>
           )}
+
+          {/* Eraser */}
+          <button
+            className={`rp-tool-btn ${activeTool === 'eraser' ? 'active' : ''}`}
+            onClick={() => setActiveTool(activeTool === 'eraser' ? null : 'eraser')}
+            title="Bút xóa"
+          >
+            <Eraser size={13} />
+            <span>Bút xóa</span>
+          </button>
+
+          <div className="rp-divider" />
+
+          {/* Vocabulary */}
+          <button
+            className={`rp-tool-btn ${showVocab ? 'active' : ''}`}
+            onClick={handleVocab}
+            title="Từ vựng quan trọng"
+          >
+            <BookMarked size={13} />
+            <span>Từ vựng</span>
+          </button>
         </div>
-
-        <button
-          className={`rp-tool-btn ${activeTool === 'eraser' ? 'active' : ''}`}
-          onClick={() => setActiveTool(activeTool === 'eraser' ? null : 'eraser')}
-        >
-          <Eraser size={13} />
-          <span>Bút xóa</span>
-        </button>
-
-        <div className="rp-divider" />
-
-        {/* Vocabulary button */}
-        <button
-          className={`rp-tool-btn ${showVocab ? 'active' : ''}`}
-          onClick={handleVocab}
-          title="Từ vựng quan trọng trong bài"
-        >
-          <BookMarked size={13} />
-          <span>Từ vựng</span>
-        </button>
       </div>
 
       {/* ── Passage content ── */}

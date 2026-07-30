@@ -104,9 +104,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider mb-4 shadow-2xs">
-            <Sparkles size={12} className="text-indigo-600 animate-pulse" />
-            <span>KHO ĐỀ ÔN THI TRỰC TUYẾN HIGH SCHOOL</span>
+          <div className="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50 border border-indigo-200/80 text-indigo-900 text-sm sm:text-base font-black uppercase tracking-wider mb-6 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-[1.02]">
+            <Sparkles size={18} className="text-indigo-600 animate-pulse flex-shrink-0" />
+            <span>KHO ĐỀ ÔN THI TRỰC TUYẾN FPT SCHOOLS (THPT)</span>
           </div>
 
           {/* ── UNIFIED SEARCH & FILTER BAR ── */}

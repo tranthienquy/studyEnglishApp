@@ -897,12 +897,6 @@ export default function TeacherView({ onSwitchStudent }) {
                     <Eye size={16} className="text-indigo-600" />
                     <span>CHẾ ĐỘ XEM TRƯỚC (PREVIEW): Bạn đang xem giao diện đọc hiểu &amp; làm bài thực tế của học sinh.</span>
                   </div>
-                  <button
-                    className="btn btn-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg border-none"
-                    onClick={() => setMainTab('edit')}
-                  >
-                    ✏️ Quay lại chỉnh sửa
-                  </button>
                 </div>
 
                 {/* 2-Column Student Test Simulator */}

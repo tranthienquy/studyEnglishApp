@@ -148,7 +148,8 @@ export async function getAllTests() {
   if (client) {
     try {
       const { data, error } = await client.from('tests').select('*').order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
+      // If connected successfully, ALWAYS return data from DB (even if it's empty)
+      if (!error && data) {
         return data.map(formatTestFromDB).filter(t => !isDeleted(t));
       }
     } catch (e) {

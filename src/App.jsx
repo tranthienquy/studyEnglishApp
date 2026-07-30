@@ -21,7 +21,16 @@ export default function App() {
       {view === 'test-select'  && <TestSelectView onSwitchTeacher={() => setIsTeacher(true)} />}
       {view === 'test'         && <TestView />}
       {view === 'review'       && <TestView isReviewMode={true} />}
-      {view === 'result'       && <ResultView />}
+      {view === 'result'       && (
+        <div className="relative min-h-screen overflow-hidden">
+          <div className="filter blur-[6px] pointer-events-none select-none opacity-75">
+            <TestView />
+          </div>
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <ResultView />
+          </div>
+        </div>
+      )}
     </>
   );
 }

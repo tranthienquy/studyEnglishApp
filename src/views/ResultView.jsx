@@ -36,7 +36,7 @@ export default function ResultView() {
   const pct = result.totalCount > 0 ? Math.round((result.correctCount / result.totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen py-8 px-4 flex items-center justify-center bg-slate-900/20 backdrop-blur-xl relative z-10">
+    <div className="min-h-screen py-8 px-4 flex items-center justify-center bg-slate-950/35 backdrop-blur-xs relative z-10">
       <div className="w-full max-w-lg mx-auto space-y-4 animate-slide-up">
 
         {/* Result Card Modal */}

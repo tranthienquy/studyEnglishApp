@@ -225,6 +225,7 @@ export async function saveTest(testData) {
     teacher: testData.teacher || 'Cô Trang',
     passage: testData.passage,
     questions_json: testData.questions_json,
+    sections_json: testData.sections,
     created_at: new Date().toISOString(),
   };
 
@@ -302,7 +303,7 @@ function formatTestFromDB(dbRow) {
     created_at: dbRow.created_at,
     passage: dbRow.passage || '',
     questions,
-    sections: dbRow.sections || [
+    sections: dbRow.sections_json || dbRow.sections || [
       {
         id: `sec-auto-1`,
         instruction: 'Read the following passage and answer the questions below.',

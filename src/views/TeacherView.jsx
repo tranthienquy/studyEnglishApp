@@ -609,33 +609,34 @@ export default function TeacherView({ onSwitchStudent }) {
 
               <div className="flex items-center gap-2">
                 <button
-                  className="btn btn-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs gap-1.5 px-4 rounded-xl shadow-xs"
+                  className="h-9 px-4 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs min-w-[110px]"
                   onClick={() => setMainTab('preview')}
                 >
-                  <Eye size={14} /> Xem trước
+                  <Eye size={14} className="text-indigo-600" />
+                  <span>Xem trước</span>
                 </button>
 
                 {(() => {
                   const isHidden = editingTest ? isTestHidden(editingTest.id || editingTest.code) : false;
                   return (
                     <button
-                      className={`btn font-bold text-xs gap-1.5 px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center ${
+                      className={`h-9 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] border ${
                         isHidden
-                          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
-                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-emerald-500/20'
+                          : 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-amber-500/20'
                       }`}
                       onClick={handleToggleStudentAccess}
-                      title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn!'}
+                      title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị (Hiện đề)!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn (Ẩn đề)!'}
                     >
                       {isHidden ? (
                         <>
-                          <EyeOff size={14} />
-                          <span>ẨN HỌC SINH ÔN TẬP</span>
+                          <Eye size={14} />
+                          <span>Hiện đề</span>
                         </>
                       ) : (
                         <>
-                          <Eye size={14} />
-                          <span>MỞ HỌC SINH ÔN TẬP</span>
+                          <EyeOff size={14} />
+                          <span>Ẩn đề</span>
                         </>
                       )}
                     </button>

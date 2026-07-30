@@ -261,7 +261,10 @@ export async function deleteTest(idOrCode) {
   const client = getClient();
   if (client) {
     try {
-      await client.from('tests').delete().or(`id.eq.${idOrCode},code.eq.${idOrCode}`);
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrCode);
+      const query = client.from('tests').delete();
+      const { error } = isUUID ? await query.eq('id', idOrCode) : await query.eq('code', idOrCode);
+      if (error) console.error('Supabase delete error:', error);
     } catch (e) {
       console.warn('Supabase delete test failed:', e);
     }

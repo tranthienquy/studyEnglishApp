@@ -47,12 +47,12 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
       <div className="rp-tab-bar">
         {sections.map((sec, i) => (
           <button
-            key={sec.id}
+            key={i}
             className={`rp-tab ${activeTab === i ? 'rp-tab-active' : ''}`}
             onClick={() => onTabChange(i)}
           >
-            <BookOpen size={13} />
-            <span>Tab {i + 1}</span>
+            <BookOpen size={14} />
+            <span>Phần {i + 1}</span>
           </button>
         ))}
       </div>

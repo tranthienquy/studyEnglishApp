@@ -55,7 +55,7 @@ function QuestionTracker({ sections }) {
           {sections?.map((sec, si) => (
             <div key={sec.id} className="qt-section">
               <p className="qt-sec-label">
-                Tab {si + 1} <span className="qt-sec-range">Q{sec.questions[0]?.no}–Q{sec.questions[sec.questions.length - 1]?.no}</span>
+                Phần {si + 1} <span className="qt-sec-range">Q{sec.questions[0]?.no}–Q{sec.questions[sec.questions.length - 1]?.no}</span>
               </p>
               <div className="qt-grid">
                 {sec.questions.map(q => {
@@ -237,7 +237,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
           </div>
           <h2 className="qp-title-text">CÂU HỎI TRẮC NGHIỆM</h2>
         </div>
-        <span className="qp-count-badge">{questions.length} câu hỏi trong Tab này</span>
+        <span className="qp-count-badge">{questions.length} câu hỏi trong Phần này</span>
       </div>
 
       {/* ── Question Tracker (bảng tổng hợp) ── */}
@@ -254,7 +254,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
       {!isReview && (
         <div className="qp-footer">
           <p className="qp-footer-label">
-            Đã trả lời <strong className="text-indigo-600">{answeredInSection}</strong>/{questions.length} câu trong tab này
+            Đã trả lời <strong className="text-indigo-600">{answeredInSection}</strong>/{questions.length} câu trong phần này
           </p>
           <button
             className="qp-submit-btn"

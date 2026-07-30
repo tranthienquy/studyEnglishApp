@@ -83,7 +83,31 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
     setTranslating(false);
   };
 
-  // ── Handle hover/select tooltip translation ─────────────────────
+  const COLOR_MAP = {
+    yellow: '#FDE68A',
+    green:  '#A7F3D0',
+    blue:   '#BFDBFE',
+    pink:   '#FBCFE8',
+    orange: '#FED7AA',
+  };
+
+  // ── Handle clicking on highlighted mark to erase ────────────────
+  const handlePassageClick = (e) => {
+    if (activeTool === 'eraser') {
+      const mark = e.target.closest('.custom-highlight') || e.target.closest('mark');
+      if (mark) {
+        const parent = mark.parentNode;
+        if (parent) {
+          while (mark.firstChild) {
+            parent.insertBefore(mark.firstChild, mark);
+          }
+          parent.removeChild(mark);
+        }
+      }
+    }
+  };
+
+  // ── Handle text selection for Highlight / Eraser / Tooltip Translate ──
   const handleMouseUp = useCallback(async (e) => {
     const sel = window.getSelection();
     if (!sel || sel.isCollapsed) {
@@ -91,22 +115,69 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       return;
     }
     const text = sel.toString().trim();
-    if (!text || text.length > 300) return;
+    if (!text) return;
 
-    const range = sel.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-    const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0 };
-    const x = rect.left - containerRect.left + rect.width / 2;
-    const y = rect.top - containerRect.top - 8;
-
-    setTooltip({ visible: true, x, y, loading: true, text: '' });
-    const translated = await translateWithGoogle(text);
-    setTooltip(prev => ({ ...prev, loading: false, text: translated }));
-
-    if (activeTool === 'highlight') {
+    // 1. Eraser mode: remove any marks in selection
+    if (activeTool === 'eraser') {
+      if (passageRef.current) {
+        const marks = passageRef.current.querySelectorAll('.custom-highlight, mark');
+        marks.forEach(mark => {
+          if (sel.containsNode(mark, true)) {
+            const parent = mark.parentNode;
+            if (parent) {
+              while (mark.firstChild) {
+                parent.insertBefore(mark.firstChild, mark);
+              }
+              parent.removeChild(mark);
+            }
+          }
+        });
+      }
       sel.removeAllRanges();
+      return;
     }
-  }, [activeTool]);
+
+    // 2. Highlight mode: apply background color mark
+    if (activeTool === 'highlight') {
+      try {
+        const range = sel.getRangeAt(0);
+        const hexColor = COLOR_MAP[activeColor] || '#FDE68A';
+        const mark = document.createElement('mark');
+        mark.className = 'custom-highlight';
+        mark.style.backgroundColor = hexColor;
+        mark.style.color = 'inherit';
+        mark.style.padding = '1px 3px';
+        mark.style.borderRadius = '4px';
+        mark.style.boxShadow = '0 1px 2px rgba(0,0,0,0.06)';
+        mark.style.cursor = 'pointer';
+
+        try {
+          range.surroundContents(mark);
+        } catch (err) {
+          const fragment = range.extractContents();
+          mark.appendChild(fragment);
+          range.insertNode(mark);
+        }
+      } catch (err) {
+        console.warn('Highlighting error:', err);
+      }
+      sel.removeAllRanges();
+      return;
+    }
+
+    // 3. Normal mode: Tooltip translation
+    if (text.length <= 300) {
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0 };
+      const x = rect.left - containerRect.left + rect.width / 2;
+      const y = rect.top - containerRect.top - 8;
+
+      setTooltip({ visible: true, x, y, loading: true, text: '' });
+      const translated = await translateWithGoogle(text);
+      setTooltip(prev => ({ ...prev, loading: false, text: translated }));
+    }
+  }, [activeTool, activeColor]);
 
   return (
     <div className="rp-panel">
@@ -121,7 +192,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       </div>
 
       {/* ── Passage content ── */}
-      <div className="rp-content" ref={passageRef} onMouseUp={handleMouseUp}>
+      <div className="rp-content" ref={passageRef} onMouseUp={handleMouseUp} onClick={handlePassageClick}>
 
         {/* Translate button */}
         <button

@@ -103,7 +103,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
         </div>
 
         {/* Hero Title Header */}
-        <div className="text-center mb-8 max-w-2xl mx-auto">
+        <div className="text-center mb-10 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider mb-3 shadow-2xs">
             <Sparkles size={12} className="text-indigo-600 animate-pulse" />
             <span>KHO ĐỀ ÔN THI TRỰC TUYẾN HIGH SCHOOL</span>
@@ -116,66 +116,57 @@ export default function TestSelectView({ onSwitchTeacher }) {
             Chọn bài khảo sát bên dưới để thử sức thi trực tuyến với đồng hồ bấm giờ và hệ thống chấm điểm tự động.
           </p>
 
-          {/* Search Box */}
-          <div className="relative max-w-md mx-auto mb-6">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm đề thi theo tên..."
-              className="w-full bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 shadow-xs transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {filteredTests.length > 0 && (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                {filteredTests.length} đề thi
-              </span>
-            )}
-          </div>
-        </div>
+          {/* ── UNIFIED SEARCH & FILTER BAR ── */}
+          <div className="bg-white/80 backdrop-blur-xl border border-white/90 shadow-md rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg">
+            {/* Search Input */}
+            <div className="relative flex-1 w-full">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm đề thi theo tên..."
+                className="w-full bg-slate-50/90 hover:bg-slate-50 focus:bg-white border border-slate-200/70 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {filteredTests.length > 0 && (
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100/80">
+                  {filteredTests.length} đề
+                </span>
+              )}
+            </div>
 
-        {/* ── FILTER BARS (Khối & Giảng viên) ── */}
-        <div className="bg-white/70 backdrop-blur-md border border-slate-200/70 rounded-2xl p-3.5 mb-8 shadow-xs space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
-          {/* Grade Filters */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-bold text-gray-400 flex items-center gap-1 mr-1">
-              <GraduationCap size={14} className="text-indigo-500" /> Khối:
-            </span>
-            {[
-              { id: 'all', label: 'Tất cả Khối' },
-              { id: '10', label: 'Khối 10' },
-              { id: '11', label: 'Khối 11' },
-              { id: '12', label: 'Khối 12' },
-            ].map(g => (
-              <button
-                key={g.id}
-                onClick={() => setSelectedGrade(g.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  selectedGrade === g.id
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25 scale-[1.02]'
-                    : 'bg-white/80 hover:bg-white text-gray-600 border border-slate-200/60'
-                }`}
-              >
-                {g.label}
-              </button>
-            ))}
-          </div>
+            {/* Filter Dropdowns (Khối & Giảng viên) */}
+            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+              {/* Select Khối */}
+              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-indigo-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <GraduationCap size={14} className="text-indigo-500 flex-shrink-0" />
+                <select
+                  value={selectedGrade}
+                  onChange={(e) => setSelectedGrade(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
+                >
+                  <option value="all">Tất cả Khối</option>
+                  <option value="10">Khối 10</option>
+                  <option value="11">Khối 11</option>
+                  <option value="12">Khối 12</option>
+                </select>
+              </div>
 
-          {/* Teacher Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-400 flex items-center gap-1">
-              <User size={13} className="text-amber-500" /> Giảng viên:
-            </span>
-            <select
-              value={selectedTeacher}
-              onChange={(e) => setSelectedTeacher(e.target.value)}
-              className="bg-white/90 border border-slate-200/80 text-xs font-bold text-gray-700 rounded-xl px-3 py-1.5 focus:outline-none focus:border-indigo-500 shadow-2xs cursor-pointer"
-            >
-              <option value="all">Tất cả Giảng viên</option>
-              {teachersList.map(tName => (
-                <option key={tName} value={tName}>{tName}</option>
-              ))}
-            </select>
+              {/* Select Giảng viên */}
+              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-indigo-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <User size={14} className="text-amber-500 flex-shrink-0" />
+                <select
+                  value={selectedTeacher}
+                  onChange={(e) => setSelectedTeacher(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer max-w-[130px] truncate"
+                >
+                  <option value="all">Tất cả Giảng viên</option>
+                  {teachersList.map(tName => (
+                    <option key={tName} value={tName}>{tName}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 

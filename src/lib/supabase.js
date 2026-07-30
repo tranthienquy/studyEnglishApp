@@ -46,6 +46,49 @@ export function isRealSupabaseConfigured() {
   return Boolean(config.url && config.key);
 }
 
+// ---- Test database live connection ----
+export async function testDatabaseConnection() {
+  const config = getSupabaseConfig();
+  if (!config.url || !config.key) {
+    return {
+      success: false,
+      mode: 'local',
+      message: 'Chưa cấu hình URL/Key. Hệ thống hiện đang lưu trữ tự động trong Bộ nhớ trình duyệt (Local Storage).'
+    };
+  }
+
+  const client = getClient();
+  if (!client) {
+    return {
+      success: false,
+      mode: 'error',
+      message: 'Không thể tạo Supabase Client. Kiểm tra lại định dạng URL & Key.'
+    };
+  }
+
+  try {
+    const { data, error } = await client.from('tests').select('id').limit(1);
+    if (error) {
+      return {
+        success: false,
+        mode: 'error',
+        message: `Kết nối Supabase bị từ chối: ${error.message}`
+      };
+    }
+    return {
+      success: true,
+      mode: 'supabase',
+      message: '🟢 Đã kết nối thành công với Database Supabase thực tế! Dữ liệu đang được lưu trữ trực tuyến.'
+    };
+  } catch (e) {
+    return {
+      success: false,
+      mode: 'error',
+      message: `Lỗi kết nối CSDL: ${e.message}`
+    };
+  }
+}
+
 // Local storage fallback for custom tests & deleted test IDs
 function getLocalCustomTests() {
   try {

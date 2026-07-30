@@ -11,7 +11,7 @@ import ReadingPassage from '../components/test/ReadingPassage';
 import QuestionPanel from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import {
-  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured
+  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured, testDatabaseConnection
 } from '../lib/supabase';
 import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
@@ -869,20 +869,54 @@ function SupabaseConfigModal({ onClose }) {
   const [url, setUrl] = useState(currentConfig.url || '');
   const [key, setKey] = useState(currentConfig.key || '');
   const [savedMsg, setSavedMsg] = useState('');
-  const isConfigured = isRealSupabaseConfigured();
+  const [testing, setTesting] = useState(false);
+  const [statusRes, setStatusRes] = useState(null);
 
-  function handleSave() {
+  useEffect(() => {
+    runCheck();
+  }, []);
+
+  async function runCheck() {
+    setTesting(true);
+    const res = await testDatabaseConnection();
+    setStatusRes(res);
+    setTesting(false);
+  }
+
+  async function handleSave() {
     saveSupabaseConfig(url, key);
-    setSavedMsg('Đã lưu cấu hình kết nối Supabase thành công!');
+    setSavedMsg('Đã lưu cấu hình mới!');
+    await runCheck();
     setTimeout(() => setSavedMsg(''), 3000);
   }
 
   return (
     <div className="p-4 space-y-4">
-      <div className={`p-3 rounded-xl text-xs font-bold flex items-center justify-between border ${
-        isConfigured ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700'
+      <div className={`p-3.5 rounded-xl text-xs font-bold border flex flex-col gap-1 ${
+        statusRes?.success
+          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+          : statusRes?.mode === 'local'
+            ? 'bg-amber-50 border-amber-200 text-amber-800'
+            : 'bg-red-50 border-red-200 text-red-800'
       }`}>
-        <span>{isConfigured ? '🟢 Đã kết nối Supabase Database thực tế' : '🟡 Đang chạy chế độ Local Storage & Mock Data'}</span>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-1.5 font-extrabold">
+            {testing ? <Loader2 size={14} className="animate-spin text-indigo-600" /> : null}
+            {statusRes?.success
+              ? '🟢 Đã kết nối thành công Supabase DB'
+              : statusRes?.mode === 'local'
+                ? '🟡 Đang lưu trữ trong Bộ nhớ trình duyệt (Local Storage)'
+                : '🔴 Lỗi kết nối CSDL Supabase'}
+          </span>
+          <button
+            className="btn btn-xs bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 text-[10px]"
+            onClick={runCheck}
+            disabled={testing}
+          >
+            {testing ? 'Đang kiểm tra...' : '🔌 Kiểm tra lại'}
+          </button>
+        </div>
+        <p className="text-[11px] font-normal opacity-90 mt-0.5">{statusRes?.message || 'Đang kiểm tra kết nối...'}</p>
       </div>
 
       <div className="space-y-3">
@@ -906,10 +940,12 @@ function SupabaseConfigModal({ onClose }) {
           />
         </div>
         <button
-          className="btn btn-sm w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs"
+          className="btn btn-sm w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs gap-1.5"
           onClick={handleSave}
+          disabled={testing}
         >
-          Lưu Cấu Hình Supabase
+          {testing ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+          Lưu &amp; Kết Nối CSDL Supabase
         </button>
         {savedMsg && <p className="text-xs text-emerald-600 font-bold text-center">{savedMsg}</p>}
       </div>

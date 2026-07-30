@@ -12,7 +12,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 ───────────────────────────────────────────── */
 function QuestionTracker({ sections }) {
   const { answers, flagged } = useAppStore();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   // Flatten all questions
   const allQ = sections?.flatMap(s => s.questions) || [];

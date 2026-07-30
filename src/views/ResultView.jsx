@@ -13,7 +13,7 @@ function formatTime(seconds) {
 }
 
 export default function ResultView() {
-  const { result, currentTest, resetTest, setView } = useAppStore();
+  const { result, currentTest, student, startTest, setView } = useAppStore();
   const [aiFeedback, setAiFeedback] = useState('');
   const [loadingFeedback, setLoadingFeedback] = useState(true);
 
@@ -27,8 +27,7 @@ export default function ResultView() {
   if (!result) return null;
 
   function handleRetry() {
-    resetTest();
-    setView('test');
+    startTest(student, currentTest);
   }
 
   const pct = result.totalCount > 0 ? Math.round((result.correctCount / result.totalCount) * 100) : 0;

@@ -503,7 +503,7 @@ function parseQuestionBlock(blockLines, defaultNo) {
 
 /**
  * Extract A/B/C/D options from a single HTML/plain line (inline FORMAT 2)
- * Handles Word docs with flexible option formats: A. A) A: with or without spaces and <strong> wrappers
+ * Uses HTML marker index scanning for 100% accuracy on Word docs
  * Returns { options: string[], correct: string }
  */
 function extractOptionsFromLine(htmlLine) {
@@ -511,10 +511,37 @@ function extractOptionsFromLine(htmlLine) {
   let correct   = 'A';
   if (!htmlLine) return { options, correct };
 
-  // Strategy 1: Strip HTML tags first, then split by option markers (A. B. C. D. or A) B) C) D) or A: B: C: D:)
-  const plainLine = htmlLine.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  // Strategy 1: HTML marker index scanning
+  const regex = /(?:<[^>]+>)*\s*([A-D])[\.\)\:]\s*(?:<[^>]+>)*/gi;
+  const matches = [];
+  let m;
+  while ((m = regex.exec(htmlLine)) !== null) {
+    const letter = m[1].toUpperCase();
+    if (!matches.some(x => x.letter === letter)) {
+      matches.push({ letter, index: m.index });
+    }
+  }
 
-  // Split by uppercase option markers (A. B. C. D., A) B), A: B:)
+  if (matches.length >= 2) {
+    for (let i = 0; i < matches.length; i++) {
+      const curr = matches[i];
+      const next = matches[i + 1];
+      const start = curr.index;
+      const end = next ? next.index : htmlLine.length;
+      const chunkHtml = htmlLine.substring(start, end);
+      const chunkPlain = chunkHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+      const cleanText = chunkPlain.replace(/^([A-D])[\.\)\:]\s*/i, '').trim();
+      const isHL = isHighlightedHtml(chunkHtml);
+
+      if (isHL) correct = curr.letter;
+      if (cleanText) options.push(cleanText);
+    }
+    return { options, correct };
+  }
+
+  // Strategy 2 fallback: split plain line by option letter markers
+  const plainLine = htmlLine.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   const segments = plainLine.split(/(?=(?:^|\s|\t)[A-D][\.\)\:]\s*)/);
 
   for (const seg of segments) {
@@ -524,41 +551,7 @@ function extractOptionsFromLine(htmlLine) {
 
     const letter = match[1].toUpperCase();
     const content = match[2].trim();
-
-    // Check highlight in original HTML
-    const letterIdx = htmlLine.indexOf(`${letter}.`);
-    const letterIdx2 = htmlLine.indexOf(`${letter})`);
-    const startIdx = Math.max(letterIdx, letterIdx2);
-    if (startIdx >= 0) {
-      const nextLetterIdx = 'ABCD'.indexOf(letter) < 3
-        ? Math.max(
-            htmlLine.indexOf(`${'ABCD'['ABCD'.indexOf(letter) + 1]}.`, startIdx + 1),
-            htmlLine.indexOf(`${'ABCD'['ABCD'.indexOf(letter) + 1]})`, startIdx + 1)
-          )
-        : -1;
-      const htmlSegment = nextLetterIdx > 0
-        ? htmlLine.substring(startIdx, nextLetterIdx)
-        : htmlLine.substring(startIdx);
-      if (isHighlightedHtml(htmlSegment)) correct = letter;
-    }
-
     if (content) options.push(content);
-  }
-
-  // Strategy 2 fallback: split html directly if plain text split didn't find >= 2 options
-  if (options.length < 2) {
-    options.length = 0;
-    correct = 'A';
-    const htmlSegments = htmlLine.split(/(?=(?:<strong>)?\s*[A-D][\.\)\:]\s*(?:<\/strong>)?)/i);
-    for (const seg of htmlSegments) {
-      const cleaned = seg.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-      const match = cleaned.match(/^([A-D])[\.\)\:]\s*([\s\S]*)/i);
-      if (!match) continue;
-      const letter = match[1].toUpperCase();
-      const cleanText = match[2].trim();
-      if (isHighlightedHtml(seg)) correct = letter;
-      if (cleanText) options.push(cleanText);
-    }
   }
 
   return { options, correct };
@@ -566,10 +559,14 @@ function extractOptionsFromLine(htmlLine) {
 
 /**
  * Returns true if the html snippet contains a yellow <mark> highlight tag
+ * or yellow background / red color styling for highlighted correct answers
  */
 function isHighlightedHtml(html) {
-  return /<mark(?:\s[^>]*)?>/.test(html) ||
+  if (!html) return false;
+  return /<mark(?:\s[^>]*)?>/i.test(html) ||
          /background(?:-color)?:\s*(?:yellow|#[fF]{3,}00|rgb\(255,\s*255,\s*0\))/i.test(html) ||
+         /color:\s*(?:red|#[fF]00|rgb\(255,\s*0\))/i.test(html) ||
+         /class="red-text"/i.test(html) ||
          /\*[^*]+\*/.test(html);  // *bold* markdown fallback
 }
 

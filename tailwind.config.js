@@ -21,8 +21,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        reading: ['Merriweather', 'Georgia', 'serif'],
+        sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        reading: ['Plus Jakarta Sans', 'sans-serif'],
       },
       backdropBlur: {
         xs: '2px',

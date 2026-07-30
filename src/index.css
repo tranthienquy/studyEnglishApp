@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
@@ -10,10 +11,11 @@
 html, body, #root {
   height: 100%;
   min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 40%, #EEF2FF 100%);
   background-attachment: fixed;
   color: #1C1C1E;
@@ -125,7 +127,7 @@ body::after {
 
 /* ========== READING TYPOGRAPHY ========== */
 .reading-text {
-  font-family: 'Merriweather', Georgia, serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
   line-height: 1.9;
   color: #2D2D2D;
@@ -392,7 +394,7 @@ body::after {
 }
 
 .exam-passage-text {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14.5px;
   line-height: 1.85;
   color: #1a1a2e;
@@ -1442,7 +1444,7 @@ body::after {
   padding: 8px 0;
 }
 .rp-translation-text {
-  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   line-height: 1.85;
   color: #3B1F8C;
@@ -1495,7 +1497,7 @@ body::after {
   font-weight: 500;
   color: #059669;
   font-style: italic;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .rp-vocab-meaning {
   font-size: 13.5px;
@@ -1534,7 +1536,7 @@ body::after {
 }
 .rp-tooltip-text {
   font-weight: 500;
-  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .rp-tooltip-loading {
   display: flex;
@@ -1567,27 +1569,27 @@ body::after {
 
 
 .rp-title {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   color: #1a56c4;
   text-align: center;
-  margin-bottom: 4px;
-  font-family: 'Times New Roman', Times, serif;
+  margin-bottom: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .rp-subtitle {
-  font-size: 15px;
+  font-size: 14px;
   font-style: italic;
   color: #6b7280;
   text-align: center;
   margin-bottom: 14px;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .rp-body {
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 15px;
-  line-height: 1.9;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.8;
   color: #1a1a2e;
   text-align: justify;
   user-select: text;
@@ -2004,21 +2006,23 @@ body::after {
 
 
 /* ================================================================
-   FONT SYNCHRONIZATION — Inter everywhere
+   FONT SYNCHRONIZATION — Plus Jakarta Sans everywhere
    ================================================================ */
 *, *::before, *::after {
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.font-reading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.font-ui {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Only passage body keeps Times New Roman (intentional academic style) */
+/* Ensure passage body and form elements all use Plus Jakarta Sans */
 .rp-body,
-.rp-body * {
-  font-family: 'Merriweather', 'Times New Roman', Georgia, serif;
-}
-
-/* Ensure buttons, inputs, selects use Inter */
+.rp-body *,
 button, input, select, textarea {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ================================================================

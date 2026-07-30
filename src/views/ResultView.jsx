@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  CheckCircle2, RotateCcw, Eye, EyeOff, Star, BrainCircuit, Loader2, MessageSquare, ArrowLeft, RefreshCw
+  CheckCircle2, RotateCcw, Eye, EyeOff, Star, BrainCircuit, Loader2, MessageSquare, ArrowLeft, RefreshCw, Home
 } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 import { generateFeedback } from '../lib/gemini';
@@ -36,14 +36,14 @@ export default function ResultView() {
   const pct = result.totalCount > 0 ? Math.round((result.correctCount / result.totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen py-8 px-4 flex items-center justify-center bg-slate-900/60 backdrop-blur-md relative z-10">
+    <div className="min-h-screen py-8 px-4 flex items-center justify-center bg-slate-900/20 backdrop-blur-xl relative z-10">
       <div className="w-full max-w-lg mx-auto space-y-4 animate-slide-up">
 
         {/* Result Card Modal */}
-        <div className="bg-white rounded-3xl p-8 shadow-2xl border border-white/80 text-center relative overflow-hidden">
+        <div className="bg-white/85 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl border border-white/80 text-center relative overflow-hidden">
 
           {/* Top Success Check Icon */}
-          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 mx-auto mb-4 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 mx-auto mb-4 shadow-xs">
             <CheckCircle2 size={36} strokeWidth={2} />
           </div>
 
@@ -111,39 +111,30 @@ export default function ResultView() {
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                className="btn bg-slate-900 hover:bg-slate-800 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 cursor-pointer"
+                onClick={() => setView('review')}
+              >
+                <Eye size={14} /> Xem lại bài làm chi tiết
+              </button>
+              <button
+                className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 shadow-md shadow-indigo-500/25 cursor-pointer"
+                onClick={handleRetry}
+              >
+                <RefreshCw size={14} /> Thi lại đề này
+              </button>
+            </div>
+
+            {/* Button Quay về trang chính */}
             <button
-              className="btn bg-slate-900 hover:bg-slate-800 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5"
-              onClick={() => setView('review')}
+              className="w-full btn bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-bold py-3 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              onClick={() => setView('test-select')}
             >
-              <Eye size={14} /> Xem lại bài làm chi tiết
-            </button>
-            <button
-              className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 shadow-md shadow-indigo-500/25"
-              onClick={handleRetry}
-            >
-              <RefreshCw size={14} /> Thi lại đề này
+              <Home size={15} /> Quay về trang chính
             </button>
           </div>
-        </div>
-
-
-
-        {/* Back navigation */}
-        <div className="flex justify-center gap-3 pt-2">
-          <button
-            className="text-xs text-slate-300 hover:text-white transition-colors underline underline-offset-2 font-medium"
-            onClick={() => setView('test-select')}
-          >
-            📚 Chọn đề ôn khác
-          </button>
-          <span className="text-slate-500 text-xs">•</span>
-          <button
-            className="text-xs text-slate-300 hover:text-white transition-colors underline underline-offset-2 font-medium"
-            onClick={() => setView('login')}
-          >
-            👤 Đổi học sinh
-          </button>
         </div>
       </div>
     </div>

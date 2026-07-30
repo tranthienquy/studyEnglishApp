@@ -202,28 +202,16 @@ export default function TestSelectView({ onSwitchTeacher }) {
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
 
                   <div>
-                    {/* Top Badge Tag & Date */}
-                    <div className="flex items-center justify-between mb-4 pt-1">
-                      {isCustom ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[11px] font-extrabold shadow-2xs">
-                          <Sparkles size={11} className="text-emerald-500 animate-pulse" />
-                          <span>Ngày tải lên: {dateDot}</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
-                          <BookOpen size={11} className="text-indigo-500" />
-                          <span>{t.subject || 'TIẾNG ANH'}</span>
-                        </span>
-                      )}
-                      {!isCustom && (
-                        <span className="text-[11px] font-semibold text-gray-400 bg-slate-100/70 px-2.5 py-0.5 rounded-full">
-                          {dateDot}
-                        </span>
-                      )}
+                    {/* Top Badge Tag */}
+                    <div className="flex items-center justify-between mb-3 pt-1">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                        <BookOpen size={11} className="text-indigo-500" />
+                        <span>{t.subject || 'TIẾNG ANH'}</span>
+                      </span>
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-base font-black text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
+                    {/* Title (Phóng to tên chủ đề) */}
+                    <h3 className="text-lg sm:text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
                       {t.title}
                     </h3>
 
@@ -243,14 +231,25 @@ export default function TestSelectView({ onSwitchTeacher }) {
                       </div>
                     </div>
 
-                    {/* Teacher Info */}
-                    <div className="flex items-center gap-2 mb-5">
-                      <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
-                        <User size={12} />
+                    {/* Teacher & Upload Date Info (Chung Format) */}
+                    <div className="space-y-2 mb-5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                          <User size={12} />
+                        </div>
+                        <span className="text-xs text-gray-500 font-medium truncate">
+                          Giáo viên: <strong className="text-gray-800 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
+                        </span>
                       </div>
-                      <span className="text-xs text-gray-500 font-medium truncate">
-                        Người phụ trách: <strong className="text-gray-800 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                          <Sparkles size={12} />
+                        </div>
+                        <span className="text-xs text-gray-500 font-medium truncate">
+                          Ngày tải lên: <strong className="text-gray-800 font-extrabold">{dateDot}</strong>
+                        </span>
+                      </div>
                     </div>
                   </div>
 

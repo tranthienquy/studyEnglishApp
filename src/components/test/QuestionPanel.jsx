@@ -92,10 +92,14 @@ export function QuestionTrackerSidebar({ sections }) {
 
   return (
     <div className="qts-sidebar">
-      {/* Header */}
-      <div className="qts-header">
-        <LayoutGrid size={14} className="text-indigo-500" />
-        <span className="qts-header-title">Bảng câu hỏi</span>
+      {/* Header (Matching CÂU HỎI TRẮC NGHIỆM style) */}
+      <div className="qp-header">
+        <div className="qp-header-left">
+          <div className="qp-header-icon">
+            <LayoutGrid size={14} className="text-indigo-600" />
+          </div>
+          <h2 className="qp-title-text">BẢNG CÂU HỎI</h2>
+        </div>
       </div>
 
       {/* Legend */}
@@ -198,19 +202,19 @@ function SingleQuestion({ q, isReview = false }) {
   return (
     <div
       id={`q-card-${q.id}`}
-      className={`bg-white rounded-2xl p-5 border shadow-xs transition-all ${
-        chosen ? 'border-indigo-400 bg-indigo-50/20 shadow-sm' : 'border-gray-200/90'
+      className={`bg-white rounded-xl p-3.5 border shadow-2xs transition-all ${
+        chosen ? 'border-indigo-400 bg-indigo-50/20 shadow-xs' : 'border-gray-200/90'
       }`}
     >
       {/* ── Question Header (Dark Navy Square Number Badge + Prompt Text) ── */}
-      <div className="flex items-start gap-3 mb-4">
-        {/* Dark Navy Square Number Badge (Matching Image 2) */}
-        <div className="w-7 h-7 min-w-[28px] rounded-lg bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center shadow-xs mt-0.5">
+      <div className="flex items-start gap-2.5 mb-2.5">
+        {/* Dark Navy Square Number Badge */}
+        <div className="w-6 h-6 min-w-[24px] rounded-md bg-slate-900 text-white font-extrabold text-[11px] flex items-center justify-center shadow-xs mt-0.5">
           {q.no}
         </div>
 
         {/* Question Prompt Text */}
-        <div className="flex-1 text-xs sm:text-sm font-semibold text-gray-900 leading-relaxed">
+        <div className="flex-1 text-xs sm:text-[13px] font-semibold text-gray-900 leading-snug">
           {renderPrompt(questionPrompt)}
         </div>
 
@@ -228,21 +232,21 @@ function SingleQuestion({ q, isReview = false }) {
         )}
       </div>
 
-      {/* ── Options Stack — Wide Card Buttons (Matching Image 2) ── */}
-      <div className="space-y-2.5">
+      {/* ── Options Stack — Compact Buttons ── */}
+      <div className="space-y-2">
         {LETTERS.map((letter, i) => {
           const text = q.options[i] || '';
           const isSelected = chosen === letter;
           const isCorrect  = letter === q.correct;
 
           // Compute option card styles matching Image 2
-          let cardStyle = "group flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-all cursor-pointer user-select-none bg-white ";
+          let cardStyle = "group flex items-center gap-3 px-3 py-2 rounded-xl border transition-all cursor-pointer user-select-none bg-white ";
           if (isReview) {
             if (isCorrect)              cardStyle += "border-emerald-500 bg-emerald-50/60 ring-1 ring-emerald-500";
             else if (isSelected)        cardStyle += "border-red-400 bg-red-50/60";
             else                        cardStyle += "border-gray-200 opacity-60";
           } else {
-            if (isSelected)             cardStyle += "border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600 shadow-sm";
+            if (isSelected)             cardStyle += "border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600 shadow-xs";
             else                        cardStyle += "border-gray-200/90 hover:border-indigo-300 hover:bg-slate-50/60";
           }
 
@@ -255,11 +259,11 @@ function SingleQuestion({ q, isReview = false }) {
               onClick={() => !isReview && setAnswer(q.id, letter)}
               onKeyDown={(e) => e.key === 'Enter' && !isReview && setAnswer(q.id, letter)}
             >
-              {/* Circular Letter Bubble (w-8 h-8 rounded-full border) */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all border ${
+              {/* Circular Letter Bubble */}
+              <div className={`w-7 h-7 min-w-[28px] rounded-full flex items-center justify-center text-[11px] font-bold transition-all border ${
                 isReview
                   ? (isCorrect ? 'bg-emerald-600 text-white border-emerald-600' : isSelected ? 'bg-red-500 text-white border-red-500' : 'bg-gray-100 text-gray-500 border-gray-200')
-                  : (isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-white text-gray-700 border-gray-300 group-hover:border-indigo-400')
+                  : (isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs' : 'bg-white text-gray-700 border-gray-300 group-hover:border-indigo-400')
               }`}>
                 {letter}
               </div>

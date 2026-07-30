@@ -1031,9 +1031,9 @@ body::after {
   flex-shrink: 0;
 }
 
-/* Left panel: Reading Passage */
+/* Left panel: Reading Passage (Expanded width) */
 .tv-left {
-  flex: 0 0 38%;
+  flex: 0 0 46%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1050,9 +1050,9 @@ body::after {
   background: rgba(248,249,250,0.6);
 }
 
-/* Right panel: Tracker Sidebar */
+/* Right panel: Tracker Sidebar (Compact) */
 .tv-right {
-  flex: 0 0 260px;
+  flex: 0 0 230px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1087,11 +1087,13 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 4px 14px;
+  height: 44px;
+  min-height: 44px;
   background: #ffffff;
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -1369,7 +1371,7 @@ body::after {
 .rp-content {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 22px 32px;
+  padding: 14px 18px 24px;
   scroll-behavior: smooth;
 }
 
@@ -2611,21 +2613,23 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 13px 16px;
-  background: rgba(255, 255, 255, 0.65);
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.06);
+  padding: 0 14px;
+  height: 44px;
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .qp-header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .qp-header-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
   background: #EEF2FF;
   color: #4F46E5;
   display: flex;
@@ -2635,10 +2639,11 @@ button, input, select, textarea {
 }
 
 .qp-title-text {
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #1e1b4b;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
   font-family: 'Inter', sans-serif;
 }
 

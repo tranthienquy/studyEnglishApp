@@ -110,13 +110,13 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
 
   return (
     <div className="rp-panel">
-      {/* ── Panel header: "PHẦN ĐỌC" title only ── */}
-      <div className="rp-panel-header">
-        <div className="rp-header-left">
-          <div className="rp-header-icon">
+      {/* ── Panel header: "PHẦN ĐỌC" (Matching CÂU HỎI TRẮC NGHIỆM exactly) ── */}
+      <div className="qp-header">
+        <div className="qp-header-left">
+          <div className="qp-header-icon">
             <BookOpen size={14} className="text-indigo-600" />
           </div>
-          <h2 className="rp-header-title">PHẦN ĐỌC</h2>
+          <h2 className="qp-title-text">PHẦN ĐỌC</h2>
         </div>
       </div>
 

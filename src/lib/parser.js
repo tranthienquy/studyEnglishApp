@@ -350,15 +350,13 @@ function parseSolutionSection(solutionHtml) {
 
     if (/^(?:Tạm\s+dịch|Dịch|Translation)\s*:/i.test(line)) {
       inTrans = true;
-      const t = line.replace(/^[^:]+:\s*/, '').trim();
-      if (t) cur.translation.push(t);
+      cur.translation.push(line);
       continue;
     }
 
     if (/^(?:Ta\s+có|Giải\s+thích|Ta\s+thấy|Phân\s+tích|Vì)\s*[:\-]?/i.test(line)) {
       inTrans = false;
-      const t = line.replace(/^[^:]+[:\-]?\s*/, '').trim();
-      if (t) cur.reasoning.push(t);
+      cur.reasoning.push(line);
       continue;
     }
 

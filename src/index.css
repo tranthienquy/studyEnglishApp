@@ -1060,9 +1060,13 @@ body::after {
   background: #f8f9fc;
 }
 
-/* Mobile show/hide */
-.mobile-show { display: flex !important; }
-.mobile-hide { display: none !important; }
+
+/* Mobile show/hide — only applies on small screens, desktop always shows all panels */
+@media (max-width: 1023px) {
+  .mobile-show { display: flex !important; }
+  .mobile-hide { display: none !important; }
+}
+
 
 /* ================================================================
    READING PASSAGE PANEL (Left)

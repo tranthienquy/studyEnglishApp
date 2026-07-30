@@ -214,21 +214,18 @@ function SingleQuestion({ q, isReview = false }) {
         })}
       </div>
 
-      {/* ── Explanation Toggle (Only visible in Review mode after completing test) ── */}
+      {/* ── Explanation Section (Always visible in Review mode) ── */}
       {isReview && q.explanation && (
-        <div className="mt-3 pt-3 border-t border-gray-100">
-          <button
-            className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-indigo-600 transition-colors"
-            onClick={() => setShowExplain(v => !v)}
-          >
-            <BookOpen size={13} />
-            <span>{showExplain ? 'Ẩn lời giải chi tiết' : 'Xem lời giải chi tiết'}</span>
-          </button>
-          {showExplain && (
-            <div className="mt-2 p-3 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed">
-              {q.explanation}
-            </div>
-          )}
+        <div className="mt-5 p-4 bg-slate-50 border border-indigo-100/80 rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen size={15} className="text-indigo-600" />
+            <h4 className="text-[11px] font-extrabold text-indigo-900 uppercase tracking-wider">
+              Học liệu & giải thích sư phạm chi tiết
+            </h4>
+          </div>
+          <div className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
+            {q.explanation}
+          </div>
         </div>
       )}
     </div>

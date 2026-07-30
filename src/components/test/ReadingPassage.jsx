@@ -137,7 +137,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       return;
     }
 
-    // 2. Highlight mode: apply background color mark
+    // 2. Highlight mode: apply background color mark (remains active until Eraser button clicked)
     if (activeTool === 'highlight') {
       try {
         const range = sel.getRangeAt(0);
@@ -150,6 +150,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
         mark.style.borderRadius = '4px';
         mark.style.boxShadow = '0 1px 2px rgba(0,0,0,0.06)';
         mark.style.cursor = 'pointer';
+        mark.title = 'Highlight (Bấm Bút xóa để gỡ màu)';
 
         try {
           range.surroundContents(mark);
@@ -192,7 +193,12 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       </div>
 
       {/* ── Passage content ── */}
-      <div className="rp-content" ref={passageRef} onMouseUp={handleMouseUp} onClick={handlePassageClick}>
+      <div
+        className={`rp-content ${activeTool === 'highlight' ? 'tool-highlight' : ''} ${activeTool === 'eraser' ? 'tool-eraser' : ''}`}
+        ref={passageRef}
+        onMouseUp={handleMouseUp}
+        onClick={handlePassageClick}
+      >
 
         {/* Translate button */}
         <button

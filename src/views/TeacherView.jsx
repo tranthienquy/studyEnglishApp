@@ -3,7 +3,7 @@ import {
   Upload, FileText, Settings, Trophy, PlusCircle, Trash2,
   CheckCircle2, Loader2, BookOpen, Save, Eye, RefreshCw,
   GripVertical, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft,
-  Users, Sparkles, Database, ExternalLink
+  Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet
 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Leaderboard from '../components/teacher/Leaderboard';
@@ -11,7 +11,7 @@ import ReadingPassage from '../components/test/ReadingPassage';
 import QuestionPanel from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import {
-  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured, testDatabaseConnection, isTestHidden, toggleHideTest
+  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured, testDatabaseConnection, isTestHidden, toggleHideTest, getTestSubmissions, exportResultsToExcel
 } from '../lib/supabase';
 import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
@@ -67,6 +67,21 @@ export default function TeacherView({ onSwitchStudent }) {
   }, []);
 
   const [hiddenVersion, setHiddenVersion] = useState(0);
+
+  // Submissions state for active editingTest
+  const [submissions, setSubmissions] = useState([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+
+  useEffect(() => {
+    if (editingTest) {
+      const testId = editingTest.id || editingTest.code;
+      setLoadingSubmissions(true);
+      getTestSubmissions(testId).then(data => {
+        setSubmissions(data || []);
+        setLoadingSubmissions(false);
+      });
+    }
+  }, [editingTest?.id, editingTest?.code]);
 
   async function loadTests() {
     setLoadingList(true);
@@ -615,31 +630,43 @@ export default function TeacherView({ onSwitchStudent }) {
           </div>
 
           {/* 2. Three Metric Stats Cards */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">SỐ LƯỢT LÀM BÀI</span>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-extrabold text-indigo-900">0</span>
-                <span className="text-xs text-gray-400 font-semibold">Lượt nộp bài</span>
-              </div>
-            </div>
+          {(() => {
+            const subCount = submissions.length;
+            const avgScore = subCount > 0
+              ? (submissions.reduce((acc, s) => acc + Number(s.score || 0), 0) / subCount).toFixed(1)
+              : '0.0';
+            const maxScore = subCount > 0
+              ? Math.max(...submissions.map(s => Number(s.score || 0))).toFixed(1)
+              : '0.0';
 
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM TRUNG BÌNH</span>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-extrabold text-indigo-900">0</span>
-                <span className="text-xs text-gray-400 font-semibold">Thang điểm 10</span>
-              </div>
-            </div>
+            return (
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">SỐ LƯỢT LÀM BÀI</span>
+                  <div className="flex items-baseline justify-between mt-2">
+                    <span className="text-3xl font-extrabold text-indigo-900">{subCount}</span>
+                    <span className="text-xs text-gray-400 font-semibold">Lượt nộp bài</span>
+                  </div>
+                </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM CAO NHẤT</span>
-              <div className="flex items-baseline justify-between mt-2">
-                <span className="text-3xl font-extrabold text-indigo-900">0</span>
-                <span className="text-xs text-amber-500 font-bold">Thành tích cao nhất</span>
+                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM TRUNG BÌNH</span>
+                  <div className="flex items-baseline justify-between mt-2">
+                    <span className="text-3xl font-extrabold text-indigo-900">{avgScore}</span>
+                    <span className="text-xs text-gray-400 font-semibold">Thang điểm 10</span>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM CAO NHẤT</span>
+                  <div className="flex items-baseline justify-between mt-2">
+                    <span className="text-3xl font-extrabold text-indigo-900">{maxScore}</span>
+                    <span className="text-xs text-amber-500 font-bold">Thành tích cao nhất</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* 3. Navigation Tabs Bar (Chỉnh sửa trực tiếp, Xem trước & Bảng kết quả) */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -674,7 +701,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 }`}
                 onClick={() => setMainTab('results')}
               >
-                👥 BẢNG KẾT QUẢ HỌC SINH (0)
+                👥 DANH SÁCH LÀM BÀI &amp; XUẤT EXCEL ({submissions.length})
               </button>
             </div>
 
@@ -879,10 +906,80 @@ export default function TeacherView({ onSwitchStudent }) {
               </div>
             )}
 
-            {/* TAB 2: BẢNG KẾT QUẢ HỌC SINH */}
+            {/* TAB 2: BẢNG KẾT QUẢ HỌC SINH & XUẤT EXCEL */}
             {mainTab === 'results' && (
-              <div className="p-6">
-                <Leaderboard />
+              <div className="p-6 space-y-5">
+                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                  <div>
+                    <h3 className="font-extrabold text-sm text-gray-900 flex items-center gap-2">
+                      <FileSpreadsheet size={16} className="text-emerald-600" />
+                      DANH SÁCH HỌC SINH ĐÃ NỘP BÀI ({submissions.length} LƯỢT)
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Tải về dữ liệu Excel đầy đủ bao gồm thời gian làm bài, số câu đúng và ngày giờ nộp bài.</p>
+                  </div>
+                  <button
+                    onClick={() => exportResultsToExcel(editingTest?.title, submissions)}
+                    className="btn bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs gap-2 px-4 py-2.5 rounded-xl shadow-md shadow-emerald-500/20 cursor-pointer flex items-center transition-all"
+                  >
+                    <Download size={14} />
+                    <span>XUẤT FILE EXCEL</span>
+                  </button>
+                </div>
+
+                {loadingSubmissions ? (
+                  <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
+                    <Loader2 size={20} className="animate-spin text-indigo-600" />
+                    <span className="text-xs font-semibold">Đang tải danh sách kết quả...</span>
+                  </div>
+                ) : submissions.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                    <Users size={32} className="mx-auto text-gray-300 mb-2" />
+                    <p className="text-sm font-bold text-gray-600">Chưa có lượt nộp bài nào cho đề thi này.</p>
+                    <p className="text-xs text-gray-400">Khi học sinh làm bài thi trực tuyến và bấm nộp bài, kết quả sẽ tự động lưu và hiển thị tại đây.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                    <table className="table w-full text-xs">
+                      <thead className="bg-slate-100/80 text-gray-700 font-extrabold uppercase text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4 text-center">STT</th>
+                          <th className="py-3 px-4 text-left">Tên học sinh</th>
+                          <th className="py-3 px-4 text-center">Lớp</th>
+                          <th className="py-3 px-4 text-center">Điểm số</th>
+                          <th className="py-3 px-4 text-center">Số câu đúng</th>
+                          <th className="py-3 px-4 text-center">Thời gian làm bài</th>
+                          <th className="py-3 px-4 text-right">Ngày giờ nộp bài</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 bg-white">
+                        {submissions.map((sub, idx) => {
+                          const scoreVal = Number(sub.score || 0);
+                          const dateStr = sub.created_at
+                            ? new Date(sub.created_at).toLocaleString('vi-VN')
+                            : 'Mới nộp';
+
+                          return (
+                            <tr key={sub.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="py-3 px-4 text-center font-bold text-gray-400">{idx + 1}</td>
+                              <td className="py-3 px-4 font-bold text-gray-900">{sub.student_name || 'Học sinh'}</td>
+                              <td className="py-3 px-4 text-center font-semibold text-indigo-600">{sub.student_class || '12A1'}</td>
+                              <td className="py-3 px-4 text-center">
+                                <span className={`font-extrabold text-sm px-2.5 py-0.5 rounded-lg ${
+                                  scoreVal >= 8 ? 'bg-emerald-100 text-emerald-800' : scoreVal >= 5 ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'
+                                }`}>
+                                  {scoreVal.toFixed(1)}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-center font-medium text-gray-600">{sub.correct_count || 'N/A'}</td>
+                              <td className="py-3 px-4 text-center font-medium text-gray-600">{sub.time_spent || 'N/A'}</td>
+                              <td className="py-3 px-4 text-right text-gray-400 font-mono text-[11px]">{dateStr}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </div>

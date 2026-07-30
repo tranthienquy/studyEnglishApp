@@ -209,31 +209,140 @@ export async function getAllTests(includeHidden = false) {
   return merged.filter(t => !isDeleted(t) && (includeHidden || !isHidden(t)));
 }
 
+// Local storage for results log
+function getLocalResults() {
+  try {
+    const raw = localStorage.getItem('readingpro_results_log');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalResult(res) {
+  const existing = getLocalResults();
+  const updated = [res, ...existing];
+  localStorage.setItem('readingpro_results_log', JSON.stringify(updated));
+}
+
 // ---- Save result (student) ----
 export async function saveResult(resultData) {
   const client = getClient();
+  let savedRecord = null;
+
   if (client) {
     try {
       const { data, error } = await client.from('results').insert({
         student_name: resultData.student_name,
         student_class: resultData.student_class,
         teacher: resultData.teacher,
-        test_id: resultData.test_id,
+        test_id: String(resultData.test_id),
+        test_code: resultData.test_code,
+        test_title: resultData.test_title,
         score: resultData.score,
+        correct_count: resultData.correct_count,
         time_spent: resultData.time_spent,
         answers_json: resultData.answers_json,
         created_at: new Date().toISOString(),
       }).select().single();
 
-      if (!error && data) return data;
+      if (!error && data) savedRecord = data;
     } catch (e) {
       console.warn('Supabase save result failed:', e);
     }
   }
 
-  // Fallback local log
-  console.log('[Local Session] Saved result:', resultData);
-  return { id: `local-${Date.now()}`, ...resultData };
+  if (!savedRecord) {
+    savedRecord = { id: `local-${Date.now()}`, ...resultData, created_at: new Date().toISOString() };
+  }
+
+  saveLocalResult(savedRecord);
+  return savedRecord;
+}
+
+// ---- Get submissions for a test (or all tests) ----
+export async function getTestSubmissions(testId) {
+  const client = getClient();
+  let dbResults = [];
+  
+  if (client) {
+    try {
+      let query = client.from('results').select('*').order('created_at', { ascending: false });
+      if (testId) {
+        const cleanId = String(testId).replace('custom-', '');
+        query = query.or(`test_id.eq.${testId},test_id.eq.${cleanId},test_code.eq.${testId}`);
+      }
+      const { data, error } = await query;
+      if (!error && data) dbResults = data;
+    } catch (e) {
+      console.warn('Supabase get results error:', e);
+    }
+  }
+
+  const localResults = getLocalResults();
+  const filteredLocal = testId
+    ? localResults.filter(r => String(r.test_id) === String(testId) || String(r.test_code) === String(testId))
+    : localResults;
+
+  const merged = [...dbResults];
+  for (const lr of filteredLocal) {
+    if (!merged.find(r => String(r.id) === String(lr.id))) {
+      merged.push(lr);
+    }
+  }
+
+  return merged;
+}
+
+// ---- Export student submissions to Excel / CSV ----
+export function exportResultsToExcel(testTitle, submissions = []) {
+  if (!submissions || submissions.length === 0) {
+    alert('Chưa có lượt làm bài nào để xuất file Excel!');
+    return;
+  }
+
+  const headers = [
+    'STT',
+    'Họ và Tên Học Sinh',
+    'Lớp',
+    'Tên Bài Thi',
+    'Điểm Số (Thang 10)',
+    'Số Câu Đúng',
+    'Thời Gian Làm Bài',
+    'Ngày Giờ Nộp Bài'
+  ];
+
+  const rows = submissions.map((s, idx) => {
+    const submittedDate = s.created_at
+      ? new Date(s.created_at).toLocaleString('vi-VN')
+      : new Date().toLocaleString('vi-VN');
+
+    const scoreVal = s.score !== undefined ? Number(s.score).toFixed(1) : '0.0';
+
+    return [
+      idx + 1,
+      `"${(s.student_name || 'Học sinh').replace(/"/g, '""')}"`,
+      `"${(s.student_class || '12A1').replace(/"/g, '""')}"`,
+      `"${(testTitle || s.test_title || 'Đề thi').replace(/"/g, '""')}"`,
+      scoreVal,
+      `"${s.correct_count || 'N/A'}"`,
+      `"${s.time_spent || 'N/A'}"`,
+      `"${submittedDate}"`
+    ].join(',');
+  });
+
+  const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  const cleanFileName = (testTitle || 'Danh_sach_ket_qua_hoc_sinh')
+    .replace(/[^a-zA-Z0-9_ -]/g, '')
+    .replace(/\s+/g, '_');
+  link.setAttribute('download', `${cleanFileName}_BangDiem_HocSinh.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 // ---- Get leaderboard ----

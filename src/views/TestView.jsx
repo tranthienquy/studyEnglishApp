@@ -36,13 +36,21 @@ export default function TestView({ isReviewMode = false }) {
       ? Math.floor((Date.now() - startTimeStamp) / 1000)
       : Math.floor((Date.now() - startTimeRef.current) / 1000);
     const result = submitTest(elapsed);
+
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const timeSpentFormatted = `${mins} phút ${secs} giây`;
+
     saveResult({
-      student_name: student?.name || '',
-      student_class: student?.class || '',
-      teacher: student?.teacher || '',
-      test_id: currentTest?.id || '',
+      student_name: student?.name || 'Học sinh',
+      student_class: student?.class || '12A1',
+      teacher: currentTest?.teacher || 'Cô Trang',
+      test_id: currentTest?.id || currentTest?.code || '',
+      test_code: currentTest?.code || '',
+      test_title: currentTest?.title || 'Đề thi',
       score: result?.score || 0,
-      time_spent: elapsed,
+      correct_count: `${result?.correctCount || 0}/${result?.totalQuestions || 40}`,
+      time_spent: timeSpentFormatted,
       answers_json: result?.detailedAnswers || [],
     }).catch(() => {});
   }

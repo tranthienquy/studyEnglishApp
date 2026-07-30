@@ -244,6 +244,11 @@ export async function saveTest(testData) {
     created_at: new Date().toISOString(),
   };
 
+  // Remove from deleted list if it was previously deleted
+  const deletedIds = getDeletedTestIds();
+  const newDeleted = deletedIds.filter(id => id !== String(testData.code));
+  localStorage.setItem('readingpro_deleted_tests', JSON.stringify(newDeleted));
+
   const client = getClient();
   if (client) {
     try {

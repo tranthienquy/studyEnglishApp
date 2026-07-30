@@ -37,7 +37,10 @@ export default function TestView({ isReviewMode = false }) {
     }).catch(() => {});
   }
 
-  if (!currentTest) return null;
+  if (!currentTest) {
+    setTimeout(() => useAppStore.getState().setView('test-select'), 0);
+    return <div className="flex h-screen items-center justify-center text-slate-500">Đang tải đề thi...</div>;
+  }
 
   return (
     <div className="tv-root">

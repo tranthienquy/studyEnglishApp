@@ -24,7 +24,10 @@ export default function ResultView() {
       .then(text => { setAiFeedback(text); setLoadingFeedback(false); });
   }, [result]);
 
-  if (!result) return null;
+  if (!result) {
+    setTimeout(() => setView('test-select'), 0);
+    return <div className="flex h-screen items-center justify-center text-white">Đang chuyển hướng...</div>;
+  }
 
   function handleRetry() {
     startTest(student, currentTest);

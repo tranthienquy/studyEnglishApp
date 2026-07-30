@@ -55,28 +55,102 @@ export async function explainAnswer(questionText, options, correctAnswer, explan
   }
 }
 
-// ---- Translate text ----
-export async function translateText(text) {
-  if (!GEMINI_KEY) {
-    await delay(700);
-    return `🇻🇳 [Mock] "${text}" — Kết nối Gemini API để dịch chính xác.`;
-  }
+// ---- Translate text (Google Translate, no API key needed) ----
+export async function translateWithGoogle(text) {
+  if (!text || !text.trim()) return '';
   try {
-    const prompt = `Dịch đoạn văn tiếng Anh sau sang tiếng Việt một cách tự nhiên và chính xác. Chỉ trả về bản dịch, không giải thích thêm:\n\n"${text}"`;
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-      }
-    );
+    // Use the unofficial but widely-used Google Translate endpoint
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(text.substring(0, 5000))}`;
+    const res = await fetch(url);
     const data = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || text;
+    // Response is nested arrays: [[["translated", "original", ...]]]
+    if (Array.isArray(data) && Array.isArray(data[0])) {
+      return data[0].map(part => part?.[0] || '').join('');
+    }
+    return text;
   } catch {
     return text;
   }
 }
+
+// ---- Translate text (Gemini fallback for backward compat) ----
+export async function translateText(text) {
+  return translateWithGoogle(text);
+}
+
+// ---- Extract vocabulary from passage ----
+export async function extractVocabulary(passageText) {
+  if (!passageText || passageText.trim().length < 50) return [];
+
+  // If Gemini key available, use AI for richer vocab extraction
+  if (GEMINI_KEY) {
+    try {
+      const prompt = `Bạn là giáo viên Tiếng Anh. Đọc đoạn văn sau và liệt kê 10-12 từ vựng quan trọng nhất. 
+Trả về JSON array với format: [{"word": "...", "type": "n./v./adj./adv./phrase", "meaning": "nghĩa tiếng Việt ngắn gọn"}]
+Chỉ trả về JSON, không giải thích thêm.
+
+Đoạn văn:
+${passageText.substring(0, 3000)}`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: 'application/json' }
+          }),
+        }
+      );
+      const data = await res.json();
+      const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+      const parsed = JSON.parse(jsonText);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch { /* fall through to Google Translate extraction */ }
+  }
+
+  // Fallback: Extract important words and translate each with Google
+  const words = extractKeyWords(passageText);
+  const vocabList = [];
+  for (const word of words.slice(0, 10)) {
+    try {
+      const meaning = await translateWithGoogle(word);
+      vocabList.push({ word, type: guessWordType(word), meaning });
+    } catch {
+      vocabList.push({ word, type: 'n.', meaning: '(đang tải...)' });
+    }
+  }
+  return vocabList;
+}
+
+function extractKeyWords(text) {
+  // Find multi-syllable words that are likely vocabulary worth studying
+  const plain = text.replace(/<[^>]+>/g, ' ').replace(/[^a-zA-Z\s'-]/g, ' ');
+  const words = plain.split(/\s+/).filter(w => w.length >= 6);
+  // Count frequency
+  const freq = {};
+  for (const w of words) {
+    const lw = w.toLowerCase().replace(/[^a-z]/g, '');
+    if (lw.length >= 5) freq[lw] = (freq[lw] || 0) + 1;
+  }
+  // Sort by frequency, exclude very common words
+  const stopWords = new Set(['which', 'where', 'their', 'there', 'these', 'those', 'would', 'could', 'should', 'people', 'other', 'about', 'because', 'between', 'through', 'during', 'before', 'after', 'while', 'although', 'however']);
+  return Object.entries(freq)
+    .filter(([w]) => !stopWords.has(w))
+    .sort((a, b) => b[1] - a[1])
+    .map(([w]) => w);
+}
+
+function guessWordType(word) {
+  if (word.endsWith('tion') || word.endsWith('ness') || word.endsWith('ment') || word.endsWith('ity')) return 'n.';
+  if (word.endsWith('ize') || word.endsWith('ise') || word.endsWith('ify') || word.endsWith('ate')) return 'v.';
+  if (word.endsWith('ful') || word.endsWith('less') || word.endsWith('ous') || word.endsWith('ive') || word.endsWith('able') || word.endsWith('ible')) return 'adj.';
+  if (word.endsWith('ly')) return 'adv.';
+  return 'n.';
+}
+
+
 
 // ---- Parse uploaded test content ----
 export async function parseTestContent(rawText) {

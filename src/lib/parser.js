@@ -100,10 +100,10 @@ export function parseExamText(fileData) {
   let rawContent = typeof fileData === 'string' ? fileData : (fileData.html || fileData.text || '');
   if (!rawContent || !rawContent.trim()) return null;
 
-  // ── 0. Cut off solution/answer key section ─────────────────────────
-  // Files may contain "LỜI GIẢI CHI TIẾT" or "----- Hết -----" markers
-  // Everything after these should be excluded to avoid duplicate questions
-  rawContent = cutOffSolutionSection(rawContent);
+  // ── 0. Split solution section from exam content, then map explanations ──────
+  // Files may contain "LỜI GIẢI CHI TIẾT" — we now extract & map to questions
+  const { examContent, solutionContent } = extractAndCutSolution(rawContent);
+  rawContent = examContent;
 
   // ── 1. Detect Test Code from red text ──────────────────────────────
   let detectedCode = '';
@@ -245,6 +245,23 @@ export function parseExamText(fileData) {
     parsedSections.push(parseSingleSectionFallback(htmlLines));
   }
 
+  // ── Merge solutions into question explanations ────────────────────
+  if (solutionContent) {
+    const solutionMap = parseSolutionSection(solutionContent);
+    for (const sec of parsedSections) {
+      for (const q of sec.questions) {
+        const sol = solutionMap[q.no];
+        if (sol) {
+          const parts = [];
+          if (sol.reasoning) parts.push(`📝 ${sol.reasoning}`);
+          if (sol.translation) parts.push(`🇻🇳 ${sol.translation}`);
+          if (sol.answer) q.correct = sol.answer; // override with official answer
+          if (parts.length > 0) q.explanation = parts.join('\n\n');
+        }
+      }
+    }
+  }
+
   return {
     code: detectedCode || '',
     title: detectedTitle || parsedSections[0]?.title || 'Đề Ôn Tập',
@@ -259,50 +276,98 @@ export function parseExamText(fileData) {
 ================================================================= */
 
 /**
- * Cut off the solution/answer-key section from the raw HTML content.
- * Vietnamese exam files often include "LỜI GIẢI CHI TIẾT" (detailed solutions)
- * or "----- Hết -----" (end marker) followed by the answer explanations.
- * We strip everything after these markers to avoid parsing duplicate questions.
+ * Split HTML into exam content + solution content.
+ * Instead of discarding solutions, we return them separately so they can
+ * be mapped into each question's explanation field.
  */
-function cutOffSolutionSection(html) {
-  if (!html) return html;
+function extractAndCutSolution(html) {
+  if (!html) return { examContent: html, solutionContent: null };
 
-  // Try HTML-aware cuts first (handles <strong>----- Hết -----</strong> etc.)
-  // Pattern 1: "----- Hết -----" (end of test marker)
   const hetPatterns = [
     /[-–—]{3,}\s*Hết\s*[-–—]{3,}/i,
     />[-–—]{3,}\s*Hết\s*[-–—]{3,}/i,
   ];
   for (const pat of hetPatterns) {
-    const match = html.match(pat);
-    if (match) {
-      return html.substring(0, match.index);
-    }
+    const m = html.match(pat);
+    if (m) return { examContent: html.substring(0, m.index), solutionContent: html.substring(m.index + m[0].length) };
   }
 
-  // Pattern 2: "LỜI GIẢI CHI TIẾT" (solution header)
   const loiGiaiIdx = html.search(/LỜI\s+GIẢI\s+CHI\s+TIẾT/i);
-  if (loiGiaiIdx > 0) {
-    return html.substring(0, loiGiaiIdx);
-  }
+  if (loiGiaiIdx > 0) return { examContent: html.substring(0, loiGiaiIdx), solutionContent: html.substring(loiGiaiIdx) };
 
-  // Pattern 3: "🗝️" emoji (key emoji often used before solutions)
-  const keyIdx = html.indexOf('🗝️');
-  if (keyIdx > 0) {
-    return html.substring(0, keyIdx);
-  }
-
-  // Pattern 4: "Hướng dẫn giải" section header (alternative format)
   const hdgIdx = html.search(/Hướng\s+dẫn\s+giải/i);
   if (hdgIdx > 0) {
-    // Only cut if it appears after at least some questions
-    const questionsBefore = html.substring(0, hdgIdx).match(/Question\s+\d+/gi);
-    if (questionsBefore && questionsBefore.length >= 10) {
-      return html.substring(0, hdgIdx);
-    }
+    const qBefore = html.substring(0, hdgIdx).match(/Question\s+\d+/gi);
+    if (qBefore && qBefore.length >= 3) return { examContent: html.substring(0, hdgIdx), solutionContent: html.substring(hdgIdx) };
   }
 
-  return html;
+  const keyIdx = html.indexOf('🗝️');
+  if (keyIdx > 0) return { examContent: html.substring(0, keyIdx), solutionContent: html.substring(keyIdx) };
+
+  return { examContent: html, solutionContent: null };
+}
+
+/**
+ * Parse the solution/explanation HTML into a question-number keyed map.
+ * { [no]: { reasoning: string, translation: string, answer: string } }
+ * Supports:
+ *   Question 1: / Câu 1.
+ *   Ta có: ...
+ *   Tạm dịch: ...
+ *   Đáp án: D
+ */
+function parseSolutionSection(solutionHtml) {
+  if (!solutionHtml) return {};
+
+  const plain = solutionHtml
+    .replace(/<\/?(p|div|tr|li|h[1-6]|br)[^>]*>/gi, '\n')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  const lines = plain.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const result = {};
+  let cur = null;   // { no, reasoning[], translation[], answer }
+  let inTrans = false;
+
+  const flush = () => {
+    if (cur) result[cur.no] = { reasoning: cur.reasoning.join(' ').trim(), translation: cur.translation.join(' ').trim(), answer: cur.answer };
+  };
+
+  for (const line of lines) {
+    const qm = line.match(/^(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]/i);
+    if (qm) {
+      flush();
+      cur = { no: parseInt(qm[1], 10), reasoning: [], translation: [], answer: null };
+      inTrans = false;
+      continue;
+    }
+    if (!cur) continue;
+
+    const am = line.match(/(?:Đáp\s+án|Answer)\s*[:\-]?\s*([A-D])/i);
+    if (am) { cur.answer = am[1].toUpperCase(); continue; }
+
+    if (/^(?:Tạm\s+dịch|Dịch|Translation)\s*:/i.test(line)) {
+      inTrans = true;
+      const t = line.replace(/^[^:]+:\s*/, '').trim();
+      if (t) cur.translation.push(t);
+      continue;
+    }
+
+    if (/^(?:Ta\s+có|Giải\s+thích|Ta\s+thấy|Phân\s+tích|Vì)\s*[:\-]?/i.test(line)) {
+      inTrans = false;
+      const t = line.replace(/^[^:]+[:\-]?\s*/, '').trim();
+      if (t) cur.reasoning.push(t);
+      continue;
+    }
+
+    if (/^[-=*_#]{3,}$/.test(line) || /^(?:LỜI GIẢI|HƯỚNG DẪN|🗝)/i.test(line)) continue;
+
+    if (inTrans) cur.translation.push(line); else cur.reasoning.push(line);
+  }
+  flush();
+  return result;
 }
 
 /**

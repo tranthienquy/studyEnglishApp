@@ -1252,21 +1252,21 @@ body::after {
 }
 
 .rp-title {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: #1a56c4;
   text-align: center;
   margin-bottom: 4px;
-  font-family: 'Merriweather', 'Times New Roman', Georgia, serif;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .rp-subtitle {
-  font-size: 14px;
+  font-size: 15px;
   font-style: italic;
   color: #6b7280;
   text-align: center;
   margin-bottom: 14px;
-  font-family: 'Merriweather', 'Times New Roman', Georgia, serif;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .rp-body {

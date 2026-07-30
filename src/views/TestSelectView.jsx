@@ -103,18 +103,11 @@ export default function TestSelectView({ onSwitchTeacher }) {
         </div>
 
         {/* Hero Title Header */}
-        <div className="text-center mb-10 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider mb-3 shadow-2xs">
+        <div className="text-center mb-6 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider mb-4 shadow-2xs">
             <Sparkles size={12} className="text-indigo-600 animate-pulse" />
             <span>KHO ĐỀ ÔN THI TRỰC TUYẾN HIGH SCHOOL</span>
           </div>
-
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-2">
-            Kho Đề Ôn Luyện Trực Tuyến
-          </h1>
-          <p className="text-gray-500 text-xs sm:text-sm leading-relaxed mb-6">
-            Chọn bài khảo sát bên dưới để thử sức thi trực tuyến với đồng hồ bấm giờ và hệ thống chấm điểm tự động.
-          </p>
 
           {/* ── UNIFIED SEARCH & FILTER BAR ── */}
           <div className="bg-white/80 backdrop-blur-xl border border-white/90 shadow-md rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg">

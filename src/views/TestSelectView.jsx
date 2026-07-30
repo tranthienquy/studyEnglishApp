@@ -105,8 +105,8 @@ export default function TestSelectView({ onSwitchTeacher }) {
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles size={22} className="text-indigo-600 flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">
+            <Sparkles size={22} className="text-blue-900 flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-400 bg-clip-text text-transparent uppercase tracking-tight">
               KHO ĐỀ ÔN THI TRỰC TUYẾN FPT SCHOOLS (THPT)
             </h1>
           </div>

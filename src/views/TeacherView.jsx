@@ -11,7 +11,7 @@ import ReadingPassage from '../components/test/ReadingPassage';
 import QuestionPanel from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import {
-  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured, testDatabaseConnection
+  saveTest, getAllTests, deleteTest, clearAllMockTests, getSupabaseConfig, saveSupabaseConfig, isRealSupabaseConfigured, testDatabaseConnection, isTestHidden, toggleHideTest
 } from '../lib/supabase';
 import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
@@ -65,10 +65,12 @@ export default function TeacherView({ onSwitchStudent }) {
     loadTests();
   }, []);
 
+  const [hiddenVersion, setHiddenVersion] = useState(0);
+
   async function loadTests() {
     setLoadingList(true);
     try {
-      const tests = await getAllTests();
+      const tests = await getAllTests(true);
       setTestList(tests || []);
       if (tests && tests.length > 0) {
         selectTest(tests[0]);
@@ -294,21 +296,11 @@ export default function TeacherView({ onSwitchStudent }) {
     setSaving(false);
   }
 
-  function handleOpenStudentTest() {
-    // Set this test as current test in app store and open student view
-    const allQs = editingTest.sections.flatMap(s => s.questions);
-    setTest({
-      id: editingTest.id,
-      code: editingTest.code,
-      title: editingTest.title,
-      subject: editingTest.subject,
-      duration: editingTest.duration,
-      teacher: editingTest.teacher,
-      sections: editingTest.sections,
-      passage: editingTest.sections[0]?.passage || '',
-      questions: allQs,
-    });
-    onSwitchStudent();
+  function handleToggleStudentAccess() {
+    if (!editingTest) return;
+    const idStr = editingTest.id || editingTest.code;
+    toggleHideTest(idStr);
+    setHiddenVersion(v => v + 1);
   }
 
   const totalQuestionsCount = editingTest.sections.reduce((acc, s) => acc + s.questions.length, 0);
@@ -410,11 +402,18 @@ export default function TeacherView({ onSwitchStudent }) {
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
-                          isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
-                        }`}>
-                          {isCustom ? 'ĐỀ ĐÃ TẢI LÊN' : (t.subject || 'ĐỀ MẪU')}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
+                            isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
+                          }`}>
+                            {isCustom ? 'ĐỀ ĐÃ TẢI LÊN' : (t.subject || 'ĐỀ MẪU')}
+                          </span>
+                          {isTestHidden(t.id || t.code) && (
+                            <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-md">
+                              🔴 Đã ẩn
+                            </span>
+                          )}
+                        </div>
                         <button
                           className="text-gray-300 hover:text-red-500 p-1 transition-colors"
                           title="Xóa đề thi này"
@@ -575,12 +574,22 @@ export default function TeacherView({ onSwitchStudent }) {
                   <Eye size={14} /> Xem trước
                 </button>
 
-                <button
-                  className="btn btn-emerald bg-emerald-600 hover:bg-emerald-700 text-white border-none font-bold text-xs gap-1.5 px-5 py-2.5 rounded-xl shadow-md shadow-emerald-500/20"
-                  onClick={handleOpenStudentTest}
-                >
-                  🟢 MỞ HỌC SINH ÔN TẬP
-                </button>
+                {(() => {
+                  const isHidden = editingTest ? isTestHidden(editingTest.id || editingTest.code) : false;
+                  return (
+                    <button
+                      className={`btn font-bold text-xs gap-1.5 px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer ${
+                        isHidden
+                          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
+                      }`}
+                      onClick={handleToggleStudentAccess}
+                      title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn!'}
+                    >
+                      {isHidden ? '🔴 ẨN HỌC SINH ÔN TẬP' : '🟢 MỞ HỌC SINH ÔN TẬP'}
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </div>

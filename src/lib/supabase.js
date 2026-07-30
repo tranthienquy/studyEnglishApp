@@ -108,6 +108,35 @@ function getDeletedTestIds() {
   }
 }
 
+export function getHiddenTestIds() {
+  try {
+    const raw = localStorage.getItem('readingpro_hidden_tests');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isTestHidden(testIdOrCode) {
+  if (!testIdOrCode) return false;
+  const hidden = getHiddenTestIds();
+  return hidden.includes(String(testIdOrCode));
+}
+
+export function toggleHideTest(testIdOrCode) {
+  if (!testIdOrCode) return false;
+  const hidden = getHiddenTestIds();
+  const idStr = String(testIdOrCode);
+  let updated;
+  if (hidden.includes(idStr)) {
+    updated = hidden.filter(id => id !== idStr);
+  } else {
+    updated = [...hidden, idStr];
+  }
+  localStorage.setItem('readingpro_hidden_tests', JSON.stringify(updated));
+  return updated.includes(idStr); // returns true if now hidden
+}
+
 function saveLocalCustomTest(test) {
   const existing = getLocalCustomTests();
   const updated = [test, ...existing.filter(t => t.code !== test.code)];
@@ -140,9 +169,11 @@ export async function getTestByCode(code) {
 }
 
 // ---- Get all tests ----
-export async function getAllTests() {
+export async function getAllTests(includeHidden = false) {
   const deletedIds = getDeletedTestIds();
   const isDeleted = (t) => deletedIds.includes(String(t.id)) || deletedIds.includes(String(t.code));
+  const hiddenIds = getHiddenTestIds();
+  const isHidden = (t) => hiddenIds.includes(String(t.id)) || hiddenIds.includes(String(t.code));
 
   const client = getClient();
   let dbTests = [];
@@ -175,7 +206,7 @@ export async function getAllTests() {
     }
   }
   
-  return merged.filter(t => !isDeleted(t));
+  return merged.filter(t => !isDeleted(t) && (includeHidden || !isHidden(t)));
 }
 
 // ---- Save result (student) ----

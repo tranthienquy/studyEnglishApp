@@ -204,7 +204,7 @@ export function parseExamText(fileData) {
 
       // ── Passage line ──────────────────────────────────────────────
       if (questions.length === 0) {
-        if (!sectionTitle && plain.length < 80 && isTitleLine(plain)) {
+        if (!sectionTitle && plain.length < 100 && isTitleLine(plain, lineObj.html)) {
           sectionTitle = plain;
           if (!detectedTitle) detectedTitle = plain;
         } else if (plain.length > 0) {
@@ -330,18 +330,25 @@ function isHeaderBannerLine(text) {
 }
 
 /** True if line is an ALL-CAPS short title (passage heading) or Title Case */
-function isTitleLine(text) {
+function isTitleLine(text, html) {
   if (!text || text.trim().length === 0) return false;
   
   const upper = text.toUpperCase();
   if (upper === text) return true; // ALL CAPS
+
+  // If it's explicitly bolded in Word (strong or b tags) and doesn't look like a normal sentence ending
+  if (html && (html.includes('<strong') || html.includes('<b'))) {
+    if (!text.endsWith('.') && !/^[a-z]/.test(text) && text.length < 100) {
+      return true;
+    }
+  }
 
   // Should not end with a normal sentence period
   if (text.endsWith('.') && !text.endsWith('...')) return false;
   // Should not start with a lowercase letter
   if (/^[a-z]/.test(text)) return false;
 
-  // Check if >= 50% of words start with uppercase or number (Title Case behavior)
+  // Check if >= 40% of words start with uppercase or number (Title Case behavior)
   const words = text.split(/\s+/).filter(w => w.length > 0);
   let capCount = 0;
   for (const w of words) {

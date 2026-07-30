@@ -160,9 +160,8 @@ export function parseExamText(fileData) {
       startIdx = 1;
     }
 
-    // Collect title/subtitle from passage header lines
+    // Collect title from passage header lines
     let sectionTitle = '';
-    let sectionSubtitle = '';
 
     // ── Parse lines ──────────────────────────────────────────────────
     let i = startIdx;
@@ -208,8 +207,6 @@ export function parseExamText(fileData) {
         if (!sectionTitle && plain.length < 80 && isTitleLine(plain)) {
           sectionTitle = plain;
           if (!detectedTitle) detectedTitle = plain;
-        } else if (sectionTitle && !sectionSubtitle && plain.length < 80 && !plain.includes('.') && isTitleLine(plain)) {
-          sectionSubtitle = plain;
         } else if (plain.length > 0) {
           // Format blanks inline: (18) ________, **(18) ________**
           passageLines.push(lineObj.html || plain);
@@ -225,7 +222,7 @@ export function parseExamText(fileData) {
         id: `sec-${sIdx + 1}`,
         instruction: instruction || 'Read the following passage and answer the questions below.',
         title: sectionTitle || '',
-        subtitle: sectionSubtitle || '',
+        subtitle: '',
         passage: passageHtml || '',
         questions: questions.length > 0 ? questions : [],
       });
@@ -332,11 +329,29 @@ function isHeaderBannerLine(text) {
   );
 }
 
-/** True if line is an ALL-CAPS short title (passage heading) */
+/** True if line is an ALL-CAPS short title (passage heading) or Title Case */
 function isTitleLine(text) {
+  if (!text || text.trim().length === 0) return false;
+  
   const upper = text.toUpperCase();
-  // All uppercase or Title Case, no sentence punctuation
-  return !text.match(/[a-z]{5,}/) || upper === text || /^[A-Z][a-zA-Z\s\&\-]+$/.test(text);
+  if (upper === text) return true; // ALL CAPS
+
+  // Should not end with a normal sentence period
+  if (text.endsWith('.') && !text.endsWith('...')) return false;
+  // Should not start with a lowercase letter
+  if (/^[a-z]/.test(text)) return false;
+
+  // Check if >= 50% of words start with uppercase or number (Title Case behavior)
+  const words = text.split(/\s+/).filter(w => w.length > 0);
+  let capCount = 0;
+  for (const w of words) {
+    if (/^[A-Z0-9]/.test(w)) capCount++;
+  }
+  if (words.length > 0 && capCount / words.length >= 0.4) {
+    return true;
+  }
+
+  return false;
 }
 
 /** Detects Question 18: / Question 18. / Q18. / Câu 18. / 18. */

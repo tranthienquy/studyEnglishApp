@@ -10,19 +10,19 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 /* ─────────────────────────────────────────────
    QuestionTracker — bảng tổng hợp câu hỏi
 ───────────────────────────────────────────── */
-function QuestionTracker({ sections }) {
-  const { answers, flagged } = useAppStore();
+export function QuestionTracker({ sections }) {
+  const { answers, flaggedArray = [] } = useAppStore();
   const [open, setOpen] = useState(false);
 
   // Flatten all questions
   const allQ = sections?.flatMap(s => s.questions) || [];
   const answered = allQ.filter(q => answers[q.id]).length;
-  const flaggedCount = flagged.size;
+  const flaggedCount = flaggedArray.length;
   const total = allQ.length;
   const unanswered = total - answered;
 
   function getStatus(q) {
-    if (flagged.has(q.id)) return 'flagged';
+    if (flaggedArray.includes(q.id)) return 'flagged';
     if (answers[q.id]) return 'done';
     return 'empty';
   }
@@ -92,11 +92,13 @@ function QuestionTracker({ sections }) {
    SingleQuestion — Box câu hỏi rộng chuẩn Ảnh 2
 ───────────────────────────────────────────── */
 function SingleQuestion({ q, isReview = false }) {
-  const { answers, setAnswer, flagged, toggleFlag } = useAppStore();
+  const { answers, setAnswer, flaggedArray = [], toggleFlag } = useAppStore();
   const [showExplain, setShowExplain] = useState(false);
 
   const chosen = answers[q.id];
-  const isFlagged = flagged.has(q.id);
+
+  // Safely check if it's flagged using the array
+  const isFlagged = flaggedArray.includes(q.id);
 
   // Clean question prompt text: remove inline options repetition if present
   let questionPrompt = q.text || `Question ${q.no}.`;

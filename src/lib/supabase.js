@@ -145,23 +145,37 @@ export async function getAllTests() {
   const isDeleted = (t) => deletedIds.includes(String(t.id)) || deletedIds.includes(String(t.code));
 
   const client = getClient();
+  let dbTests = [];
+  
   if (client) {
     try {
       const { data, error } = await client.from('tests').select('*').order('created_at', { ascending: false });
-      // If connected successfully, ALWAYS return data from DB (even if it's empty)
       if (!error && data) {
-        return data.map(formatTestFromDB).filter(t => !isDeleted(t));
+        dbTests = data.map(formatTestFromDB);
       }
     } catch (e) {
       console.warn('Supabase fetch all failed, fallback to local:', e);
     }
   }
 
-  // Fallback: return custom tests + mock tests (filtering out deleted)
-  const custom = getLocalCustomTests();
-  const customFormatted = custom.map(formatTestFromDB);
-  const all = [...customFormatted, ...MOCK_TESTS];
-  return all.filter(t => !isDeleted(t));
+  const localTests = getLocalCustomTests();
+
+  // Merge tests, preferring DB tests over local tests by code
+  const merged = [...dbTests];
+  for (const lt of localTests) {
+    if (!merged.find(t => t.code === lt.code)) {
+      merged.push(lt);
+    }
+  }
+  
+  // Also include mock tests if not already present or deleted
+  for (const mt of MOCK_TESTS) {
+    if (!merged.find(t => t.code === mt.code)) {
+      merged.push(mt);
+    }
+  }
+  
+  return merged.filter(t => !isDeleted(t));
 }
 
 // ---- Save result (student) ----

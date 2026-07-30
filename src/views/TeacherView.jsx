@@ -270,7 +270,7 @@ export default function TeacherView({ onSwitchStudent }) {
     setSaving(true);
     try {
       const allQs = editingTest.sections.flatMap(s => s.questions);
-      await saveTest({
+      const result = await saveTest({
         code: editingTest.code,
         title: editingTest.title,
         subject: editingTest.subject,
@@ -281,8 +281,12 @@ export default function TeacherView({ onSwitchStudent }) {
         questions_json: allQs,
       });
 
-      setSavedMsg('Đã lưu đề thi thành công!');
-      setTimeout(() => setSavedMsg(''), 3000);
+      if (result && result.error) {
+        alert('Lỗi từ Supabase: ' + result.error);
+      } else {
+        setSavedMsg('Đã lưu đề thi thành công!');
+        setTimeout(() => setSavedMsg(''), 3000);
+      }
       await loadTests();
     } catch (e) {
       alert('Lưu thất bại: ' + e.message);

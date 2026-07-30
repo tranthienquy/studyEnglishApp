@@ -254,9 +254,11 @@ export async function saveTest(testData) {
       }
       if (error) {
         console.warn('Supabase save test error (falling back to Local Storage):', error.message);
+        return { error: error.message }; // Return explicit error so UI can alert the user
       }
     } catch (e) {
       console.warn('Supabase save test exception (falling back to Local Storage):', e.message);
+      return { error: e.message }; // Return explicit error
     }
   }
 

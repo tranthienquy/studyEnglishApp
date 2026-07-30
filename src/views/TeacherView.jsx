@@ -697,7 +697,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 onClick={() => setMainTab('edit')}
               >
                 <FileEdit size={14} className="text-amber-600" />
-                <span>CHỈNH SỬA ĐỀ ({totalQuestionsCount} CÂU)</span>
+                <span>Chỉnh sửa đề ({totalQuestionsCount} câu)</span>
               </button>
 
               <button
@@ -709,7 +709,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 onClick={() => setMainTab('preview')}
               >
                 <Eye size={14} className="text-amber-600" />
-                <span>PREVIEW</span>
+                <span>Preview</span>
               </button>
 
               <button
@@ -721,7 +721,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 onClick={() => setMainTab('results')}
               >
                 <FileSpreadsheet size={14} className="text-emerald-600" />
-                <span>TẢI EXCEL ({submissions.length})</span>
+                <span>Tải Excel ({submissions.length})</span>
               </button>
             </div>
 

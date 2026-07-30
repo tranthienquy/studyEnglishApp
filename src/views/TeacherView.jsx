@@ -324,19 +324,19 @@ export default function TeacherView({ onSwitchStudent }) {
   const totalQuestionsCount = editingTest.sections.reduce((acc, s) => acc + s.questions.length, 0);
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] text-gray-800 font-sans pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12">
       {/* ── Top Header Navigation Bar ── */}
-      <header className="bg-white border-b border-gray-200 px-6 py-3 shadow-sm sticky top-0 z-30">
+      <header className="bg-white/90 backdrop-blur-md border-b border-amber-100 px-6 py-3 shadow-xs sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
               <BookOpen size={20} />
             </div>
             <div>
               <h1 className="font-extrabold text-base tracking-tight text-gray-900 uppercase">
                 LUYỆN THI THPT QUỐC GIA
               </h1>
-              <p className="text-[11px] font-semibold text-gray-400 tracking-wider">
+              <p className="text-[11px] font-semibold text-amber-600/80 tracking-wider">
                 HỆ THỐNG ĐỀ ÔN LUYỆN THÔNG MINH AI
               </p>
             </div>
@@ -358,7 +358,7 @@ export default function TeacherView({ onSwitchStudent }) {
             </button>
 
             <button
-              className="btn btn-sm bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold text-xs gap-1.5 rounded-xl pointer-events-none"
+              className="btn btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl pointer-events-none"
             >
               <Settings size={13} /> Giáo viên quản lý
             </button>
@@ -377,7 +377,7 @@ export default function TeacherView({ onSwitchStudent }) {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="font-bold text-sm text-gray-900 flex items-center gap-2">
-                  <BookOpen size={16} className="text-indigo-600" />
+                  <BookOpen size={16} className="text-amber-600" />
                   ĐỀ THI TRÊN HỆ THỐNG ({testList.length})
                 </h2>
                 <p className="text-[10px] text-gray-400 mt-0.5">Bao gồm đề đã tải lên &amp; đề mẫu demo</p>
@@ -400,7 +400,7 @@ export default function TeacherView({ onSwitchStudent }) {
             <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
               {loadingList ? (
                 <div className="text-center py-6 text-xs text-gray-400">
-                  <Loader2 size={20} className="animate-spin mx-auto mb-2 text-indigo-500" />
+                  <Loader2 size={20} className="animate-spin mx-auto mb-2 text-amber-500" />
                   Đang tải danh sách đề thi...
                 </div>
               ) : testList.length === 0 ? (
@@ -420,14 +420,14 @@ export default function TeacherView({ onSwitchStudent }) {
                       onClick={() => selectTest(t)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer relative ${
                         isSelected
-                          ? 'bg-indigo-50/70 border-indigo-500 ring-1 ring-indigo-500'
-                          : 'bg-white border-gray-100 hover:border-indigo-200 hover:bg-slate-50'
+                          ? 'bg-amber-50/80 border-amber-400 ring-1 ring-amber-400'
+                          : 'bg-white border-gray-100 hover:border-amber-200 hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
                           <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
-                            isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
+                            isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100/80 text-amber-800'
                           }`}>
                             {isCustom ? `Ngày tải lên: ${dateDot}` : (t.subject || 'ĐỀ MẪU')}
                           </span>
@@ -467,7 +467,7 @@ export default function TeacherView({ onSwitchStudent }) {
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 space-y-4">
             <div>
               <h2 className="font-bold text-sm text-gray-900 flex items-center gap-2">
-                <Sparkles size={16} className="text-indigo-600" />
+                <Sparkles size={16} className="text-amber-500" />
                 TẢI ĐỀ THI AI THÔNG MINH
               </h2>
               <p className="text-[11px] text-gray-400 mt-0.5">AI tự động nhận diện và soạn lời giải chi tiết</p>
@@ -538,8 +538,8 @@ export default function TeacherView({ onSwitchStudent }) {
                 <div
                   className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
                     isDragging
-                      ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-gray-200 bg-slate-50/50 hover:bg-slate-100/70 hover:border-indigo-300'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 bg-slate-50/50 hover:bg-amber-50/40 hover:border-amber-300'
                   }`}
                   onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -555,12 +555,12 @@ export default function TeacherView({ onSwitchStudent }) {
                   />
                   {uploading ? (
                     <div className="space-y-2 py-2">
-                      <Loader2 size={28} className="text-indigo-600 animate-spin mx-auto" />
-                      <p className="text-xs font-bold text-indigo-700">{parseMsg}</p>
+                      <Loader2 size={28} className="text-amber-500 animate-spin mx-auto" />
+                      <p className="text-xs font-bold text-amber-700">{parseMsg}</p>
                     </div>
                   ) : (
                     <>
-                      <Upload size={28} className="text-indigo-400 mx-auto mb-2" strokeWidth={1.5} />
+                      <Upload size={28} className="text-amber-400 mx-auto mb-2" strokeWidth={1.5} />
                       <p className="text-xs font-bold text-gray-700">Tải lên file Word (.doc, .docx), PDF hoặc .txt</p>
                       <p className="text-[10px] text-gray-400 mt-1">Kéo thả hoặc nhấn vào để chọn tệp</p>
                     </>
@@ -591,10 +591,10 @@ export default function TeacherView({ onSwitchStudent }) {
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-md tracking-wider">
+                  <span className="text-[10px] font-extrabold uppercase bg-amber-100/80 text-amber-800 px-2.5 py-0.5 rounded-md tracking-wider">
                     {editingTest.subject || 'TIẾNG ANH'}
                   </span>
-                  <span className="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-md tracking-wider">
+                  <span className="text-[10px] font-extrabold uppercase bg-orange-100/80 text-orange-800 px-2.5 py-0.5 rounded-md tracking-wider">
                     Khối {editingTest.grade || '12'}
                   </span>
                   <span className="text-xs text-gray-400 font-medium">Tạo ngày: 16/7/2026</span>
@@ -609,10 +609,10 @@ export default function TeacherView({ onSwitchStudent }) {
 
               <div className="flex items-center gap-2">
                 <button
-                  className="h-9 px-4 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs min-w-[110px]"
+                  className="h-9 px-4 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs min-w-[110px]"
                   onClick={() => setMainTab('preview')}
                 >
-                  <Eye size={14} className="text-indigo-600" />
+                  <Eye size={14} className="text-amber-600" />
                   <span>Xem trước</span>
                 </button>
 
@@ -661,7 +661,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">SỐ LƯỢT LÀM BÀI</span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-extrabold text-indigo-900">{subCount}</span>
+                    <span className="text-3xl font-extrabold text-slate-900">{subCount}</span>
                     <span className="text-xs text-gray-400 font-semibold">Lượt nộp bài</span>
                   </div>
                 </div>
@@ -669,7 +669,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM TRUNG BÌNH</span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-extrabold text-indigo-900">{avgScore}</span>
+                    <span className="text-3xl font-extrabold text-slate-900">{avgScore}</span>
                     <span className="text-xs text-gray-400 font-semibold">Thang điểm 10</span>
                   </div>
                 </div>
@@ -677,7 +677,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
                   <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM CAO NHẤT</span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-extrabold text-indigo-900">{maxScore}</span>
+                    <span className="text-3xl font-extrabold text-amber-600">{maxScore}</span>
                     <span className="text-xs text-amber-500 font-bold">Thành tích cao nhất</span>
                   </div>
                 </div>
@@ -691,24 +691,24 @@ export default function TeacherView({ onSwitchStudent }) {
               <button
                 className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'edit'
-                    ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-xl'
+                    ? 'border-amber-500 text-amber-600 bg-amber-50/40 rounded-t-xl font-extrabold'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
                 onClick={() => setMainTab('edit')}
               >
-                <FileEdit size={14} className="text-indigo-600" />
+                <FileEdit size={14} className="text-amber-600" />
                 <span>CHỈNH SỬA ĐỀ ({totalQuestionsCount} CÂU)</span>
               </button>
 
               <button
                 className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'preview'
-                    ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-xl'
+                    ? 'border-amber-500 text-amber-600 bg-amber-50/40 rounded-t-xl font-extrabold'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
                 onClick={() => setMainTab('preview')}
               >
-                <Eye size={14} className="text-indigo-600" />
+                <Eye size={14} className="text-amber-600" />
                 <span>PREVIEW</span>
               </button>
 
@@ -760,7 +760,7 @@ export default function TeacherView({ onSwitchStudent }) {
                         </h3>
                         <div className="flex items-center gap-2">
                           <button
-                            className="btn btn-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-none font-bold rounded-lg gap-1"
+                            className="btn btn-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border-none font-bold rounded-lg gap-1"
                             onClick={() => addQuestionToSection(secIdx)}
                           >
                             + Thêm câu hỏi
@@ -794,7 +794,7 @@ export default function TeacherView({ onSwitchStudent }) {
                           <div key={q.id || qIdx} className="bg-slate-50/60 rounded-xl p-4 border border-gray-200/80 space-y-3">
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-2.5 flex-1">
-                                <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0">
+                                <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0">
                                   {q.no || qIdx + 1}
                                 </span>
                                 <input
@@ -816,7 +816,7 @@ export default function TeacherView({ onSwitchStudent }) {
                             <div className="grid grid-cols-2 gap-2">
                               {OPTION_LABELS.map((l, oi) => (
                                 <div key={l} className="flex items-center gap-2">
-                                  <span className="text-xs font-extrabold text-indigo-700 w-4">{l}.</span>
+                                  <span className="text-xs font-extrabold text-amber-700 w-4">{l}.</span>
                                   <input
                                     className="input input-bordered input-sm flex-1 bg-white border-gray-200 text-xs rounded-lg"
                                     value={q.options?.[oi] || ''}
@@ -868,7 +868,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 {/* Action Controls Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                   <button
-                    className="btn btn-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold rounded-xl text-xs gap-1.5"
+                    className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold rounded-xl text-xs gap-1.5"
                     onClick={addNewSection}
                   >
                     <PlusCircle size={14} /> Thêm phần đọc mới (Section)
@@ -877,7 +877,7 @@ export default function TeacherView({ onSwitchStudent }) {
                   <div className="flex items-center gap-3">
                     {savedMsg && <span className="text-xs font-bold text-emerald-600">{savedMsg}</span>}
                     <button
-                      className="btn btn-sm bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs px-6 gap-1.5 shadow-md shadow-indigo-500/20"
+                      className="btn btn-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs px-6 gap-1.5 shadow-md shadow-orange-500/20"
                       onClick={handleSaveTest}
                       disabled={saving}
                     >
@@ -937,7 +937,7 @@ export default function TeacherView({ onSwitchStudent }) {
 
                 {loadingSubmissions ? (
                   <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
-                    <Loader2 size={20} className="animate-spin text-indigo-600" />
+                    <Loader2 size={20} className="animate-spin text-amber-500" />
                     <span className="text-xs font-semibold">Đang tải danh sách kết quả...</span>
                   </div>
                 ) : submissions.length === 0 ? (
@@ -971,10 +971,10 @@ export default function TeacherView({ onSwitchStudent }) {
                             <tr key={sub.id || idx} className="hover:bg-slate-50/80 transition-colors">
                               <td className="py-3 px-4 text-center font-bold text-gray-400">{idx + 1}</td>
                               <td className="py-3 px-4 font-bold text-gray-900">{sub.student_name || 'Học sinh'}</td>
-                              <td className="py-3 px-4 text-center font-semibold text-indigo-600">{sub.student_class || '12A1'}</td>
+                              <td className="py-3 px-4 text-center font-semibold text-amber-700">{sub.student_class || '12A1'}</td>
                               <td className="py-3 px-4 text-center">
                                 <span className={`font-extrabold text-sm px-2.5 py-0.5 rounded-lg ${
-                                  scoreVal >= 8 ? 'bg-emerald-100 text-emerald-800' : scoreVal >= 5 ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'
+                                  scoreVal >= 8 ? 'bg-emerald-100 text-emerald-800' : scoreVal >= 5 ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800'
                                 }`}>
                                   {scoreVal.toFixed(1)}
                                 </span>
@@ -1040,7 +1040,7 @@ function SupabaseConfigModal({ onClose }) {
       }`}>
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 font-extrabold">
-            {testing ? <Loader2 size={14} className="animate-spin text-indigo-600" /> : null}
+            {testing ? <Loader2 size={14} className="animate-spin text-amber-600" /> : null}
             {statusRes?.success
               ? '🟢 Đã kết nối thành công Supabase DB'
               : statusRes?.mode === 'local'
@@ -1079,7 +1079,7 @@ function SupabaseConfigModal({ onClose }) {
           />
         </div>
         <button
-          className="btn btn-sm w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs gap-1.5"
+          className="btn btn-sm w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs gap-1.5 shadow-md shadow-orange-500/20"
           onClick={handleSave}
           disabled={testing}
         >

@@ -129,7 +129,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
         </button>
 
         {/* Title */}
-        {section.title && (
+        {section.title && !/^SECTION\s+\d+$/i.test(section.title.trim()) && (
           <h3 className="rp-title">{section.title}</h3>
         )}
         {section.subtitle && (

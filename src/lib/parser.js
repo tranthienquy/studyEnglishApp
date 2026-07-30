@@ -224,7 +224,7 @@ export function parseExamText(fileData) {
       parsedSections.push({
         id: `sec-${sIdx + 1}`,
         instruction: instruction || 'Read the following passage and answer the questions below.',
-        title: sectionTitle || `SECTION ${parsedSections.length + 1}`,
+        title: sectionTitle || '',
         subtitle: sectionSubtitle || '',
         passage: passageHtml || '',
         questions: questions.length > 0 ? questions : [],

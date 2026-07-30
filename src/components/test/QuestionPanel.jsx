@@ -120,7 +120,7 @@ function SingleQuestion({ q, isReview = false }) {
 
         {/* Question Prompt Text */}
         <div className="flex-1">
-          <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-relaxed">
+          <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-relaxed whitespace-pre-wrap">
             {questionPrompt}
           </p>
         </div>

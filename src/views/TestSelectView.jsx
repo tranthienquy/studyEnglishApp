@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles, Trash2 } from 'lucide-react';
+import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import useAppStore from '../stores/useAppStore';
 import { getAllTests, deleteTest } from '../lib/supabase';
@@ -25,17 +25,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
     startTest(student, test);
   }
 
-  async function handleDeleteTest(e, test) {
-    e.stopPropagation();
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa đề thi "${test.title}" khỏi hệ thống?`)) return;
-    try {
-      if (test.id) await deleteTest(test.id);
-      if (test.code && test.code !== test.id) await deleteTest(test.code);
-      setTests(prev => prev.filter(x => (x.id || x.code) !== (test.id || test.code)));
-    } catch (err) {
-      console.error('Lỗi khi xóa đề thi:', err);
-    }
-  }
+
 
   function countTotalQuestions(test) {
     if (test.sections) {
@@ -118,13 +108,6 @@ export default function TestSelectView({ onSwitchTeacher }) {
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400 font-medium">{dateStr}</span>
-                        <button
-                          className="p-2 text-red-400 hover:text-white rounded-lg hover:bg-red-500 bg-red-50 transition-colors shadow-sm"
-                          title="Xóa đề thi này"
-                          onClick={(e) => handleDeleteTest(e, t)}
-                        >
-                          <Trash2 size={15} />
-                        </button>
                       </div>
                     </div>
 

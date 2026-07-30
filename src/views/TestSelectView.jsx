@@ -63,20 +63,20 @@ export default function TestSelectView({ onSwitchTeacher }) {
   return (
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 relative z-10 font-sans">
       {/* Animated Background Glow Blobs */}
-      <div className="absolute top-10 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000" />
-      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000 delay-500" />
+      <div className="absolute top-10 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000" />
+      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000 delay-500" />
 
       <div className="max-w-6xl mx-auto">
         {/* Top Header / Profile Bar */}
         <div className="bg-white/80 backdrop-blur-xl border border-white/80 shadow-xs rounded-2xl p-3.5 sm:px-5 flex items-center justify-between mb-8 transition-all hover:shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-indigo-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-500/20">
               {student?.name ? student.name.charAt(0).toUpperCase() : 'H'}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <p className="font-bold text-gray-900 text-sm">{student?.name || 'Học sinh'}</p>
-                <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100">
+                <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100">
                   Lớp {student?.class || '12A1'}
                 </span>
               </div>
@@ -93,10 +93,10 @@ export default function TestSelectView({ onSwitchTeacher }) {
               <span className="hidden sm:inline">Đổi thông tin</span>
             </button>
             <button
-              className="btn btn-xs sm:btn-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 font-bold text-xs gap-1.5 px-3.5 py-1.5 rounded-xl cursor-pointer transition-colors shadow-2xs"
+              className="btn btn-xs sm:btn-sm bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200/80 font-bold text-xs gap-1.5 px-3.5 py-1.5 rounded-xl cursor-pointer transition-colors shadow-2xs"
               onClick={onSwitchTeacher}
             >
-              <ShieldCheck size={14} className="text-indigo-600" />
+              <ShieldCheck size={14} className="text-orange-600" />
               <span>Giáo viên</span>
             </button>
           </div>
@@ -105,8 +105,8 @@ export default function TestSelectView({ onSwitchTeacher }) {
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles size={22} className="text-blue-900 flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-400 bg-clip-text text-transparent uppercase tracking-tight">
+            <Sparkles size={22} className="text-orange-500 flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-orange-600 via-slate-900 to-slate-700 bg-clip-text text-transparent uppercase tracking-tight">
               KHO ĐỀ ÔN THI TRỰC TUYẾN FPT SCHOOLS (THPT)
             </h1>
           </div>
@@ -115,16 +115,16 @@ export default function TestSelectView({ onSwitchTeacher }) {
           <div className="bg-white/80 backdrop-blur-xl border border-white/90 shadow-md rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500" />
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-500" />
               <input
                 type="text"
                 placeholder="Tìm kiếm đề thi theo tên..."
-                className="w-full bg-slate-50/90 hover:bg-slate-50 focus:bg-white border border-slate-200/70 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full bg-slate-50/90 hover:bg-slate-50 focus:bg-white border border-slate-200/70 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               {filteredTests.length > 0 && (
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100/80">
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100/80">
                   {filteredTests.length} đề
                 </span>
               )}
@@ -133,8 +133,8 @@ export default function TestSelectView({ onSwitchTeacher }) {
             {/* Filter Dropdowns (Khối & Giảng viên) */}
             <div className="flex items-center gap-2 w-full md:w-auto justify-end">
               {/* Select Khối */}
-              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-indigo-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <GraduationCap size={14} className="text-indigo-500 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <GraduationCap size={14} className="text-orange-500 flex-shrink-0" />
                 <select
                   value={selectedGrade}
                   onChange={(e) => setSelectedGrade(e.target.value)}
@@ -148,8 +148,8 @@ export default function TestSelectView({ onSwitchTeacher }) {
               </div>
 
               {/* Select Giảng viên */}
-              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-indigo-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <User size={14} className="text-amber-500 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <User size={14} className="text-slate-700 flex-shrink-0" />
                 <select
                   value={selectedTeacher}
                   onChange={(e) => setSelectedTeacher(e.target.value)}
@@ -168,7 +168,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
         {/* Loading State */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
-            <Loader2 size={32} className="animate-spin text-indigo-600" />
+            <Loader2 size={32} className="animate-spin text-orange-600" />
             <p className="text-xs font-semibold">Đang tải danh sách đề thi...</p>
           </div>
         ) : filteredTests.length === 0 ? (
@@ -177,9 +177,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
             <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giảng viên hoặc tìm kiếm với từ khóa khác.</p>
             <button
               onClick={() => { setSearchTerm(''); setSelectedGrade('all'); setSelectedTeacher('all'); }}
-              className="btn btn-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold text-xs mt-2 rounded-xl"
+              className="btn btn-xs bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold text-xs mt-2 rounded-xl"
             >
-              Xóa bộ lọc
+              Xóa tất cả bộ lọc
             </button>
           </div>
         ) : (
@@ -196,35 +196,35 @@ export default function TestSelectView({ onSwitchTeacher }) {
                 <div
                   key={t.id || t.code}
                   style={{ animationDelay: `${index * 60}ms` }}
-                  className="bg-white/90 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 hover:border-indigo-300/80 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
+                  className="bg-white/90 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 hover:border-orange-300/80 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
                 >
                   {/* Top Decorative Accent Bar */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-slate-800 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
 
                   <div>
                     {/* Top Badge Tag */}
                     <div className="flex items-center justify-between mb-3 pt-1">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
-                        <BookOpen size={11} className="text-indigo-500" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                        <BookOpen size={11} className="text-orange-500" />
                         <span>{t.subject || 'TIẾNG ANH'}</span>
                       </span>
                     </div>
 
                     {/* Title (Phóng to tên chủ đề) */}
-                    <h3 className="text-lg sm:text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
                       {t.title}
                     </h3>
 
                     {/* Meta Stats Box */}
                     <div className="grid grid-cols-2 gap-2.5 bg-slate-50/90 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 mb-4 shadow-2xs">
                       <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
-                        <div className="w-6 h-6 rounded-lg bg-indigo-100/80 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                        <div className="w-6 h-6 rounded-lg bg-orange-100/80 flex items-center justify-center text-orange-600 flex-shrink-0">
                           <Clock size={13} />
                         </div>
                         <span>{t.duration || 50} phút</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
-                        <div className="w-6 h-6 rounded-lg bg-emerald-100/80 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                        <div className="w-6 h-6 rounded-lg bg-slate-200/70 flex items-center justify-center text-slate-700 flex-shrink-0">
                           <FileText size={13} />
                         </div>
                         <span>{qCount} câu hỏi</span>
@@ -234,20 +234,20 @@ export default function TestSelectView({ onSwitchTeacher }) {
                     {/* Teacher & Upload Date Info (Chung Format) */}
                     <div className="space-y-2 mb-5">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
                           <User size={12} />
                         </div>
                         <span className="text-xs text-gray-500 font-medium truncate">
-                          Giáo viên: <strong className="text-gray-800 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
+                          Giáo viên: <strong className="text-slate-900 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
                           <Sparkles size={12} />
                         </div>
                         <span className="text-xs text-gray-500 font-medium truncate">
-                          Ngày tải lên: <strong className="text-gray-800 font-extrabold">{dateDot}</strong>
+                          Ngày tải lên: <strong className="text-slate-900 font-extrabold">{dateDot}</strong>
                         </span>
                       </div>
                     </div>
@@ -255,7 +255,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
                   {/* Primary Action Button */}
                   <button
-                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-[0.98] transition-all duration-200 shadow-md shadow-indigo-500/25 group-hover:shadow-indigo-500/40 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 hover:from-orange-600 hover:to-amber-700 active:scale-[0.98] transition-all duration-200 shadow-md shadow-orange-500/25 group-hover:shadow-orange-500/40 flex items-center justify-center gap-2 cursor-pointer"
                     onClick={() => handleSelectTest(t)}
                   >
                     <Play size={13} className="fill-white group-hover:translate-x-1 transition-transform" />

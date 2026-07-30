@@ -25,25 +25,30 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
       onClick={(e) => e.target === e.currentTarget && onClose?.()}
     >
       <div
-        className={`glass w-full ${sizeClass} rounded-2xl animate-scale-in max-h-[90vh] flex flex-col`}
+        className={`glass w-full ${sizeClass} rounded-2xl animate-scale-in max-h-[90vh] flex flex-col relative`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        {(title || showClose) && (
+        {title && title.trim() !== '' ? (
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/30 flex-shrink-0">
-            {title && (
-              <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-            )}
+            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
             {showClose && (
               <button
-                className="ml-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-100/60 text-gray-400 hover:text-gray-600 transition-colors"
+                className="ml-auto w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                 onClick={onClose}
               >
                 <X size={16} />
               </button>
             )}
           </div>
-        )}
+        ) : showClose ? (
+          <button
+            className="absolute top-3.5 right-3.5 z-10 w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            onClick={onClose}
+          >
+            <X size={16} />
+          </button>
+        ) : null}
 
         {/* Content */}
         <div className="overflow-y-auto flex-1">

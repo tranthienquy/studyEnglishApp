@@ -38,6 +38,7 @@ export default function TeacherView({ onSwitchStudent }) {
   // Upload sidebar state
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadSubject, setUploadSubject] = useState('Tiếng Anh');
+  const [uploadGrade, setUploadGrade] = useState('12');
   const [uploadDuration, setUploadDuration] = useState(50);
   const [uploadTeacher, setUploadTeacher] = useState('Cô Trang');
   const [isDragging, setIsDragging] = useState(false);
@@ -136,6 +137,7 @@ export default function TeacherView({ onSwitchStudent }) {
           code: newCode,
           title: newTitle,
           subject: uploadSubject,
+          grade: uploadGrade,
           duration: parseInt(uploadDuration) || 50,
           teacher: uploadTeacher || 'Cô Trang',
           sections: parsed.sections,
@@ -148,6 +150,7 @@ export default function TeacherView({ onSwitchStudent }) {
           code: newTestObj.code,
           title: newTestObj.title,
           subject: newTestObj.subject,
+          grade: newTestObj.grade,
           duration: newTestObj.duration,
           teacher: newTestObj.teacher,
           passage: newTestObj.passage,
@@ -461,7 +464,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="text-xs font-semibold text-gray-600 mb-1 block">Môn học</label>
                   <select
@@ -473,6 +476,20 @@ export default function TeacherView({ onSwitchStudent }) {
                     <option>Ngữ Văn</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Khối</label>
+                  <select
+                    className="select select-bordered select-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
+                    value={uploadGrade}
+                    onChange={e => setUploadGrade(e.target.value)}
+                  >
+                    <option value="10">Khối 10</option>
+                    <option value="11">Khối 11</option>
+                    <option value="12">Khối 12</option>
+                  </select>
+                </div>
+
                 <div>
                   <label className="text-xs font-semibold text-gray-600 mb-1 block">Thời gian (Phút)</label>
                   <input
@@ -555,6 +572,9 @@ export default function TeacherView({ onSwitchStudent }) {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-md tracking-wider">
                     {editingTest.subject || 'TIẾNG ANH'}
+                  </span>
+                  <span className="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-md tracking-wider">
+                    Khối {editingTest.grade || '12'}
                   </span>
                   <span className="text-xs text-gray-400 font-medium">Tạo ngày: 16/7/2026</span>
                 </div>

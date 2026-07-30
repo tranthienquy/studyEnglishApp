@@ -133,8 +133,13 @@ export function parseExamText(fileData) {
 
   for (const lineObj of htmlLines) {
     if (SECTION_BREAK.test(lineObj.plain) && currentGroup.length > 0) {
-      sectionGroups.push(currentGroup);
-      currentGroup = [lineObj];
+      // If currentGroup is just a short "Phần X" header, don't split! Append to it.
+      if (currentGroup.length === 1 && /^\s*(?:Section\s+\d|Phần\s+\d)/i.test(currentGroup[0].plain)) {
+        currentGroup.push(lineObj);
+      } else {
+        sectionGroups.push(currentGroup);
+        currentGroup = [lineObj];
+      }
     } else {
       currentGroup.push(lineObj);
     }
@@ -158,6 +163,12 @@ export function parseExamText(fileData) {
     if (SECTION_BREAK.test(group[0].plain)) {
       instruction = group[0].plain;
       startIdx = 1;
+      
+      // If the next line is ALSO a SECTION_BREAK (e.g. group[0]="Phần 5", group[1]="Read the passage"), combine them!
+      if (startIdx < group.length && SECTION_BREAK.test(group[startIdx].plain)) {
+        instruction += ' - ' + group[startIdx].plain;
+        startIdx = 2;
+      }
     }
 
     // Collect title from passage header lines

@@ -332,7 +332,7 @@ function parseSolutionSection(solutionHtml) {
   let inTrans = false;
 
   const flush = () => {
-    if (cur) result[cur.no] = { reasoning: cur.reasoning.join(' ').trim(), translation: cur.translation.join(' ').trim(), answer: cur.answer };
+    if (cur) result[cur.no] = { reasoning: cur.reasoning.join('\n').trim(), translation: cur.translation.join('\n').trim(), answer: cur.answer };
   };
 
   for (const line of lines) {

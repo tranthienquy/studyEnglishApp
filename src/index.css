@@ -1079,88 +1079,153 @@ body::after {
   overflow: hidden;
 }
 
-/* ---- Unified Header Bar (tabs + tools in one row) ---- */
-.rp-header-bar {
+/* ================================================================
+   TOP FULL-WIDTH SUBNAV BAR (tv-subnav)
+   Left: Section tabs | Right: Tool buttons
+   ================================================================ */
+.tv-subnav {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  height: 52px;
-  min-height: 52px;
-  background: rgba(255,255,255,0.92);
-  border-bottom: 1.5px solid rgba(0,0,0,0.07);
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #ffffff;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
-  overflow: hidden;
+  gap: 12px;
+  width: 100%;
 }
 
-/* Left: Panel title */
-.rp-header-left {
+/* Tabs on the far left */
+.tv-subnav-tabs {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tv-subnav-tabs::-webkit-scrollbar { display: none; }
+
+.tv-subnav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4b5563;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.tv-subnav-tab:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+  border-color: #c7d2fe;
+}
+.tv-subnav-tab.active {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+/* Tools on the far right */
+.tv-subnav-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
   flex-shrink: 0;
 }
-.rp-header-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  background: #EEF2FF;
-  border: 1px solid #C7D2FE;
+
+.tv-subnav-zoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+.tv-subnav-icon-btn {
+  background: none;
+  border: none;
+  color: #4b5563;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.rp-header-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #1a1a2e;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+.tv-subnav-icon-btn:hover { background: #e5e7eb; color: #111827; }
+.tv-subnav-zoom-pct { font-size: 11.5px; font-weight: 700; color: #374151; min-width: 38px; text-align: center; }
+
+.tv-subnav-sep {
+  width: 1px;
+  height: 18px;
+  background: #e5e7eb;
+  margin: 0 2px;
 }
 
-/* Center: Section tabs inline */
-.rp-tabs-inline {
-  display: flex;
+.tv-subnav-tool-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
-  flex: 1;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 0 4px;
-}
-.rp-tabs-inline::-webkit-scrollbar { display: none; }
-
-.rp-tab-inline {
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  border-radius: 7px;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
   font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
-  background: rgba(0,0,0,0.04);
-  border: 1px solid transparent;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-}
-.rp-tab-inline:hover {
-  background: rgba(99,102,241,0.08);
-  color: #4F46E5;
-}
-.rp-tab-inline-active {
-  background: #4F46E5 !important;
-  color: #fff !important;
   font-weight: 600;
-  border-color: transparent;
-  box-shadow: 0 1px 4px rgba(79,70,229,0.3);
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tv-subnav-tool-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+.tv-subnav-tool-btn.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #3b82f6;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Right: Tools inline */
-.rp-tools-inline {
+.tv-subnav-colors {
   display: flex;
   align-items: center;
   gap: 4px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 4px 6px;
+  border-radius: 8px;
+}
+.tv-subnav-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.tv-subnav-color-dot:hover { transform: scale(1.2); }
+.tv-subnav-color-dot.selected { ring: 2px; ring-offset: 1px; ring-color: #6b7280; }
+
+/* Panel Header for Reading Passage (matches qp-header & qts-header) */
+.rp-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 52px;
+  min-height: 52px;
+  border-bottom: 1.5px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.6);
   flex-shrink: 0;
 }
 

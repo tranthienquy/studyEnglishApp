@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { GraduationCap, User, Send, Trophy, Menu, X, Info, Clock } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { GraduationCap, User, Send, Trophy, Menu, X, Info, Clock, BookOpen, Highlighter, Eraser, ZoomIn, ZoomOut, BookMarked } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 import { saveResult } from '../lib/supabase';
 import Timer from '../components/ui/Timer';
@@ -9,14 +9,24 @@ import Modal from '../components/ui/Modal';
 import Leaderboard from '../components/teacher/Leaderboard';
 
 export default function TestView({ isReviewMode = false }) {
-  const { currentTest, student, submitTest, answers } = useAppStore();
+  const { currentTest, student, submitTest, answers, activeTool, setActiveTool } = useAppStore();
   const startTimeRef = useRef(Date.now());
 
-  // Shared active tab state — synced between left (passage) and right (questions) panels
+  // Shared active tab state
   const [activeTab, setActiveTab] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
-  const [mobilePanel, setMobilePanel] = useState('passage'); // 'passage' | 'questions'
+  const [mobilePanel, setMobilePanel] = useState('passage');
+
+  // Lifted toolbar state (shared across the top subnav bar)
+  const [zoom, setZoom] = useState(100);
+  const [activeColor, setActiveColor] = useState('yellow');
+  const [showVocab, setShowVocab] = useState(false);
+  const HIGHLIGHT_COLORS = { yellow: '#FDE68A', green: '#A7F3D0', blue: '#BFDBFE', pink: '#FBCFE8', orange: '#FED7AA' };
+  const clampZoom = (v) => Math.max(80, Math.min(130, v));
+
+  // Reset vocab when switching tabs
+  useEffect(() => { setShowVocab(false); }, [activeTab]);
 
   const sections = currentTest?.sections || [];
 
@@ -123,8 +133,69 @@ export default function TestView({ isReviewMode = false }) {
         <Info size={14} className="text-indigo-400 flex-shrink-0" />
         <span>Mẹo học tập: Nhấp đúp chuột (Double-click) vào bất kỳ từ nào trong bài đọc, câu hỏi hoặc đáp án để xem nghĩa tiếng Việt ngay tức thì!</span>
       </div>
+      {/* ══ FULL-WIDTH SUBNAV: Tabs (left) + Tools (right) ══ */}
+      <div className="tv-subnav">
+        {/* LEFT: Section tabs */}
+        <div className="tv-subnav-tabs">
+          {sections.map((sec, i) => (
+            <button
+              key={i}
+              className={`tv-subnav-tab ${activeTab === i ? 'active' : ''}`}
+              onClick={() => setActiveTab(i)}
+            >
+              <BookOpen size={12} />
+              <span>Phần {i + 1}</span>
+            </button>
+          ))}
+        </div>
 
-      {/* ══ MOBILE PANEL SWITCHER ══ */}
+        {/* RIGHT: Toolbar */}
+        <div className="tv-subnav-tools">
+          {/* Zoom */}
+          <div className="tv-subnav-zoom">
+            <button className="tv-subnav-icon-btn" onClick={() => setZoom(z => clampZoom(z - 10))} title="Thu nhỏ"><ZoomOut size={13} /></button>
+            <span className="tv-subnav-zoom-pct">{zoom}%</span>
+            <button className="tv-subnav-icon-btn" onClick={() => setZoom(z => clampZoom(z + 10))} title="Phóng to"><ZoomIn size={13} /></button>
+          </div>
+          <div className="tv-subnav-sep" />
+
+          {/* Highlight */}
+          <button
+            className={`tv-subnav-tool-btn ${activeTool === 'highlight' ? 'active' : ''}`}
+            onClick={() => setActiveTool(activeTool === 'highlight' ? null : 'highlight')}
+            style={activeTool === 'highlight' ? { borderColor: HIGHLIGHT_COLORS[activeColor], color: '#d97706' } : {}}
+          >
+            <Highlighter size={13} /><span>Dạ quang</span>
+          </button>
+          {activeTool === 'highlight' && (
+            <div className="tv-subnav-colors">
+              {Object.entries(HIGHLIGHT_COLORS).map(([name, color]) => (
+                <button key={name} className={`tv-subnav-color-dot ${activeColor === name ? 'selected' : ''}`} style={{ background: color }} onClick={() => setActiveColor(name)} title={name} />
+              ))}
+            </div>
+          )}
+
+          {/* Eraser */}
+          <button
+            className={`tv-subnav-tool-btn ${activeTool === 'eraser' ? 'active' : ''}`}
+            onClick={() => setActiveTool(activeTool === 'eraser' ? null : 'eraser')}
+          >
+            <Eraser size={13} /><span>Bút xóa</span>
+          </button>
+
+          <div className="tv-subnav-sep" />
+
+          {/* Vocab */}
+          <button
+            className={`tv-subnav-tool-btn ${showVocab ? 'active' : ''}`}
+            onClick={() => setShowVocab(v => !v)}
+          >
+            <BookMarked size={13} /><span>Từ vựng</span>
+          </button>
+        </div>
+      </div>
+
+
       <div className="tv-mobile-switch lg:hidden">
         <button
           className={`tv-switch-btn ${mobilePanel === 'passage' ? 'active' : ''}`}
@@ -148,6 +219,11 @@ export default function TestView({ isReviewMode = false }) {
             sections={sections}
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            zoom={zoom}
+            activeTool={activeTool}
+            activeColor={activeColor}
+            showVocab={showVocab}
+            setShowVocab={setShowVocab}
           />
         </div>
 

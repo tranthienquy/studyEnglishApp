@@ -1,30 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { BookOpen, Highlighter, Eraser, BookMarked, Globe, ZoomIn, ZoomOut, X, Loader2 } from 'lucide-react';
+import { BookOpen, Globe, X, Loader2 } from 'lucide-react';
 import useAppStore from '../../stores/useAppStore';
 import { translateWithGoogle, extractVocabulary } from '../../lib/gemini';
 
 /**
  * ReadingPassage — Left panel
- * Features:
- *  - Tab navigation + Toolbar + Passage content
- *  - Button "Dịch nghĩa Tiếng Việt" → translate entire passage using Google Translate
- *  - Hover/select tooltip translation
- *  - AI Vocabulary panel
+ * zoom, activeTool, showVocab are lifted up to TestView via props
  */
-export default function ReadingPassage({ sections, activeTab, onTabChange }) {
-  const [zoom, setZoom] = useState(100);
-  const { activeTool, setActiveTool } = useAppStore();
+export default function ReadingPassage({ sections, activeTab, onTabChange, zoom = 100, activeTool, activeColor, showVocab, setShowVocab }) {
   const passageRef = useRef(null);
-
-  // ── Highlight tool ──────────────────────────────────────────────
-  const HIGHLIGHT_COLORS = {
-    yellow: '#FDE68A',
-    green:  '#A7F3D0',
-    blue:   '#BFDBFE',
-    pink:   '#FBCFE8',
-    orange: '#FED7AA',
-  };
-  const [activeColor, setActiveColor] = useState('yellow');
 
   // ── Translate full passage ──────────────────────────────────────
   const [translating, setTranslating] = useState(false);
@@ -36,20 +20,30 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
   const tooltipRef = useRef(null);
 
   // ── Vocabulary panel ────────────────────────────────────────────
-  const [showVocab, setShowVocab] = useState(false);
   const [vocabLoading, setVocabLoading] = useState(false);
   const [vocabList, setVocabList] = useState([]);
-
-  const clampZoom = (v) => Math.max(80, Math.min(130, v));
 
   // Reset translation when switching tabs
   useEffect(() => {
     setTranslatedPassage('');
     setShowTranslation(false);
-    setShowVocab(false);
     setVocabList([]);
     setTooltip({ visible: false, x: 0, y: 0, loading: false, text: '' });
   }, [activeTab]);
+
+  // Load vocab when showVocab toggled on from parent
+  useEffect(() => {
+    if (showVocab && vocabList.length === 0 && !vocabLoading) {
+      setVocabLoading(true);
+      const div = document.createElement('div');
+      div.innerHTML = (sections[activeTab]?.passage) || '';
+      const plain = div.innerText || div.textContent || '';
+      extractVocabulary(plain).then(result => {
+        setVocabList(result);
+        setVocabLoading(false);
+      });
+    }
+  }, [showVocab]);
 
   // Close tooltip on outside click
   useEffect(() => {
@@ -99,7 +93,6 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
     const text = sel.toString().trim();
     if (!text || text.length > 300) return;
 
-    // Position tooltip near the selection
     const range = sel.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0 };
@@ -107,113 +100,23 @@ export default function ReadingPassage({ sections, activeTab, onTabChange }) {
     const y = rect.top - containerRect.top - 8;
 
     setTooltip({ visible: true, x, y, loading: true, text: '' });
-
     const translated = await translateWithGoogle(text);
     setTooltip(prev => ({ ...prev, loading: false, text: translated }));
 
-    // Highlight tool behavior
     if (activeTool === 'highlight') {
       sel.removeAllRanges();
     }
   }, [activeTool]);
 
-  // ── Handle vocabulary panel ─────────────────────────────────────
-  const handleVocab = async () => {
-    if (showVocab) { setShowVocab(false); return; }
-    setShowVocab(true);
-    if (vocabList.length > 0) return; // already loaded
-    setVocabLoading(true);
-    const plain = getPlainPassage();
-    const result = await extractVocabulary(plain);
-    setVocabList(result);
-    setVocabLoading(false);
-  };
-
   return (
     <div className="rp-panel">
-      {/* ── Unified Header: title + tabs + tools all in one row ── */}
-      <div className="rp-header-bar">
-        {/* Left: Panel title */}
+      {/* ── Panel header: "PHẦN ĐỌC" title only ── */}
+      <div className="rp-panel-header">
         <div className="rp-header-left">
           <div className="rp-header-icon">
             <BookOpen size={14} className="text-indigo-600" />
           </div>
           <h2 className="rp-header-title">PHẦN ĐỌC</h2>
-        </div>
-
-        {/* Center: Section tabs */}
-        <div className="rp-tabs-inline">
-          {sections.map((sec, i) => (
-            <button
-              key={i}
-              className={`rp-tab-inline ${activeTab === i ? 'rp-tab-inline-active' : ''}`}
-              onClick={() => onTabChange(i)}
-            >
-              <span>Phần {i + 1}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Right: Tools */}
-        <div className="rp-tools-inline">
-          {/* Zoom */}
-          <div className="rp-zoom-group">
-            <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z - 10))} title="Thu nhỏ">
-              <ZoomOut size={13} />
-            </button>
-            <span className="rp-zoom-pct">{zoom}%</span>
-            <button className="rp-icon-btn" onClick={() => setZoom(z => clampZoom(z + 10))} title="Phóng to">
-              <ZoomIn size={13} />
-            </button>
-          </div>
-
-          <div className="rp-divider" />
-
-          {/* Highlight */}
-          <button
-            className={`rp-tool-btn ${activeTool === 'highlight' ? 'active' : ''}`}
-            onClick={() => setActiveTool(activeTool === 'highlight' ? null : 'highlight')}
-            style={activeTool === 'highlight' ? { borderColor: HIGHLIGHT_COLORS[activeColor], color: '#d97706' } : {}}
-            title="Bút dạ quang"
-          >
-            <Highlighter size={13} />
-            <span>Dạ quang</span>
-          </button>
-          {activeTool === 'highlight' && (
-            <div className="rp-color-dots">
-              {Object.entries(HIGHLIGHT_COLORS).map(([name, color]) => (
-                <button
-                  key={name}
-                  className={`rp-color-dot ${activeColor === name ? 'ring-2 ring-offset-1 ring-gray-400' : ''}`}
-                  style={{ background: color }}
-                  onClick={() => setActiveColor(name)}
-                  title={name}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Eraser */}
-          <button
-            className={`rp-tool-btn ${activeTool === 'eraser' ? 'active' : ''}`}
-            onClick={() => setActiveTool(activeTool === 'eraser' ? null : 'eraser')}
-            title="Bút xóa"
-          >
-            <Eraser size={13} />
-            <span>Bút xóa</span>
-          </button>
-
-          <div className="rp-divider" />
-
-          {/* Vocabulary */}
-          <button
-            className={`rp-tool-btn ${showVocab ? 'active' : ''}`}
-            onClick={handleVocab}
-            title="Từ vựng quan trọng"
-          >
-            <BookMarked size={13} />
-            <span>Từ vựng</span>
-          </button>
         </div>
       </div>
 

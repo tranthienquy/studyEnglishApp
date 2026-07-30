@@ -1257,7 +1257,6 @@ body::after {
   color: #1a56c4;
   text-align: center;
   margin-bottom: 4px;
-  font-family: 'Times New Roman', Times, serif;
 }
 
 .rp-subtitle {
@@ -1692,7 +1691,9 @@ body::after {
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-/* Only passage body keeps Times New Roman (intentional academic style) */
+/* Reading passage and its titles keep academic style */
+.rp-title,
+.rp-subtitle,
 .rp-body,
 .rp-body * {
   font-family: 'Merriweather', 'Times New Roman', Georgia, serif;

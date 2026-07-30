@@ -125,8 +125,8 @@ export function parseExamText(fileData) {
   // ── 3. Split into SECTIONS by instruction headers ──────────────────
   // Instruction patterns:
   //   "Read the following passage..."
-  //   "Mark the letter A, B, C or D on your answer sheet to indicate..."
-  const SECTION_BREAK = /^(?:Read the following|Mark the letter\s+A[,.]?\s*B[,.]?\s*C\s+or\s+D|Choose the (?:word|best)|Section\s+\d|Phần\s+\d)/i;
+  //   Explicit "Section X" or "Phần X"
+  const SECTION_BREAK = /^(?:Read the following|Section\s+\d|Phần\s+\d)/i;
 
   const sectionGroups = [];
   let currentGroup   = [];

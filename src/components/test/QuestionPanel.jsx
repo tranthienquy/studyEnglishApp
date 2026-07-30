@@ -104,6 +104,26 @@ function SingleQuestion({ q, isReview = false }) {
     questionPrompt = questionPrompt.split(/A[\.\:\)]/)[0].trim() || `Question ${q.no}.`;
   }
 
+  const renderPrompt = (text) => {
+    if (!text) return null;
+    const parts = text.split(/(?=\b[a-e]\.\s+[A-Z])/);
+    
+    return parts.map((part, index) => {
+      if (!part.trim()) return null;
+      const subLines = part.split('\n');
+      return (
+        <div key={index} className={`${index > 0 ? 'mt-3' : ''}`}>
+          {subLines.map((line, lIdx) => (
+            <React.Fragment key={lIdx}>
+              {line}
+              {lIdx < subLines.length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </div>
+      );
+    });
+  };
+
   return (
     <div
       id={`q-card-${q.id}`}
@@ -119,10 +139,8 @@ function SingleQuestion({ q, isReview = false }) {
         </div>
 
         {/* Question Prompt Text */}
-        <div className="flex-1">
-          <p className="text-xs sm:text-sm font-semibold text-gray-900 leading-relaxed">
-            {questionPrompt}
-          </p>
+        <div className="flex-1 text-xs sm:text-sm font-semibold text-gray-900 leading-relaxed">
+          {renderPrompt(questionPrompt)}
         </div>
 
         {/* Flag button */}

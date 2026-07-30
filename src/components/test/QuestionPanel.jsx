@@ -307,7 +307,7 @@ function SingleQuestion({ q, isReview = false }) {
   );
 }
 
-export default function QuestionPanel({ sections, activeTab, onSubmit, isReview = false }) {
+export default function QuestionPanel({ sections, activeTab, onSubmit, isReview = false, zoom = 100 }) {
   const { answers } = useAppStore();
 
   const section = sections?.[activeTab];
@@ -317,7 +317,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
   const answeredInSection = questions.filter(q => answers[q.id]).length;
 
   return (
-    <div className="qp-panel">
+    <div className="qp-panel" style={{ fontSize: `${zoom}%` }}>
 
       {/* ── Header ── */}
       <div className="qp-header">

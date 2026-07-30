@@ -899,6 +899,7 @@ export default function TeacherView({ onSwitchStudent }) {
                       sections={editingTest.sections}
                       activeTab={previewTab}
                       onTabChange={setPreviewTab}
+                      zoom={80}
                     />
                   </div>
                   <div className="lg:col-span-5 h-full overflow-hidden bg-white">
@@ -906,6 +907,7 @@ export default function TeacherView({ onSwitchStudent }) {
                       sections={editingTest.sections}
                       activeTab={previewTab}
                       isReview={false}
+                      zoom={80}
                       onSubmit={() => alert('Chế độ Xem trước (Preview): Học sinh làm xong sẽ bấm nộp bài để xem điểm & lời giải chi tiết!')}
                     />
                   </div>

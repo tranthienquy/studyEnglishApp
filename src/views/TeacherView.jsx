@@ -658,27 +658,27 @@ export default function TeacherView({ onSwitchStudent }) {
 
             return (
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">SỐ LƯỢT LÀM BÀI</span>
+                <div className="bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-2xs flex flex-col justify-between">
+                  <span className="text-[11px] font-extrabold text-amber-800/80 uppercase tracking-wider">SỐ LƯỢT LÀM BÀI</span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-extrabold text-slate-900">{subCount}</span>
-                    <span className="text-xs text-gray-400 font-semibold">Lượt nộp bài</span>
+                    <span className="text-3xl font-extrabold text-amber-600">{subCount}</span>
+                    <span className="text-xs text-amber-600 font-bold">Lượt nộp bài</span>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM TRUNG BÌNH</span>
+                <div className="bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-2xs flex flex-col justify-between">
+                  <span className="text-[11px] font-extrabold text-amber-800/80 uppercase tracking-wider">ĐIỂM TRUNG BÌNH</span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-3xl font-extrabold text-slate-900">{avgScore}</span>
-                    <span className="text-xs text-gray-400 font-semibold">Thang điểm 10</span>
+                    <span className="text-3xl font-extrabold text-amber-600">{avgScore}</span>
+                    <span className="text-xs text-amber-600 font-bold">Thang điểm 10</span>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs flex flex-col justify-between">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ĐIỂM CAO NHẤT</span>
+                <div className="bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-2xs flex flex-col justify-between">
+                  <span className="text-[11px] font-extrabold text-amber-800/80 uppercase tracking-wider">ĐIỂM CAO NHẤT</span>
                   <div className="flex items-baseline justify-between mt-2">
                     <span className="text-3xl font-extrabold text-amber-600">{maxScore}</span>
-                    <span className="text-xs text-amber-500 font-bold">Thành tích cao nhất</span>
+                    <span className="text-xs text-amber-600 font-bold">Thành tích cao nhất</span>
                   </div>
                 </div>
               </div>

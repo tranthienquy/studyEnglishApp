@@ -358,27 +358,33 @@ function tryParseInlineLine(lineObj, defaultNo) {
   if (optMatches.length < 2) return null;
 
   const qNoMatch = plain.match(/(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]/i);
-  const qNo = qNoMatch ? parseInt(qNoMatch[1], 10) : defaultNo;
+  const qMatch = plain.match(/^(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]\s*(.*)/i);
+  if (!qMatch) return null;
 
-  // Extract question text (before first A.)
-  const firstOptIdx = plain.search(/\bA[\.\)\:]\s*/);
-  const questionText = firstOptIdx > 0
-    ? plain.slice(0, firstOptIdx).replace(/^(?:Question|Câu|Q)\s*\d+\s*[:\.\)]\s*/i, '').trim()
-    : '';
+  const qNo = parseInt(qMatch[1], 10);
+  const rest = qMatch[2].trim();
+  // inline line means it has at least A. and B. (or A) / B) / A: / B:)
+  if (/(?:^|\s|\t)A[\.\)\:]/i.test(rest) && /(?:^|\s|\t)B[\.\)\:]/i.test(rest)) {
+    const { options, correct } = extractOptionsFromLine(lineObj.html);
+    if (options.length >= 2) {
+      // Find the prompt text before A.
+      let promptText = rest;
+      const firstOptMatch = rest.match(/(?:^|\s|\t)A[\.\)\:]/i);
+      if (firstOptMatch) {
+        promptText = rest.substring(0, firstOptMatch.index).trim();
+      }
 
-  // Parse options — use html version for highlight detection
-  const { options, correct } = extractOptionsFromLine(lineObj.html || lineObj.plain);
-
-  if (options.length < 2) return null;
-
-  return {
-    id: `q-${qNo}-${Date.now()}`,
-    no: qNo,
-    text: questionText || `Question ${qNo}.`,
-    options: options.slice(0, 4),
-    correct,
-    explanation: `Đáp án đúng là ${correct}.`,
-  };
+      return {
+        id: `q-${qNo}-${Date.now()}`,
+        no: qNo,
+        text: promptText || `Question ${qNo}.`,
+        options: options.slice(0, 4),
+        correct,
+        explanation: `Đáp án đúng là ${correct}.`,
+      };
+    }
+  }
+  return null;
 }
 
 /**
@@ -418,7 +424,7 @@ function parseQuestionBlock(blockLines, defaultNo) {
     // Check if this line has MULTIPLE inline options (A. B. C. D. on same line)
     // This happens for tab-separated option lines in arrangement questions:
     //   "A. a – b – c	B. b – c – a	C. c – a – b	D. c – b – a"
-    const inlineOptCount = (plain.match(/\b[A-D]\.\s/g) || []).length;
+    const inlineOptCount = (plain.match(/(?:^|\s|\t)[A-D][\.\)\:]\s*/gi) || []).length;
     if (inlineOptCount >= 2) {
       const { options: inlineOpts, correct: inlineCorrect } = extractOptionsFromLine(html);
       if (inlineOpts.length >= 2) {
@@ -431,7 +437,7 @@ function parseQuestionBlock(blockLines, defaultNo) {
     // Standard option line "A. text" or "A) text" (single option per line)
     // CASE-SENSITIVE: Only match uppercase A-D to avoid confusion with
     // lowercase dialogue items (a. b. c. d. e.) in arrangement questions
-    const optMatch = plain.match(/^([A-D])[.\)]\s+(.*)/);
+    const optMatch = plain.trim().match(/^([A-D])[\.\)\:]\s*(.*)/);
     if (optMatch) {
       const letter = optMatch[1];
       const rawText = optMatch[2].trim();

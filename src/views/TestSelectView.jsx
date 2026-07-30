@@ -119,7 +119,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400 font-medium">{dateStr}</span>
                         <button
-                          className="p-1 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                          className="p-2 text-red-400 hover:text-white rounded-lg hover:bg-red-500 bg-red-50 transition-colors shadow-sm"
                           title="Xóa đề thi này"
                           onClick={(e) => handleDeleteTest(e, t)}
                         >

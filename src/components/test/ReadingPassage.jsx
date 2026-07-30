@@ -188,15 +188,19 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       return;
     }
 
-    // 3. Normal mode: Tooltip translation
+    // 3. Normal mode: Tooltip translation (appears right next to cursor)
     if (text.length <= 300) {
-      const range = sel.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0 };
-      const x = rect.left - containerRect.left + rect.width / 2;
-      const y = rect.top - containerRect.top - 8;
+      const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0, width: 600 };
+      let x = e.clientX ? (e.clientX - containerRect.left + 12) : 100;
+      let y = e.clientY ? (e.clientY - containerRect.top - 8) : 100;
+      let alignLeft = false;
 
-      setTooltip({ visible: true, x, y, loading: true, text: '' });
+      if (x + 220 > containerRect.width) {
+        x = e.clientX - containerRect.left - 12;
+        alignLeft = true;
+      }
+
+      setTooltip({ visible: true, x, y, alignLeft, loading: true, text: '' });
       const translated = await translateWithGoogle(text);
       setTooltip(prev => ({ ...prev, loading: false, text: translated }));
     }
@@ -303,7 +307,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
           </div>
         )}
 
-        {/* Floating tooltip for selected text translation */}
+        {/* Floating tooltip for selected text translation right next to cursor */}
         {tooltip.visible && (
           <div
             ref={tooltipRef}
@@ -311,7 +315,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
             style={{
               left: `${tooltip.x}px`,
               top: `${tooltip.y}px`,
-              transform: 'translate(-50%, -100%)',
+              transform: tooltip.alignLeft ? 'translate(-100%, -100%)' : 'translate(0, -100%)',
             }}
           >
             <div className="rp-tooltip-flag">🇻🇳</div>
@@ -320,7 +324,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
             ) : (
               <div className="rp-tooltip-text">{tooltip.text}</div>
             )}
-            <div className="rp-tooltip-arrow" />
+            <div className={`rp-tooltip-arrow ${tooltip.alignLeft ? 'right-3 left-auto' : 'left-3'}`} />
           </div>
         )}
       </div>

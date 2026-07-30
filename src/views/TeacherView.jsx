@@ -892,13 +892,6 @@ export default function TeacherView({ onSwitchStudent }) {
             {/* TAB 2: XEM TRƯỚC ĐỀ ÔN TẬP (PREVIEW MODE) */}
             {mainTab === 'preview' && (
               <div className="p-6 space-y-4">
-                <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-2xl flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs">
-                    <Eye size={16} className="text-indigo-600" />
-                    <span>CHẾ ĐỘ XEM TRƯỚC (PREVIEW): Bạn đang xem giao diện đọc hiểu &amp; làm bài thực tế của học sinh.</span>
-                  </div>
-                </div>
-
                 {/* 2-Column Student Test Simulator */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[650px] border border-gray-200 rounded-2xl overflow-hidden bg-slate-50">
                   <div className="lg:col-span-7 h-full border-r border-gray-200 overflow-hidden bg-white">

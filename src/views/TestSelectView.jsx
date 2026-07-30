@@ -198,7 +198,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
           </div>
         ) : (
           /* Premium Tests Grid with Staggered Animations */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTests.map((t, index) => {
               const qCount = countTotalQuestions(t);
               const isCustom = String(t.id).startsWith('custom') || String(t.code).startsWith('TEST');
@@ -210,49 +210,70 @@ export default function TestSelectView({ onSwitchTeacher }) {
                 <div
                   key={t.id || t.code}
                   style={{ animationDelay: `${index * 60}ms` }}
-                  className="bg-white/85 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 relative overflow-hidden animate-fade-in"
+                  className="bg-white/90 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 hover:border-indigo-300/80 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
                 >
+                  {/* Top Decorative Accent Bar */}
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
+
                   <div>
-                    {/* Top Tag & Date */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md ${
-                        isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
-                      }`}>
-                        {isCustom ? `Ngày tải lên: ${dateDot}` : (t.subject || 'TIẾNG ANH')}
-                      </span>
-                      {!isCustom && <span className="text-[11px] text-gray-400 font-medium">{dateDot}</span>}
+                    {/* Top Badge Tag & Date */}
+                    <div className="flex items-center justify-between mb-4 pt-1">
+                      {isCustom ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[11px] font-extrabold shadow-2xs">
+                          <Sparkles size={11} className="text-emerald-500 animate-pulse" />
+                          <span>Ngày tải lên: {dateDot}</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                          <BookOpen size={11} className="text-indigo-500" />
+                          <span>{t.subject || 'TIẾNG ANH'}</span>
+                        </span>
+                      )}
+                      {!isCustom && (
+                        <span className="text-[11px] font-semibold text-gray-400 bg-slate-100/70 px-2.5 py-0.5 rounded-full">
+                          {dateDot}
+                        </span>
+                      )}
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-sm font-extrabold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
+                    <h3 className="text-base font-black text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
                       {t.title}
                     </h3>
 
-                    {/* Meta Stats Pill Box */}
-                    <div className="grid grid-cols-2 gap-2 bg-slate-50/80 p-2.5 rounded-xl border border-slate-100 mb-4">
-                      <div className="flex items-center gap-1.5 text-xs text-gray-600 font-semibold">
-                        <Clock size={13} className="text-indigo-500 flex-shrink-0" />
+                    {/* Meta Stats Box */}
+                    <div className="grid grid-cols-2 gap-2.5 bg-slate-50/90 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 mb-4 shadow-2xs">
+                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                        <div className="w-6 h-6 rounded-lg bg-indigo-100/80 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                          <Clock size={13} />
+                        </div>
                         <span>{t.duration || 50} phút</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-600 font-semibold">
-                        <FileText size={13} className="text-emerald-500 flex-shrink-0" />
+                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
+                        <div className="w-6 h-6 rounded-lg bg-emerald-100/80 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                          <FileText size={13} />
+                        </div>
                         <span>{qCount} câu hỏi</span>
                       </div>
                     </div>
 
                     {/* Teacher Info */}
-                    <p className="text-[11px] text-gray-400 mb-5 flex items-center gap-1">
-                      <span>Người phụ trách:</span>
-                      <strong className="text-gray-700 font-semibold">{t.teacher || 'Cô Trang'}</strong>
-                    </p>
+                    <div className="flex items-center gap-2 mb-5">
+                      <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                        <User size={12} />
+                      </div>
+                      <span className="text-xs text-gray-500 font-medium truncate">
+                        Người phụ trách: <strong className="text-gray-800 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Action Button */}
+                  {/* Primary Action Button */}
                   <button
-                    className="w-full py-3 px-4 rounded-xl text-xs font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all duration-200 shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/35 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-[0.98] transition-all duration-200 shadow-md shadow-indigo-500/25 group-hover:shadow-indigo-500/40 flex items-center justify-center gap-2 cursor-pointer"
                     onClick={() => handleSelectTest(t)}
                   >
-                    <Play size={13} className="fill-white group-hover:translate-x-0.5 transition-transform" />
+                    <Play size={13} className="fill-white group-hover:translate-x-1 transition-transform" />
                     <span>VÀO LÀM BÀI THI TRỰC TUYẾN</span>
                   </button>
                 </div>

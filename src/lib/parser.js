@@ -126,7 +126,7 @@ export function parseExamText(fileData) {
   // Instruction patterns:
   //   "Read the following passage..."
   //   Explicit "Section X" or "Phần X"
-  const SECTION_BREAK = /^(?:Read the following|Section\s+\d|Phần\s+\d)/i;
+  const SECTION_BREAK = /^(?:Read the (?:following|passage)|Section\s+\d|Phần\s+\d)/i;
 
   const sectionGroups = [];
   let currentGroup   = [];

@@ -410,6 +410,10 @@ export default function TeacherView({ onSwitchStudent }) {
                   const isSelected = selectedTestId === (t.id || t.code);
                   const qCount = t.questions?.length || t.questions_json?.length || 40;
                   const isCustom = String(t.id).startsWith('custom') || String(t.code).startsWith('TEST');
+                  
+                  const d = t.created_at ? new Date(t.created_at) : new Date();
+                  const dateDot = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+
                   return (
                     <div
                       key={t.id || t.code}
@@ -425,7 +429,7 @@ export default function TeacherView({ onSwitchStudent }) {
                           <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
                             isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
                           }`}>
-                            {isCustom ? 'Ngày tải lên' : (t.subject || 'ĐỀ MẪU')}
+                            {isCustom ? `Ngày tải lên: ${dateDot}` : (t.subject || 'ĐỀ MẪU')}
                           </span>
                           {isTestHidden(t.id || t.code) && (
                             <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-md flex items-center gap-1">

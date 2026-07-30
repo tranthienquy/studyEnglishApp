@@ -202,9 +202,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
             {filteredTests.map((t, index) => {
               const qCount = countTotalQuestions(t);
               const isCustom = String(t.id).startsWith('custom') || String(t.code).startsWith('TEST');
-              const dateStr = t.created_at
-                ? new Date(t.created_at).toLocaleDateString('vi-VN')
-                : 'Mới cập nhật';
+              
+              const d = t.created_at ? new Date(t.created_at) : new Date();
+              const dateDot = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 
               return (
                 <div
@@ -218,9 +218,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
                       <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md ${
                         isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
                       }`}>
-                        {isCustom ? `Ngày tải lên ${dateStr}` : (t.subject || 'TIẾNG ANH')}
+                        {isCustom ? `Ngày tải lên: ${dateDot}` : (t.subject || 'TIẾNG ANH')}
                       </span>
-                      {!isCustom && <span className="text-[11px] text-gray-400 font-medium">{dateStr}</span>}
+                      {!isCustom && <span className="text-[11px] text-gray-400 font-medium">{dateDot}</span>}
                     </div>
 
                     {/* Title */}

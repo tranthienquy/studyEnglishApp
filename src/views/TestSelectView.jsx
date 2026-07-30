@@ -215,12 +215,12 @@ export default function TestSelectView({ onSwitchTeacher }) {
                   <div>
                     {/* Top Tag & Date */}
                     <div className="flex items-center justify-between mb-3">
-                      <span className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md ${
+                      <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md ${
                         isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
                       }`}>
-                        {isCustom ? 'ĐỀ ĐÃ TẢI LÊN' : (t.subject || 'TIẾNG ANH')}
+                        {isCustom ? `Ngày tải lên ${dateStr}` : (t.subject || 'TIẾNG ANH')}
                       </span>
-                      <span className="text-[11px] text-gray-400 font-medium">{dateStr}</span>
+                      {!isCustom && <span className="text-[11px] text-gray-400 font-medium">{dateStr}</span>}
                     </div>
 
                     {/* Title */}

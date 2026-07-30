@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Upload, FileText, Settings, Trophy, PlusCircle, Trash2,
-  CheckCircle2, Loader2, BookOpen, Save, Eye, RefreshCw,
+  CheckCircle2, Loader2, BookOpen, Save, Eye, EyeOff, FileEdit, RefreshCw,
   GripVertical, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft,
   Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet
 } from 'lucide-react';
@@ -383,7 +383,7 @@ export default function TeacherView({ onSwitchStudent }) {
                 <p className="text-[10px] text-gray-400 mt-0.5">Bao gồm đề đã tải lên &amp; đề mẫu demo</p>
               </div>
               <button
-                className="text-[10px] font-bold text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 transition-colors flex-shrink-0"
+                className="text-[10px] font-bold text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 transition-colors flex-shrink-0 flex items-center gap-1 cursor-pointer"
                 title="Xóa 2 đề mẫu demo mặc định khỏi danh sách"
                 onClick={() => {
                   if (window.confirm('Bạn có muốn xóa toàn bộ 2 đề thi mẫu mặc định (Demo) khỏi hệ thống?')) {
@@ -392,7 +392,8 @@ export default function TeacherView({ onSwitchStudent }) {
                   }
                 }}
               >
-                🗑️ Xóa đề mẫu
+                <Trash2 size={12} className="text-red-500" />
+                <span>Xóa đề mẫu</span>
               </button>
             </div>
 
@@ -421,14 +422,15 @@ export default function TeacherView({ onSwitchStudent }) {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-1.5">
-                          <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
                             isCustom ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-700'
                           }`}>
-                            {isCustom ? 'ĐỀ ĐÃ TẢI LÊN' : (t.subject || 'ĐỀ MẪU')}
+                            {isCustom ? 'Ngày tải lên' : (t.subject || 'ĐỀ MẪU')}
                           </span>
                           {isTestHidden(t.id || t.code) && (
-                            <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-md">
-                              🔴 Đã ẩn
+                            <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                              <EyeOff size={11} className="text-amber-700" />
+                              <span>Đã ẩn</span>
                             </span>
                           )}
                         </div>
@@ -613,7 +615,7 @@ export default function TeacherView({ onSwitchStudent }) {
                   const isHidden = editingTest ? isTestHidden(editingTest.id || editingTest.code) : false;
                   return (
                     <button
-                      className={`btn font-bold text-xs gap-1.5 px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer ${
+                      className={`btn font-bold text-xs gap-1.5 px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center ${
                         isHidden
                           ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
                           : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
@@ -621,7 +623,17 @@ export default function TeacherView({ onSwitchStudent }) {
                       onClick={handleToggleStudentAccess}
                       title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn!'}
                     >
-                      {isHidden ? '🔴 ẨN HỌC SINH ÔN TẬP' : '🟢 MỞ HỌC SINH ÔN TẬP'}
+                      {isHidden ? (
+                        <>
+                          <EyeOff size={14} />
+                          <span>ẨN HỌC SINH ÔN TẬP</span>
+                        </>
+                      ) : (
+                        <>
+                          <Eye size={14} />
+                          <span>MỞ HỌC SINH ÔN TẬP</span>
+                        </>
+                      )}
                     </button>
                   );
                 })()}
@@ -672,36 +684,39 @@ export default function TeacherView({ onSwitchStudent }) {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="flex border-b border-gray-200 bg-gray-50/50 px-2 pt-2 flex-wrap">
               <button
-                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center ${
+                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'edit'
                     ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-xl'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
                 onClick={() => setMainTab('edit')}
               >
-                ✏️ CHỈNH SỬA TRỰC TIẾP ĐỀ THI ({totalQuestionsCount} CÂU)
+                <FileEdit size={14} className="text-indigo-600" />
+                <span>CHỈNH SỬA ĐỀ ({totalQuestionsCount} CÂU)</span>
               </button>
 
               <button
-                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center ${
+                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'preview'
                     ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-xl'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
                 onClick={() => setMainTab('preview')}
               >
-                👁 XEM TRƯỚC ĐỀ ÔN TẬP (PREVIEW)
+                <Eye size={14} className="text-indigo-600" />
+                <span>PREVIEW</span>
               </button>
 
               <button
-                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center ${
+                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'results'
                     ? 'border-indigo-600 text-indigo-600 bg-white rounded-t-xl'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
                 onClick={() => setMainTab('results')}
               >
-                👥 DANH SÁCH LÀM BÀI &amp; XUẤT EXCEL ({submissions.length})
+                <FileSpreadsheet size={14} className="text-emerald-600" />
+                <span>XUẤT EXCEL ({submissions.length})</span>
               </button>
             </div>
 

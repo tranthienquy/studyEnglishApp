@@ -319,12 +319,19 @@ function extractAndCutSolution(html) {
 function parseSolutionSection(solutionHtml) {
   if (!solutionHtml) return {};
 
-  const plain = solutionHtml
+  let plain = solutionHtml
     .replace(/<\/?(p|div|tr|li|h[1-6]|br)[^>]*>/gi, '\n')
     .replace(/&nbsp;/g, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+
+  // Fix Mammoth merging multiple lines into a single paragraph by forcing newlines:
+  // 1. Before option letters A., B., C., D.
+  plain = plain.replace(/(?:\s+|^)([A-D])\.\s+/g, '\n$1. ');
+  
+  // 2. Before common solution prefixes
+  plain = plain.replace(/(?:\s+|^)(Ta có|Giải thích|Ta thấy|Phân tích|Vì|Tạm dịch|Dịch|Translation|Đáp án|Answer)\s*[:\-]/gi, '\n$1: ');
 
   const lines = plain.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   const result = {};

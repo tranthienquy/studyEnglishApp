@@ -1033,7 +1033,7 @@ body::after {
 
 /* Left panel */
 .tv-left {
-  flex: 1;
+  flex: 1.1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1041,15 +1041,25 @@ body::after {
   max-width: 50%;
 }
 
-/* Right panel */
-.tv-right {
-  flex: 1;
+/* Middle panel */
+.tv-middle {
+  flex: 1.1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  max-width: 50%;
   background: rgba(248,249,250,0.6);
+}
+
+/* Right panel */
+.tv-right {
+  flex: 0 0 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #ffffff;
+  border-left: 1px solid rgba(0,0,0,0.08);
 }
 
 /* Mobile show/hide */

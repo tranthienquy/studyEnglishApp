@@ -4,7 +4,7 @@ import useAppStore from '../stores/useAppStore';
 import { saveResult } from '../lib/supabase';
 import Timer from '../components/ui/Timer';
 import ReadingPassage from '../components/test/ReadingPassage';
-import QuestionPanel from '../components/test/QuestionPanel';
+import QuestionPanel, { QuestionTracker } from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import Leaderboard from '../components/teacher/Leaderboard';
 
@@ -154,14 +154,21 @@ export default function TestView({ isReviewMode = false }) {
         {/* Divider */}
         <div className="tv-divider hidden lg:block" />
 
-        {/* RIGHT: Question panel */}
-        <div className={`tv-right ${mobilePanel === 'questions' ? 'mobile-show' : 'mobile-hide'}`}>
+        {/* MIDDLE: Question panel */}
+        <div className={`tv-middle ${mobilePanel === 'questions' ? 'mobile-show' : 'mobile-hide'}`}>
           <QuestionPanel
             sections={sections}
             activeTab={activeTab}
             onSubmit={() => setShowSubmitConfirm(true)}
             isReview={isReviewMode}
           />
+        </div>
+
+        {/* RIGHT: Question tracker (Desktop only for now) */}
+        <div className="tv-right hidden xl:flex">
+          <div className="flex-1 overflow-y-auto">
+            {!isReviewMode && <QuestionTracker sections={sections} defaultOpen={true} />}
+          </div>
         </div>
       </main>
 

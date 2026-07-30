@@ -10,9 +10,9 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 /* ─────────────────────────────────────────────
    QuestionTracker — bảng tổng hợp câu hỏi
 ───────────────────────────────────────────── */
-export function QuestionTracker({ sections }) {
+export function QuestionTracker({ sections, defaultOpen = false }) {
   const { answers, flaggedArray = [] } = useAppStore();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
 
   // Flatten all questions
   const allQ = sections?.flatMap(s => s.questions) || [];
@@ -256,9 +256,6 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
         </div>
         <span className="qp-count-badge">{questions.length} câu hỏi trong Phần này</span>
       </div>
-
-      {/* ── Question Tracker (bảng tổng hợp) ── */}
-      {!isReview && <QuestionTracker sections={sections} />}
 
       {/* ── Questions list — scrollable ── */}
       <div className="qp-list">

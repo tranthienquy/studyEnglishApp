@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   GraduationCap, CheckCircle2, XCircle,
-  ChevronDown, ChevronUp, BookOpen, Flag, LayoutGrid
+  ChevronDown, ChevronUp, BookOpen, Flag, LayoutGrid, Send
 } from 'lucide-react';
 import useAppStore from '../../stores/useAppStore';
 
@@ -344,10 +344,11 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
             Đã trả lời <strong className="text-indigo-600">{answeredInSection}</strong>/{questions.length} câu trong phần này
           </p>
           <button
-            className="qp-submit-btn"
+            className="qp-submit-btn cursor-pointer flex items-center justify-center gap-2"
             onClick={onSubmit}
           >
-            📤 Nộp bài
+            <Send size={14} className="flex-shrink-0" />
+            <span>Nộp bài</span>
           </button>
         </div>
       )}

@@ -267,32 +267,65 @@ function SubmitConfirmModal({ sections, onCancel, onConfirm }) {
   const allQ = sections?.flatMap(s => s.questions) || [];
   const done = allQ.filter(q => answers[q.id]).length;
   const total = allQ.length;
+  const unanswered = total - done;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
   return (
-    <div className="p-6 text-center space-y-4">
-      <div className="w-14 h-14 rounded-full bg-amber-100 border border-amber-200 text-amber-500 flex items-center justify-center mx-auto text-2xl">
-        ⚠️
+    <div className="p-6 text-center relative overflow-hidden">
+      {/* Top Send Icon Badge */}
+      <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-4 shadow-xs">
+        <Send size={28} strokeWidth={1.75} className="translate-x-0.5" />
       </div>
-      <div>
-        <h3 className="text-lg font-extrabold text-gray-900 tracking-tight uppercase mb-1">
-          XÁC NHẬN NỘP BÀI THI
-        </h3>
-        <p className="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto">
-          Bạn đã làm được <strong className="text-indigo-600">{done}/{total}</strong> câu hỏi. Bạn có chắc chắn muốn nộp bài thi ngay bây giờ để nhận kết quả?
-        </p>
+
+      {/* Title & Subtitle */}
+      <h2 className="text-xl font-black text-gray-900 tracking-tight uppercase mb-1">
+        XÁC NHẬN NỘP BÀI THI
+      </h2>
+      <p className="text-xs text-indigo-600 font-semibold mb-5">
+        Vui lòng kiểm tra kỹ trước khi nộp bài
+      </p>
+
+      {/* Metrics Summary Box */}
+      <div className="grid grid-cols-2 gap-3 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 mb-5">
+        <div className="text-center p-2 border-r border-indigo-100/60">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">ĐÃ LÀM</span>
+          <p className="text-2xl font-black text-emerald-600 my-0.5">{done}/{total}</p>
+          <span className="text-[10px] text-gray-400 font-medium">câu hỏi</span>
+        </div>
+        <div className="text-center p-2">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">CHƯA LÀM</span>
+          <p className={`text-2xl font-black my-0.5 ${unanswered > 0 ? 'text-amber-500' : 'text-gray-400'}`}>{unanswered}</p>
+          <span className="text-[10px] text-gray-400 font-medium">câu hỏi</span>
+        </div>
       </div>
-      <div className="flex gap-3 pt-2">
+
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
+          <span>Tiến độ hoàn thành</span>
+          <span className="text-indigo-600 font-bold">{pct}%</span>
+        </div>
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="grid grid-cols-2 gap-3">
         <button
-          className="btn btn-sm flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-none font-semibold"
+          className="btn bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 rounded-xl text-xs font-bold py-3 transition-colors cursor-pointer"
           onClick={onCancel}
         >
           Quay lại làm tiếp
         </button>
         <button
-          className="btn btn-sm flex-1 bg-indigo-600 hover:bg-indigo-700 text-white border-none font-semibold shadow-md shadow-indigo-500/20"
+          className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 shadow-md shadow-indigo-500/25 cursor-pointer flex items-center justify-center gap-1.5"
           onClick={onConfirm}
         >
-          Xác nhận Nộp bài
+          <Send size={14} /> Xác nhận Nộp bài
         </button>
       </div>
     </div>

@@ -188,15 +188,25 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       return;
     }
 
-    // 3. Normal mode: Tooltip translation (appears right next to cursor)
+    // 3. Normal mode: Tooltip translation (positioned directly adjacent to mouse cursor)
     if (text.length <= 300) {
       const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0, width: 600 };
-      let x = e.clientX ? (e.clientX - containerRect.left + 12) : 100;
-      let y = e.clientY ? (e.clientY - containerRect.top - 8) : 100;
+      let clientX = e.clientX;
+      let clientY = e.clientY;
+
+      if (clientX === undefined || clientY === undefined) {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        clientX = rect.right;
+        clientY = rect.top;
+      }
+
+      let x = clientX - containerRect.left + 6;
+      let y = clientY - containerRect.top - 6;
       let alignLeft = false;
 
-      if (x + 220 > containerRect.width) {
-        x = e.clientX - containerRect.left - 12;
+      if (x + 210 > containerRect.width) {
+        x = clientX - containerRect.left - 6;
         alignLeft = true;
       }
 

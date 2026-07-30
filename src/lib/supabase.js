@@ -233,7 +233,7 @@ export async function saveTest(testData) {
   const client = getClient();
   if (client) {
     try {
-      const { data, error } = await client.from('tests').insert(formattedForDB).select().single();
+      const { data, error } = await client.from('tests').upsert(formattedForDB, { onConflict: 'code' }).select().single();
       if (!error && data) {
         saveLocalCustomTest(formatTestFromDB(data));
         return data;

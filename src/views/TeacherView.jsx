@@ -717,9 +717,8 @@ export default function TeacherView({ onSwitchStudent }) {
                                 <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0">
                                   {q.no || qIdx + 1}
                                 </span>
-                                <textarea
-                                  className="textarea textarea-bordered textarea-sm flex-1 bg-white border-gray-200 text-xs font-semibold rounded-lg leading-relaxed whitespace-pre-wrap"
-                                  rows={2}
+                                <input
+                                  className="input input-bordered input-sm flex-1 bg-white border-gray-200 text-xs font-semibold rounded-lg"
                                   value={q.text || ''}
                                   onChange={e => updateQuestion(secIdx, qIdx, 'text', e.target.value)}
                                   placeholder="Nhập nội dung câu hỏi..."

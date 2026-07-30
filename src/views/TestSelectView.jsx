@@ -105,26 +105,26 @@ export default function TestSelectView({ onSwitchTeacher }) {
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles size={22} className="text-orange-500 flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-orange-600 via-slate-900 to-slate-700 bg-clip-text text-transparent uppercase tracking-tight">
+            <Sparkles size={24} className="text-orange-500 flex-shrink-0 animate-pulse" />
+            <h1 className="text-lg sm:text-xl md:text-2xl font-black bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 bg-clip-text text-transparent uppercase tracking-tight drop-shadow-2xs">
               KHO ĐỀ ÔN THI TRỰC TUYẾN FPT SCHOOLS (THPT)
             </h1>
           </div>
 
-          {/* ── UNIFIED SEARCH & FILTER BAR ── */}
-          <div className="bg-white/80 backdrop-blur-xl border border-white/90 shadow-md rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg">
+          {/* ── UNIFIED SEARCH & FILTER BAR (Radiant Orange-White) ── */}
+          <div className="bg-gradient-to-r from-orange-100/90 via-white to-amber-100/80 backdrop-blur-xl border border-orange-200/90 shadow-md shadow-orange-500/5 rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg hover:shadow-orange-500/15">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-500" />
               <input
                 type="text"
                 placeholder="Tìm kiếm đề thi theo tên..."
-                className="w-full bg-slate-50/90 hover:bg-slate-50 focus:bg-white border border-slate-200/70 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
+                className="w-full bg-white/90 hover:bg-white focus:bg-white border border-orange-200/80 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               {filteredTests.length > 0 && (
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100/80">
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-extrabold text-orange-700 bg-orange-100/80 px-2.5 py-0.5 rounded-full border border-orange-200">
                   {filteredTests.length} đề
                 </span>
               )}
@@ -133,7 +133,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
             {/* Filter Dropdowns (Khối & Giảng viên) */}
             <div className="flex items-center gap-2 w-full md:w-auto justify-end">
               {/* Select Khối */}
-              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
                 <GraduationCap size={14} className="text-orange-500 flex-shrink-0" />
                 <select
                   value={selectedGrade}
@@ -148,8 +148,8 @@ export default function TestSelectView({ onSwitchTeacher }) {
               </div>
 
               {/* Select Giảng viên */}
-              <div className="flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/70 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <User size={14} className="text-slate-700 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <User size={14} className="text-amber-600 flex-shrink-0" />
                 <select
                   value={selectedTeacher}
                   onChange={(e) => setSelectedTeacher(e.target.value)}
@@ -172,18 +172,18 @@ export default function TestSelectView({ onSwitchTeacher }) {
             <p className="text-xs font-semibold">Đang tải danh sách đề thi...</p>
           </div>
         ) : filteredTests.length === 0 ? (
-          <div className="text-center py-20 text-gray-400 space-y-2 bg-white/50 backdrop-blur-sm rounded-2xl border border-dashed border-slate-200">
+          <div className="text-center py-20 text-gray-400 space-y-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-dashed border-orange-200">
             <p className="text-base font-bold text-gray-600">Không tìm thấy đề thi phù hợp.</p>
             <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giảng viên hoặc tìm kiếm với từ khóa khác.</p>
             <button
               onClick={() => { setSearchTerm(''); setSelectedGrade('all'); setSelectedTeacher('all'); }}
-              className="btn btn-xs bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold text-xs mt-2 rounded-xl"
+              className="btn btn-xs bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold text-xs mt-2 rounded-xl"
             >
               Xóa tất cả bộ lọc
             </button>
           </div>
         ) : (
-          /* Premium Tests Grid with Staggered Animations */
+          /* Radiant Orange-White Tests Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTests.map((t, index) => {
               const qCount = countTotalQuestions(t);
@@ -196,42 +196,42 @@ export default function TestSelectView({ onSwitchTeacher }) {
                 <div
                   key={t.id || t.code}
                   style={{ animationDelay: `${index * 60}ms` }}
-                  className="bg-white/90 backdrop-blur-2xl rounded-3xl p-6 border border-white/80 hover:border-orange-300/80 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
+                  className="bg-gradient-to-br from-orange-50/90 via-white to-amber-50/70 backdrop-blur-2xl rounded-3xl p-6 border border-orange-200/70 hover:border-orange-400/80 shadow-md hover:shadow-2xl hover:shadow-orange-500/15 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
                 >
-                  {/* Top Decorative Accent Bar */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-slate-800 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
+                  {/* Top Radiant Accent Bar */}
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-300 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
 
                   <div>
                     {/* Top Badge Tag */}
                     <div className="flex items-center justify-between mb-3 pt-1">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-700 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
-                        <BookOpen size={11} className="text-orange-500" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100/80 border border-orange-200 text-orange-800 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
+                        <BookOpen size={11} className="text-orange-600" />
                         <span>{t.subject || 'TIẾNG ANH'}</span>
                       </span>
                     </div>
 
-                    {/* Title (Phóng to tên chủ đề) */}
+                    {/* Title (Tên chủ đề radiant hover) */}
                     <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
                       {t.title}
                     </h3>
 
-                    {/* Meta Stats Box */}
-                    <div className="grid grid-cols-2 gap-2.5 bg-slate-50/90 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 mb-4 shadow-2xs">
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
-                        <div className="w-6 h-6 rounded-lg bg-orange-100/80 flex items-center justify-center text-orange-600 flex-shrink-0">
+                    {/* Meta Stats Box (Radiant Cam Trắng) */}
+                    <div className="grid grid-cols-2 gap-2.5 bg-gradient-to-r from-orange-100/60 to-amber-100/50 backdrop-blur-sm p-3 rounded-2xl border border-orange-200/60 mb-4 shadow-2xs">
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                        <div className="w-6 h-6 rounded-lg bg-orange-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                           <Clock size={13} />
                         </div>
                         <span>{t.duration || 50} phút</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
-                        <div className="w-6 h-6 rounded-lg bg-slate-200/70 flex items-center justify-center text-slate-700 flex-shrink-0">
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                        <div className="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                           <FileText size={13} />
                         </div>
                         <span>{qCount} câu hỏi</span>
                       </div>
                     </div>
 
-                    {/* Teacher & Upload Date Info (Chung Format) */}
+                    {/* Teacher & Upload Date Info */}
                     <div className="space-y-2 mb-5">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
@@ -243,7 +243,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0 border border-orange-200">
                           <Sparkles size={12} />
                         </div>
                         <span className="text-xs text-gray-500 font-medium truncate">
@@ -253,9 +253,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
                     </div>
                   </div>
 
-                  {/* Primary Action Button */}
+                  {/* Primary Action Button (Radiant Orange-White) */}
                   <button
-                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-600 hover:from-orange-600 hover:to-amber-700 active:scale-[0.98] transition-all duration-200 shadow-md shadow-orange-500/25 group-hover:shadow-orange-500/40 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 flex items-center justify-center gap-2 cursor-pointer"
                     onClick={() => handleSelectTest(t)}
                   >
                     <Play size={13} className="fill-white group-hover:translate-x-1 transition-transform" />

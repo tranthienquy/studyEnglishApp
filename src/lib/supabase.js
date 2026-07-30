@@ -294,52 +294,116 @@ export async function getTestSubmissions(testId) {
   return merged;
 }
 
-// ---- Export student submissions to Excel / CSV ----
+// ---- Export student submissions to formatted Excel (.xls) ----
 export function exportResultsToExcel(testTitle, submissions = []) {
   if (!submissions || submissions.length === 0) {
     alert('Chưa có lượt làm bài nào để xuất file Excel!');
     return;
   }
 
-  const headers = [
-    'STT',
-    'Họ và Tên Học Sinh',
-    'Lớp',
-    'Tên Bài Thi',
-    'Điểm Số (Thang 10)',
-    'Số Câu Đúng',
-    'Thời Gian Làm Bài',
-    'Ngày Giờ Nộp Bài'
-  ];
+  const cleanTitle = (testTitle || 'BÀI THI KHẢO SÁT TRỰC TUYẾN').toUpperCase();
 
-  const rows = submissions.map((s, idx) => {
+  const tableRowsHtml = submissions.map((s, idx) => {
     const submittedDate = s.created_at
       ? new Date(s.created_at).toLocaleString('vi-VN')
       : new Date().toLocaleString('vi-VN');
 
     const scoreVal = s.score !== undefined ? Number(s.score).toFixed(1) : '0.0';
 
-    return [
-      idx + 1,
-      `"${(s.student_name || 'Học sinh').replace(/"/g, '""')}"`,
-      `"${(s.student_class || '12A1').replace(/"/g, '""')}"`,
-      `"${(testTitle || s.test_title || 'Đề thi').replace(/"/g, '""')}"`,
-      scoreVal,
-      `"${s.correct_count || 'N/A'}"`,
-      `"${s.time_spent || 'N/A'}"`,
-      `"${submittedDate}"`
-    ].join(',');
-  });
+    return `
+      <tr>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${idx + 1}</td>
+        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; font-weight: bold;">${s.student_name || 'Học sinh'}</td>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${s.student_class || '12A1'}</td>
+        <td style="text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${testTitle || s.test_title || 'Đề thi'}</td>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt; font-weight: bold; color: #C2410C;">${scoreVal}</td>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${s.correct_count || 'N/A'}</td>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${s.time_spent || 'N/A'}</td>
+        <td style="text-align: center; font-family: 'Times New Roman', Times, serif; font-size: 12pt;">${submittedDate}</td>
+      </tr>
+    `;
+  }).join('');
 
-  const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const excelTemplate = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <!--[if gte mso 9]>
+      <xml>
+        <x:ExcelWorkbook>
+          <x:ExcelWorksheets>
+            <x:ExcelWorksheet>
+              <x:Name>KetQuaHocSinh</x:Name>
+              <x:WorksheetOptions>
+                <x:DisplayGridlines/>
+              </x:WorksheetOptions>
+            </x:ExcelWorksheet>
+          </x:ExcelWorksheets>
+        </x:ExcelWorkbook>
+      </xml>
+      <![endif]-->
+      <style>
+        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; }
+        table { border-collapse: collapse; width: 100%; font-family: 'Times New Roman', Times, serif; }
+        th {
+          background-color: #FFEDD5 !important; /* Nền cam nhạt (Amber/Orange 100) */
+          color: #000000 !important; /* Chữ màu đen */
+          font-family: 'Times New Roman', Times, serif !important;
+          font-size: 13pt;
+          font-weight: bold;
+          text-align: center;
+          vertical-align: middle;
+          border: 1px solid #F97316;
+          padding: 10px 14px;
+        }
+        td {
+          font-family: 'Times New Roman', Times, serif !important;
+          font-size: 12pt;
+          vertical-align: middle;
+          border: 1px solid #D1D5DB;
+          padding: 8px 12px;
+        }
+        tr:nth-child(even) {
+          background-color: #FFF7ED; /* Hàng xen kẽ cam nhạt dịu */
+        }
+      </style>
+    </head>
+    <body>
+      <h2 style="font-family: 'Times New Roman', Times, serif; text-align: center; color: #EA580C; margin-top: 10px; margin-bottom: 5px;">
+        BẢNG THỐNG KÊ KẾT QUẢ THI TRỰC TUYẾN - ${cleanTitle}
+      </h2>
+      <p style="font-family: 'Times New Roman', Times, serif; text-align: center; color: #4B5563; font-size: 11pt; margin-top: 0; margin-bottom: 15px;">
+        Ngày xuất dữ liệu: ${new Date().toLocaleString('vi-VN')}
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">STT</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Họ và Tên Học Sinh</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Lớp</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Tên Bài Thi</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Điểm Số (Thang 10)</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Số Câu Đúng</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Thời Gian Làm Bài</th>
+            <th style="background-color: #FFEDD5; color: #000000; font-family: 'Times New Roman', serif;">Ngày Giờ Nộp Bài</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRowsHtml}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob(['\uFEFF' + excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
   const cleanFileName = (testTitle || 'Danh_sach_ket_qua_hoc_sinh')
     .replace(/[^a-zA-Z0-9_ -]/g, '')
     .replace(/\s+/g, '_');
-  link.setAttribute('download', `${cleanFileName}_BangDiem_HocSinh.csv`);
+  link.setAttribute('download', `${cleanFileName}_BangDiem_HocSinh.xls`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

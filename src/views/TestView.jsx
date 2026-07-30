@@ -4,7 +4,7 @@ import useAppStore from '../stores/useAppStore';
 import { saveResult } from '../lib/supabase';
 import Timer from '../components/ui/Timer';
 import ReadingPassage from '../components/test/ReadingPassage';
-import QuestionPanel, { QuestionTracker } from '../components/test/QuestionPanel';
+import QuestionPanel, { QuestionTracker, QuestionTrackerSidebar } from '../components/test/QuestionPanel';
 import Modal from '../components/ui/Modal';
 import Leaderboard from '../components/teacher/Leaderboard';
 
@@ -164,11 +164,9 @@ export default function TestView({ isReviewMode = false }) {
           />
         </div>
 
-        {/* RIGHT: Question tracker (Desktop only for now) */}
-        <div className="tv-right hidden xl:flex">
-          <div className="flex-1 overflow-y-auto">
-            {!isReviewMode && <QuestionTracker sections={sections} defaultOpen={true} />}
-          </div>
+        {/* RIGHT: Question tracker sidebar */}
+        <div className="tv-right">
+          {!isReviewMode && <QuestionTrackerSidebar sections={sections} />}
         </div>
       </main>
 

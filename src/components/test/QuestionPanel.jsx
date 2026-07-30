@@ -8,13 +8,12 @@ import useAppStore from '../../stores/useAppStore';
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 /* ─────────────────────────────────────────────
-   QuestionTracker — bảng tổng hợp câu hỏi
+   QuestionTracker — bảng tổng hợp câu hỏi (collapsible, dùng trong QuestionPanel)
 ───────────────────────────────────────────── */
 export function QuestionTracker({ sections, defaultOpen = false }) {
   const { answers, flaggedArray = [] } = useAppStore();
   const [open, setOpen] = useState(defaultOpen);
 
-  // Flatten all questions
   const allQ = sections?.flatMap(s => s.questions) || [];
   const answered = allQ.filter(q => answers[q.id]).length;
   const flaggedCount = flaggedArray.length;
@@ -29,7 +28,6 @@ export function QuestionTracker({ sections, defaultOpen = false }) {
 
   return (
     <div className="qt-wrapper">
-      {/* Toggle header */}
       <button className="qt-toggle" onClick={() => setOpen(o => !o)}>
         <LayoutGrid size={13} />
         <span>Bảng tổng hợp câu hỏi</span>
@@ -40,18 +38,13 @@ export function QuestionTracker({ sections, defaultOpen = false }) {
         </div>
         {open ? <ChevronUp size={12} className="ml-auto flex-shrink-0" /> : <ChevronDown size={12} className="ml-auto flex-shrink-0" />}
       </button>
-
-      {/* Grid */}
       {open && (
         <div className="qt-body">
-          {/* Legend */}
           <div className="qt-legend">
             <span className="qt-leg-item"><span className="qt-dot done" />Đã làm</span>
             <span className="qt-leg-item"><span className="qt-dot empty" />Chưa làm</span>
             <span className="qt-leg-item"><span className="qt-dot flagged" />Ghim</span>
           </div>
-
-          {/* Per-section groups */}
           {sections?.map((sec, si) => (
             <div key={sec.id} className="qt-section">
               <p className="qt-sec-label">
@@ -61,11 +54,7 @@ export function QuestionTracker({ sections, defaultOpen = false }) {
                 {sec.questions.map(q => {
                   const st = getStatus(q);
                   return (
-                    <div
-                      key={q.id}
-                      className={`qt-cell ${st}`}
-                      title={`Câu ${q.no}${st === 'done' ? ` — ${answers[q.id]}` : ''}${st === 'flagged' ? ' (đã ghim)' : ''}`}
-                    >
+                    <div key={q.id} className={`qt-cell ${st}`} title={`Câu ${q.no}${st === 'done' ? ` — ${answers[q.id]}` : ''}${st === 'flagged' ? ' (đã ghim)' : ''}`}>
                       {st === 'flagged' ? <Flag size={8} /> : q.no}
                     </div>
                   );
@@ -73,13 +62,8 @@ export function QuestionTracker({ sections, defaultOpen = false }) {
               </div>
             </div>
           ))}
-
-          {/* Progress bar */}
           <div className="qt-progress-bar">
-            <div
-              className="qt-progress-fill"
-              style={{ width: `${total > 0 ? (answered / total) * 100 : 0}%` }}
-            />
+            <div className="qt-progress-fill" style={{ width: `${total > 0 ? (answered / total) * 100 : 0}%` }} />
           </div>
           <p className="qt-progress-label">{total > 0 ? Math.round((answered / total) * 100) : 0}% hoàn thành</p>
         </div>
@@ -87,6 +71,91 @@ export function QuestionTracker({ sections, defaultOpen = false }) {
     </div>
   );
 }
+
+/* ─────────────────────────────────────────────
+   QuestionTrackerSidebar — luôn hiển thị đầy đủ trong sidebar phải
+───────────────────────────────────────────── */
+export function QuestionTrackerSidebar({ sections }) {
+  const { answers, flaggedArray = [] } = useAppStore();
+
+  const allQ = sections?.flatMap(s => s.questions) || [];
+  const answered = allQ.filter(q => answers[q.id]).length;
+  const flaggedCount = flaggedArray.length;
+  const total = allQ.length;
+  const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+  function getStatus(q) {
+    if (flaggedArray.includes(q.id)) return 'flagged';
+    if (answers[q.id]) return 'done';
+    return 'empty';
+  }
+
+  return (
+    <div className="qts-sidebar">
+      {/* Header */}
+      <div className="qts-header">
+        <LayoutGrid size={14} className="text-indigo-500" />
+        <span className="qts-header-title">Bảng câu hỏi</span>
+      </div>
+
+      {/* Legend */}
+      <div className="qts-legend">
+        <span className="qts-leg"><span className="qts-dot empty" />Chưa làm</span>
+        <span className="qts-leg"><span className="qts-dot done" />Đã làm</span>
+        <span className="qts-leg"><span className="qts-dot flagged" />Đánh dấu</span>
+      </div>
+
+      {/* Question grid per section */}
+      <div className="qts-body">
+        {sections?.map((sec, si) => (
+          <div key={sec.id} className="qts-section">
+            {sections.length > 1 && (
+              <p className="qts-sec-label">
+                Phần {si + 1}
+                <span className="qts-sec-range">
+                  &nbsp;(Q{sec.questions[0]?.no}–Q{sec.questions[sec.questions.length - 1]?.no})
+                </span>
+              </p>
+            )}
+            <div className="qts-grid">
+              {sec.questions.map(q => {
+                const st = getStatus(q);
+                return (
+                  <button
+                    key={q.id}
+                    className={`qts-cell ${st}`}
+                    title={`Câu ${q.no}${st === 'done' ? ` — ${answers[q.id]}` : ''}${st === 'flagged' ? ' (đã đánh dấu)' : ''}`}
+                    onClick={() => {
+                      document.getElementById(`q-card-${q.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }}
+                  >
+                    {st === 'flagged' ? <Flag size={8} /> : q.no}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Progress */}
+      <div className="qts-footer">
+        <div className="qts-progress-bar">
+          <div className="qts-progress-fill" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="qts-progress-info">
+          <span>{answered}/{total} câu đã làm</span>
+          <span className="font-bold text-indigo-600">{pct}%</span>
+        </div>
+        {flaggedCount > 0 && (
+          <p className="qts-flagged-hint">⚑ {flaggedCount} câu đã đánh dấu</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 
 /* ─────────────────────────────────────────────
    SingleQuestion — Box câu hỏi rộng chuẩn Ảnh 2

@@ -3,7 +3,8 @@ import {
   Upload, FileText, Settings, Trophy, PlusCircle, Trash2,
   CheckCircle2, Loader2, BookOpen, Save, Eye, EyeOff, FileEdit, RefreshCw,
   GripVertical, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft,
-  Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet, LogOut, ShieldCheck
+  Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet, LogOut, ShieldCheck,
+  Share2, Copy, Check
 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Leaderboard from '../components/teacher/Leaderboard';
@@ -49,8 +50,11 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [parseStatus, setParseStatus] = useState(null);
-  const [parseMsg, setParseMsg] = useState('');
   const fileInputRef = useRef(null);
+
+  // Share test modal state
+  const [shareModalUrl, setShareModalUrl] = useState('');
+  const [copiedShare, setCopiedShare] = useState(false);
 
   // Active test editing state
   const [editingTest, setEditingTest] = useState({
@@ -293,8 +297,30 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     setEditingTest(blankTest);
     setSelectedTestId(blankTest.id);
     setMainTab('edit');
-    setSavedMsg('✨ Đã tạo mới bài thi trống! Vui lòng điền nội dung đề thi.');
     setTimeout(() => setSavedMsg(''), 4000);
+  }
+
+  function handleShareTest() {
+    if (!editingTest) return;
+    const testCodeOrId = editingTest.code || editingTest.id;
+    const shareUrl = `${window.location.origin}/?test=${encodeURIComponent(testCodeOrId)}`;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 3500);
+    } else {
+      setCopiedShare(false);
+    }
+    setShareModalUrl(shareUrl);
+  }
+
+  function handleCopyShareLink() {
+    if (shareModalUrl && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareModalUrl);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 3500);
+    }
   }
 
   function handleDrop(e) {
@@ -778,6 +804,15 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                     </button>
                   );
                 })()}
+
+                <button
+                  className="h-9 px-3.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs shadow-orange-500/20 active:scale-[0.98]"
+                  onClick={handleShareTest}
+                  title="Lấy liên kết chia sẻ đề thi cho học sinh"
+                >
+                  <Share2 size={14} className="text-white" />
+                  <span>Share tài liệu</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1171,6 +1206,65 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
           >
             ĐÃ HIỂU &amp; ĐỒNG Ý
           </button>
+        </div>
+      </Modal>
+
+      {/* ── Share Link Modal ── */}
+      <Modal
+        isOpen={Boolean(shareModalUrl)}
+        onClose={() => setShareModalUrl('')}
+        title="CHIA SẺ ĐƯỜNG DẪN BÀI THI"
+      >
+        <div className="text-center space-y-4 py-2">
+          <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 mx-auto shadow-sm">
+            <Share2 size={28} />
+          </div>
+
+          <div>
+            <h3 className="font-extrabold text-slate-900 text-sm">
+              {editingTest?.title || 'Đề ôn tập'}
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">
+              Gửi liên kết này cho học sinh. Học sinh mở link sẽ được tự động dẫn thẳng tới đề thi này!
+            </p>
+          </div>
+
+          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+            <div className="relative flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={shareModalUrl}
+                className="w-full bg-white border border-slate-200 text-slate-700 text-xs h-10 px-3 pr-24 rounded-xl font-medium focus:outline-none select-all"
+              />
+              <button
+                onClick={handleCopyShareLink}
+                className={`absolute right-1 text-xs font-bold px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  copiedShare
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-orange-500 hover:bg-orange-600 text-white'
+                }`}
+              >
+                {copiedShare ? <Check size={13} /> : <Copy size={13} />}
+                <span>{copiedShare ? 'Đã chép' : 'Sao chép'}</span>
+              </button>
+            </div>
+
+            {copiedShare && (
+              <p className="text-[11px] text-emerald-600 font-bold flex items-center justify-center gap-1">
+                <CheckCircle2 size={13} /> Đã sao chép liên kết vào bộ nhớ tạm!
+              </p>
+            )}
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => setShareModalUrl('')}
+              className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+            >
+              Đóng
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

@@ -8,8 +8,33 @@ import TeacherView from './views/TeacherView';
 import TeacherAuthView from './views/TeacherAuthView';
 import AdminView from './views/AdminView';
 
+import { getTestByCode } from './lib/supabase';
+
 export default function App() {
-  const { view, setView } = useAppStore();
+  const { view, setView, setCurrentTest, student } = useAppStore();
+
+  React.useEffect(() => {
+    async function checkSharedLink() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const sharedCode = params.get('test');
+        if (sharedCode) {
+          const found = await getTestByCode(sharedCode);
+          if (found) {
+            setCurrentTest(found);
+            if (student && student.name && student.class) {
+              setView('test-select');
+            } else {
+              setView('login');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Check shared link failed:', e);
+      }
+    }
+    checkSharedLink();
+  }, []);
 
   return (
     <>

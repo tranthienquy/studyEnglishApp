@@ -20,6 +20,7 @@ const useAppStore = create(
       // ---- Active Test ----
       currentTest: null,
       setCurrentTest: (test) => set({ currentTest: test }),
+      selectTest: (test) => set({ currentTest: test }),
 
       // ---- Answers ----
       answers: {}, // { questionId: 'A' | 'B' | 'C' | 'D' }

@@ -1,10 +1,9 @@
 -- ================================================================
 -- SUPABASE MIGRATION — Multi-Teacher Platform Upgrade
--- Chạy từng block trong Supabase SQL Editor:
--- Dashboard > SQL Editor > Paste & Run
+-- Copy toàn bộ file này và dán vào Supabase SQL Editor > Run
 -- ================================================================
 
--- 1. Thêm cột teacher_email vào bảng tests (phân quyền RBAC)
+-- 1. Thêm cột teacher_email, teacher_name, grade vào bảng tests
 ALTER TABLE tests
   ADD COLUMN IF NOT EXISTS teacher_email TEXT,
   ADD COLUMN IF NOT EXISTS teacher_name  TEXT,
@@ -34,44 +33,46 @@ CREATE TABLE IF NOT EXISTS student_logs (
   student_class TEXT,
   test_id      TEXT,
   test_title   TEXT,
-  action       TEXT DEFAULT 'login', -- 'login' | 'start_test' | 'submit'
+  action       TEXT DEFAULT 'login',
   created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Row Level Security (RLS) — Giáo viên chỉ đọc/ghi đề của mình
+-- 4. Row Level Security (RLS) — Bảng tests
 ALTER TABLE tests ENABLE ROW LEVEL SECURITY;
 
--- Policy: Học sinh/public chỉ xem đề không bị ẩn
-CREATE POLICY IF NOT EXISTS "public_read_visible_tests"
+DROP POLICY IF EXISTS "public_read_visible_tests" ON tests;
+CREATE POLICY "public_read_visible_tests"
   ON tests FOR SELECT
   USING (true);
 
--- Policy: Giáo viên chỉ INSERT đề của mình
-CREATE POLICY IF NOT EXISTS "teacher_insert_own_tests"
+DROP POLICY IF EXISTS "teacher_insert_own_tests" ON tests;
+CREATE POLICY "teacher_insert_own_tests"
   ON tests FOR INSERT
   WITH CHECK (teacher_email = auth.email());
 
--- Policy: Giáo viên chỉ UPDATE đề của mình
-CREATE POLICY IF NOT EXISTS "teacher_update_own_tests"
+DROP POLICY IF EXISTS "teacher_update_own_tests" ON tests;
+CREATE POLICY "teacher_update_own_tests"
   ON tests FOR UPDATE
   USING (teacher_email = auth.email());
 
--- Policy: Giáo viên chỉ DELETE đề của mình
-CREATE POLICY IF NOT EXISTS "teacher_delete_own_tests"
+DROP POLICY IF EXISTS "teacher_delete_own_tests" ON tests;
+CREATE POLICY "teacher_delete_own_tests"
   ON tests FOR DELETE
   USING (teacher_email = auth.email());
 
--- 5. RLS cho teacher_profiles — giáo viên chỉ xem/sửa hồ sơ của mình
+-- 5. RLS — Bảng teacher_profiles
 ALTER TABLE teacher_profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "teacher_manage_own_profile"
+DROP POLICY IF EXISTS "teacher_manage_own_profile" ON teacher_profiles;
+CREATE POLICY "teacher_manage_own_profile"
   ON teacher_profiles FOR ALL
   USING (email = auth.email());
 
--- 6. RLS cho student_logs — public có thể insert, chỉ admin đọc
+-- 6. RLS — Bảng student_logs
 ALTER TABLE student_logs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "public_insert_student_logs"
+DROP POLICY IF EXISTS "public_insert_student_logs" ON student_logs;
+CREATE POLICY "public_insert_student_logs"
   ON student_logs FOR INSERT
   WITH CHECK (true);
 

@@ -25,8 +25,13 @@ export default function TestSelectView({ onSwitchTeacher }) {
   }, []);
 
   function handleSelectTest(test) {
-    saveStudentLog(student?.name || 'Học sinh', student?.class || '12A1', test.id || test.code, test.title);
-    startTest(student, test);
+    selectTest(test);
+    if (!student || !student.name || !student.class) {
+      setView('login');
+    } else {
+      saveStudentLog(student.name, student.class, test.id || test.code, test.title);
+      startTest(student, test);
+    }
   }
 
   function countTotalQuestions(test) {
@@ -93,22 +98,36 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
           {/* Right: Student Info + Change Info Button + Switch Role */}
           <div className="flex items-center gap-3">
-            {/* Student Info */}
-            <div className="hidden sm:flex items-center gap-1.5 text-xs">
-              <span className="text-gray-500 font-medium">Xin chào,</span>
-              <span className="text-gray-900 font-extrabold">{student?.name || 'Học sinh'}</span>
-              <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100/90 ml-0.5">
-                Lớp {student?.class || '12A1'}
-              </span>
-            </div>
+            {student && student.name && student.class ? (
+              <>
+                {/* Student Info */}
+                <div className="hidden sm:flex items-center gap-1.5 text-xs">
+                  <span className="text-gray-500 font-medium">Xin chào,</span>
+                  <span className="text-gray-900 font-extrabold">{student.name}</span>
+                  <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100/90 ml-0.5">
+                    Lớp {student.class}
+                  </span>
+                </div>
 
-            <button
-              className="btn btn-xs sm:btn-sm bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 font-bold text-xs gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
-              onClick={() => setView('login')}
-            >
-              <LogOut size={13} />
-              <span className="hidden sm:inline">Đổi thông tin</span>
-            </button>
+                <button
+                  className="btn btn-xs sm:btn-sm bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 font-bold text-xs gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
+                  onClick={() => setView('login')}
+                  title="Thay đổi thông tin học sinh"
+                >
+                  <LogOut size={13} />
+                  <span className="hidden sm:inline">Đổi thông tin</span>
+                </button>
+              </>
+            ) : (
+              <button
+                className="btn btn-xs sm:btn-sm bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200/80 font-bold text-xs gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors shadow-2xs"
+                onClick={() => setView('login')}
+              >
+                <User size={13} />
+                <span>Đăng nhập Học sinh</span>
+              </button>
+            )}
+
             <button
               className="btn btn-xs sm:btn-sm bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200/80 font-bold text-xs gap-1.5 px-3.5 py-1.5 rounded-xl cursor-pointer transition-colors shadow-2xs"
               onClick={onSwitchTeacher}

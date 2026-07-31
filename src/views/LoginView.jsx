@@ -19,13 +19,30 @@ export default function LoginView({ onSwitchTeacher }) {
     if (!form.name.trim()) { setError('Vui lòng nhập họ và tên học sinh.'); return; }
     if (!form.class.trim()) { setError('Vui lòng nhập lớp học.'); return; }
 
-    setStudent({ name: form.name.trim(), class: form.class.trim().toUpperCase() });
-    setView('test-select');
+    const studentObj = { name: form.name.trim(), class: form.class.trim().toUpperCase() };
+    setStudent(studentObj);
+
+    const { currentTest } = useAppStore.getState();
+    if (currentTest) {
+      setView('test');
+    } else {
+      setView('test-select');
+    }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white relative z-10">
       <div className="w-full max-w-md animate-slide-up">
+        {/* Top Back to Home Button */}
+        <div className="mb-3 text-left">
+          <button
+            onClick={() => setView('test-select')}
+            className="text-xs font-bold text-gray-500 hover:text-orange-600 flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            ← Quay lại Trang chủ Kho đề
+          </button>
+        </div>
+
         {/* Card Modal */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl border border-white/80 text-center relative overflow-hidden">
 

@@ -284,11 +284,11 @@ export default function TestSelectView({ onSwitchTeacher }) {
       </main>
 
       {/* Bottom-Right Background Illustration */}
-      <div className="fixed -bottom-6 -right-2 sm:-bottom-8 sm:-right-4 pointer-events-none z-0 opacity-90 select-none overflow-hidden">
+      <div className="fixed bottom-0 right-0 pointer-events-none z-0 opacity-90 select-none overflow-hidden">
         <img
           src="/bg-illustration.png"
           alt="Illustration Background"
-          className="w-56 sm:w-72 md:w-80 lg:w-96 max-w-[40vw] object-contain translate-y-4"
+          className="w-56 sm:w-72 md:w-80 lg:w-96 max-w-[40vw] object-contain drop-shadow-md"
         />
       </div>
     </div>

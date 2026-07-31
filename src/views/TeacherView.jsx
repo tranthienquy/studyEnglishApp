@@ -24,6 +24,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   export default function TeacherView({ onSwitchStudent }) {
   const { teacherSession, clearTeacherSession, setView } = useAppStore();
 
+  // Custom warning alert modal state
+  const [warningModal, setWarningModal] = useState(null); // { title, message, list: [] } or null
+
   // Tests list state
   const [testList, setTestList] = useState([]);
   const [selectedTestId, setSelectedTestId] = useState(null);
@@ -174,9 +177,12 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
     if (missingFields.length > 0) {
       setParseStatus('error');
-      const msg = `⚠️ VUI LÒNG ĐIỀN ĐẦY ĐỦ CÁC THÔNG TIN BẮT BUỘC TRƯỚC KHI TẢI FILE LÊN HỆ THỐNG:\n\n• ${missingFields.join('\n• ')}`;
-      setParseMsg(msg);
-      alert(msg);
+      setParseMsg('⚠️ Vui lòng nhập đầy đủ các thông tin bắt buộc trước khi tải file lên hệ thống!');
+      setWarningModal({
+        title: 'THÔNG BÁO BẮT BUỘC KHAI BÁO',
+        message: 'Vui lòng điền đầy đủ các thông tin bắt buộc dưới đây trước khi tải file lên hệ thống:',
+        list: missingFields,
+      });
       return;
     }
 
@@ -312,7 +318,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
   function deleteSection(secIdx) {
     if (editingTest.sections.length <= 1) {
-      alert('Đề thi phải có ít nhất 1 phần (Section).');
+      setWarningModal({ title: 'THÔNG BÁO HỆ THỐNG', message: 'Đề thi phải có ít nhất 1 phần (Section) đọc hiểu.' });
       return;
     }
     setEditingTest(prev => ({
@@ -353,14 +359,14 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       });
 
       if (result && result.error) {
-        alert('Lỗi từ Supabase: ' + result.error);
+        setWarningModal({ title: 'LỖI CƠ SỞ DỮ LIỆU', message: 'Lỗi kết nối từ Supabase: ' + result.error });
       } else {
         setSavedMsg('Đã lưu đề thi thành công!');
         setTimeout(() => setSavedMsg(''), 3000);
       }
       await loadTests();
     } catch (e) {
-      alert('Lưu thất bại: ' + e.message);
+      setWarningModal({ title: 'LƯU BÀI THI THẤT BẠI', message: 'Lỗi: ' + e.message });
     }
     setSaving(false);
   }
@@ -1085,6 +1091,41 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       {/* Supabase Config Modal */}
       <Modal isOpen={showSupabaseModal} onClose={() => setShowSupabaseModal(false)} title="⚡ Cấu Hình Supabase Database" size="md">
         <SupabaseConfigModal onClose={() => setShowSupabaseModal(false)} />
+      </Modal>
+
+      {/* ── CUSTOM ORANGE THEME WARNING ALERT MODAL ── */}
+      <Modal isOpen={Boolean(warningModal)} onClose={() => setWarningModal(null)} size="sm" showClose={false}>
+        <div className="bg-white rounded-3xl p-6 text-center shadow-2xl border border-orange-100/90 animate-scale-in">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/25">
+            <AlertTriangle size={28} />
+          </div>
+
+          <h3 className="text-base font-extrabold text-gray-900 tracking-tight uppercase mb-2">
+            {warningModal?.title || 'THÔNG BÁO CẢNH BÁO'}
+          </h3>
+
+          <p className="text-xs text-gray-600 font-medium leading-relaxed mb-4">
+            {warningModal?.message}
+          </p>
+
+          {warningModal?.list && warningModal.list.length > 0 && (
+            <div className="bg-orange-50/80 border border-orange-200/90 rounded-2xl p-3.5 mb-5 text-left text-xs font-bold text-orange-900 space-y-1.5 shadow-2xs">
+              {warningModal.list.map((item, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={() => setWarningModal(null)}
+            className="w-full py-3 px-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-md shadow-orange-500/20 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+          >
+            ĐÃ HIỂU &amp; ĐỒNG Ý
+          </button>
+        </div>
       </Modal>
     </div>
   );

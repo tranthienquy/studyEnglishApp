@@ -5,7 +5,7 @@ const useAppStore = create(
   persist(
     (set, get) => ({
       // ---- App Navigation & Mode ----
-      view: 'test-select', // 'test-select' | 'login' | 'test' | 'result' | 'review' | 'teacher' | 'teacher-auth' | 'admin'
+      view: 'login', // 'login' | 'test-select' | 'test' | 'result' | 'review' | 'teacher' | 'teacher-auth' | 'admin'
       setView: (view) => set({ view }),
 
       // ---- Teacher Session ----
@@ -69,7 +69,7 @@ const useAppStore = create(
       // ---- Reset everything for new attempt ----
       resetTest: () =>
         set({
-          view: 'test-select',
+          view: 'login',
           student: null,
           currentTest: null,
           answers: {},

@@ -194,12 +194,6 @@ export default function TestSelectView({ onSwitchTeacher }) {
           <div className="text-center py-20 text-gray-400 space-y-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-dashed border-orange-200">
             <p className="text-base font-bold text-gray-600">Không tìm thấy đề ôn tập phù hợp.</p>
             <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giảng viên hoặc tìm kiếm với từ khóa khác.</p>
-            <button
-              onClick={() => { setSearchTerm(''); setSelectedGrade('all'); setSelectedTeacher('all'); }}
-              className="btn btn-xs bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold text-xs mt-2 rounded-xl"
-            >
-              Xóa tất cả bộ lọc
-            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">

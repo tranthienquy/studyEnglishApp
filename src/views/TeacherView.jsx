@@ -17,6 +17,7 @@ import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
 import { MOCK_TESTS } from '../lib/mockData';
 import { downloadWordTemplate, SUBJECTS } from '../lib/templates';
+import { signOut } from '../lib/auth';
 import useAppStore from '../stores/useAppStore';
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
@@ -417,7 +418,18 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     setHiddenVersion(v => v + 1);
   }
 
-  const totalQuestionsCount = editingTest.sections.reduce((acc, s) => acc + s.questions.length, 0);
+  async function handleLogout() {
+    try {
+      await signOut();
+    } catch (e) {
+      console.error(e);
+    }
+    clearTeacherSession();
+    if (onSwitchStudent) {
+      onSwitchStudent();
+    }
+    setView('login');
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12 pt-20">
@@ -453,10 +465,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
             <button
               className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
-              onClick={() => {
-                clearTeacherSession();
-                setView('login');
-              }}
+              onClick={handleLogout}
               title="Đăng xuất và quay lại trang đăng nhập"
             >
               <LogOut size={13} /> Đăng xuất

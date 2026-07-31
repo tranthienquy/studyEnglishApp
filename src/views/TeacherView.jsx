@@ -431,6 +431,10 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     setView('login');
   }
 
+  const totalQuestionsCount = editingTest?.sections
+    ? editingTest.sections.reduce((acc, s) => acc + (s.questions?.length || 0), 0)
+    : 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12 pt-20">
       {/* ── Top Header Navigation Bar ── */}

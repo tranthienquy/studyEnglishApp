@@ -69,13 +69,13 @@ export default function TestSelectView({ onSwitchTeacher }) {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50/30 via-[#F8FAFC] to-amber-50/40 text-gray-800 font-sans pb-12 relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/30 via-[#F8FAFC] to-amber-50/40 text-gray-800 font-sans pb-12 pt-20 relative z-10">
       {/* Animated Background Glow Blobs */}
       <div className="absolute top-10 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000" />
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000 delay-500" />
 
       {/* ── Top Header Navigation Bar (Synchronized with Teacher View) ── */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-xs sticky top-0 z-30 mb-8">
+      <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Left: Logo Image + Title */}
           <div className="flex items-center gap-3">

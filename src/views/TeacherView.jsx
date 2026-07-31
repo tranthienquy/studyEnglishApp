@@ -420,9 +420,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const totalQuestionsCount = editingTest.sections.reduce((acc, s) => acc + s.questions.length, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12 pt-20">
       {/* ── Top Header Navigation Bar ── */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-amber-100 px-6 py-3 shadow-xs sticky top-0 z-30">
+      <header className="bg-white/95 backdrop-blur-md border-b border-amber-200/80 px-6 py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
@@ -469,7 +469,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       </header>
 
       {/* ── Main 2-Column Content ── */}
-      <main className="max-w-7xl mx-auto px-6 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="max-w-7xl mx-auto px-6 mt-2 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* ── LEFT COLUMN (Sidebar: Available Tests & AI Upload Zone) ── */}
         <div className="lg:col-span-4 space-y-6">

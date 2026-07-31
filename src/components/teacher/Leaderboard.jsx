@@ -37,15 +37,15 @@ export default function Leaderboard() {
   return (
     <div className="p-2 sm:p-4 space-y-6">
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-16 text-indigo-600 gap-3">
-          <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+        <div className="flex flex-col items-center justify-center py-16 text-orange-600 gap-3">
+          <div className="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
           <span className="text-xs font-bold text-gray-500">Đang tải bảng xếp hạng...</span>
         </div>
       ) : (
         <>
           {/* ── TOP 3 OLYMPIC PODIUM ── */}
           {data.length >= 3 && (
-            <div className="bg-gradient-to-b from-indigo-50/80 via-slate-50 to-white p-5 rounded-3xl border border-indigo-100/80 shadow-sm">
+            <div className="bg-gradient-to-b from-orange-50/80 via-slate-50 to-white p-5 rounded-3xl border border-orange-100/80 shadow-sm">
               <div className="text-center mb-4">
                 <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100/80 text-amber-800 text-[11px] font-black uppercase tracking-wider shadow-2xs">
                   <Flame size={13} className="text-amber-500 fill-amber-500" />
@@ -170,14 +170,14 @@ export default function Leaderboard() {
                     key={i}
                     className={`flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-200 ${
                       isMe
-                        ? 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25 ring-2 ring-indigo-400/50'
+                        ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-md shadow-orange-500/25 ring-2 ring-orange-400/50'
                         : isTop1
                         ? 'bg-amber-50/90 border border-amber-200/80 text-gray-900 shadow-xs'
                         : isTop2
                         ? 'bg-slate-100/90 border border-slate-200/80 text-gray-900 shadow-xs'
                         : isTop3
                         ? 'bg-orange-50/70 border border-orange-200/70 text-gray-900 shadow-xs'
-                        : 'bg-white border border-gray-100 hover:border-indigo-200 text-gray-800 shadow-2xs hover:shadow-sm'
+                        : 'bg-white border border-gray-100 hover:border-orange-200 text-gray-800 shadow-2xs hover:shadow-sm'
                     }`}
                   >
                     {/* Left: Rank badge & Student Name */}
@@ -207,7 +207,7 @@ export default function Leaderboard() {
                             </span>
                           )}
                         </div>
-                        <p className={`text-[11px] font-medium ${isMe ? 'text-indigo-100' : 'text-gray-400'}`}>
+                        <p className={`text-[11px] font-medium ${isMe ? 'text-amber-100' : 'text-gray-400'}`}>
                           Lớp {row.class || '12A1'}
                         </p>
                       </div>
@@ -215,8 +215,8 @@ export default function Leaderboard() {
 
                     {/* Right: Time & Score */}
                     <div className="flex items-center gap-4 flex-shrink-0">
-                      <span className={`flex items-center gap-1 text-xs font-semibold ${isMe ? 'text-indigo-100' : 'text-gray-400'}`}>
-                        <Clock size={12} className={isMe ? 'text-indigo-200' : 'text-gray-400'} />
+                      <span className={`flex items-center gap-1 text-xs font-semibold ${isMe ? 'text-amber-100' : 'text-gray-400'}`}>
+                        <Clock size={12} className={isMe ? 'text-amber-200' : 'text-gray-400'} />
                         {formatTime(row.time)}
                       </span>
 
@@ -227,7 +227,7 @@ export default function Leaderboard() {
                             : row.score >= 8
                             ? 'text-emerald-600'
                             : row.score >= 5
-                            ? 'text-indigo-600'
+                            ? 'text-amber-600'
                             : 'text-gray-600'
                         }`}>
                           {row.score} <span className="text-xs font-bold">đ</span>

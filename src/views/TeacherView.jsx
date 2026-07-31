@@ -441,18 +441,13 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Teacher Profile Badge */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
-              <div className="w-6 h-6 rounded-full bg-orange-600 text-white font-extrabold flex items-center justify-center text-[11px] shadow-2xs">
-                {(teacherSession?.name || uploadTeacher || 'G').charAt(0).toUpperCase()}
+            {/* Teacher Info Text (Minimal, No Avatar, No Chip) */}
+            <div className="text-right sm:text-left mr-1">
+              <div className="font-extrabold text-xs text-slate-900 leading-tight">
+                {teacherSession?.name || uploadTeacher || 'Trần Thiên Quý (FE HO HCM)'}
               </div>
-              <div className="text-left">
-                <div className="font-extrabold text-slate-900 leading-tight">
-                  {teacherSession?.name || uploadTeacher || 'Trần Thiên Quý (FE HO HCM)'}
-                </div>
-                <div className="text-[10px] text-orange-600 font-bold leading-tight">
-                  Giáo viên
-                </div>
+              <div className="text-[11px] text-orange-600 font-bold leading-tight">
+                Giáo viên
               </div>
             </div>
 

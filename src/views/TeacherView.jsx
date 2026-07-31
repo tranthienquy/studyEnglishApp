@@ -363,9 +363,11 @@ export default function TeacherView({ onSwitchStudent }) {
       <header className="bg-white/90 backdrop-blur-md border-b border-amber-100 px-6 py-3 shadow-xs sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
-              <BookOpen size={20} />
-            </div>
+            <img
+              src="/fpt-logo.png"
+              alt="FPT Schools Logo"
+              className="w-10 h-10 object-contain rounded-xl shadow-2xs"
+            />
             <div>
               <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
                 HỆ THỐNG ÔN TẬP FPT SCHOOLS

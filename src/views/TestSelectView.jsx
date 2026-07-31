@@ -69,11 +69,13 @@ export default function TestSelectView({ onSwitchTeacher }) {
       {/* ── Top Header Navigation Bar (Synchronized with Teacher View) ── */}
       <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-xs sticky top-0 z-30 mb-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Left: Brand Icon + Gradient Title */}
+          {/* Left: Logo Image + Title */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
-              <BookOpen size={20} />
-            </div>
+            <img
+              src="/fpt-logo.png"
+              alt="FPT Schools Logo"
+              className="w-10 h-10 object-contain rounded-xl shadow-2xs"
+            />
             <div>
               <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
                 HỆ THỐNG ÔN TẬP FPT SCHOOLS
@@ -280,6 +282,15 @@ export default function TestSelectView({ onSwitchTeacher }) {
           </div>
         )}
       </main>
+
+      {/* Bottom-Right Background Illustration */}
+      <div className="fixed bottom-0 right-0 pointer-events-none z-0 opacity-90 select-none overflow-hidden">
+        <img
+          src="/bg-illustration.png"
+          alt="Illustration Background"
+          className="w-56 sm:w-72 md:w-80 lg:w-96 max-w-[40vw] object-contain drop-shadow-md"
+        />
+      </div>
     </div>
   );
 }

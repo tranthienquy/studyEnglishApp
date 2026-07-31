@@ -46,7 +46,7 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
   // Manual Demo Login (for offline or local testing)
   async function handleManualLogin() {
     if (!manualEmail.trim()) {
-      setError('Vui lòng nhập Email giảng viên.');
+      setError('Vui lòng nhập Email giáo viên.');
       return;
     }
     const cleanEmail = manualEmail.trim().toLowerCase();

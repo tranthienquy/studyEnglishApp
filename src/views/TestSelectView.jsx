@@ -170,13 +170,13 @@ export default function TestSelectView({ onSwitchTeacher }) {
                 ]}
               />
 
-              {/* Select Giảng viên */}
+              {/* Select Giáo viên */}
               <CustomSelect
                 value={selectedTeacher}
                 onChange={setSelectedTeacher}
                 icon={User}
                 options={[
-                  { value: 'all', label: 'Tất cả Giảng viên' },
+                  { value: 'all', label: 'Tất cả Giáo viên' },
                   ...teachersList.map(tName => ({ value: tName, label: tName }))
                 ]}
               />
@@ -193,7 +193,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
         ) : filteredTests.length === 0 ? (
           <div className="text-center py-20 text-gray-400 space-y-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-dashed border-orange-200">
             <p className="text-base font-bold text-gray-600">Không tìm thấy đề ôn tập phù hợp.</p>
-            <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giảng viên hoặc tìm kiếm với từ khóa khác.</p>
+            <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giáo viên hoặc tìm kiếm với từ khóa khác.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">

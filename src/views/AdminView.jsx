@@ -174,7 +174,7 @@ export default function AdminView({ onExit }) {
 
           <div className="bg-white p-4 rounded-2xl border border-amber-100 shadow-2xs flex items-center justify-between">
             <div>
-              <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">GIẢNG VIÊN ĐÃ ĐĂNG NHẬP</div>
+              <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">GIÁO VIÊN ĐÃ ĐĂNG NHẬP</div>
               <div className="text-2xl font-black text-gray-900 mt-0.5">{teachers.length || 3} <span className="text-xs text-amber-600 font-bold">thầy cô</span></div>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
@@ -228,7 +228,7 @@ export default function AdminView({ onExit }) {
             }`}
           >
             <Users size={16} />
-            <span>QUẢN LÝ ĐĂNG NHẬP GIẢNG VIÊN ({teachers.length})</span>
+            <span>QUẢN LÝ ĐĂNG NHẬP GIÁO VIÊN ({teachers.length})</span>
           </button>
 
           <button
@@ -359,13 +359,13 @@ export default function AdminView({ onExit }) {
           </div>
         )}
 
-        {/* ── TAB 2: QUẢN LÝ DỮ LIỆU ĐĂNG NHẬP GIẢNG VIÊN ── */}
+        {/* ── TAB 2: QUẢN LÝ DỮ LIỆU ĐĂNG NHẬP GIÁO VIÊN ── */}
         {activeTab === 'teachers' && (
           <div className="space-y-6 animate-slide-up">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
               <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Users size={16} className="text-orange-500" />
-                <span>Danh sách Giảng viên được phép đăng nhập qua Google (@fpt.edu.vn)</span>
+                <span>Danh sách Giáo viên được phép đăng nhập qua Google (@fpt.edu.vn)</span>
               </h2>
 
               <div className="overflow-x-auto">
@@ -373,7 +373,7 @@ export default function AdminView({ onExit }) {
                   <thead className="bg-slate-50 text-gray-500 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200">
                     <tr>
                       <th className="p-4">STT</th>
-                      <th className="p-4">Họ và Tên Giảng Viên</th>
+                      <th className="p-4">Họ và Tên Giáo Viên</th>
                       <th className="p-4">Email Google (@fpt.edu.vn)</th>
                       <th className="p-4">Môn giảng dạy</th>
                       <th className="p-4">Đăng nhập gần nhất</th>
@@ -382,14 +382,14 @@ export default function AdminView({ onExit }) {
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {loadingTeachers ? (
-                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Đang tải danh sách giảng viên...</td></tr>
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Đang tải danh sách giáo viên...</td></tr>
                     ) : teachers.length === 0 ? (
-                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Chưa có dữ liệu giảng viên. Tất cả tài khoản có đuôi @fpt.edu.vn đều có thể đăng nhập.</td></tr>
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Chưa có dữ liệu giáo viên. Tất cả tài khoản có đuôi @fpt.edu.vn đều có thể đăng nhập.</td></tr>
                     ) : (
                       teachers.map((prof, idx) => (
                         <tr key={prof.email} className="hover:bg-orange-50/30 transition-colors">
                           <td className="p-4 text-gray-400 font-bold">{idx + 1}</td>
-                          <td className="p-4 font-bold text-gray-900">{prof.name || 'Giảng viên'}</td>
+                          <td className="p-4 font-bold text-gray-900">{prof.name || 'Giáo viên'}</td>
                           <td className="p-4 font-mono font-bold text-orange-600">{prof.email}</td>
                           <td className="p-4">{prof.subject_default || 'Tiếng Anh'}</td>
                           <td className="p-4 text-gray-500">{prof.last_login_at ? new Date(prof.last_login_at).toLocaleString('vi-VN') : 'Mới khởi tạo'}</td>

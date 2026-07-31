@@ -327,7 +327,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
           </div>
           <h2 className="qp-title-text">CÂU HỎI TRẮC NGHIỆM</h2>
         </div>
-        <span className="qp-count-badge">{questions.length} câu hỏi trong Phần này</span>
+        <span className="qp-count-badge">{questions.length} câu hỏi</span>
       </div>
 
       {/* ── Questions list — scrollable ── */}

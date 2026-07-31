@@ -222,7 +222,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       <div className="qp-header">
         <div className="qp-header-left">
           <div className="qp-header-icon">
-            <BookOpen size={14} className="text-indigo-600" />
+            <BookOpen size={14} className="text-orange-600" />
           </div>
           <h2 className="qp-title-text">PHẦN ĐỌC</h2>
         </div>

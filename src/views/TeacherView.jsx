@@ -60,6 +60,8 @@ export default function TeacherView({ onSwitchStudent }) {
 
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
+  const isFirstLoad = useRef(true);
+  const autoSaveTimer = useRef(null);
 
   // Fetch all available tests on mount
   useEffect(() => {
@@ -82,6 +84,37 @@ export default function TeacherView({ onSwitchStudent }) {
       });
     }
   }, [editingTest?.id, editingTest?.code]);
+
+  // ── Auto-save: debounce 2s after any editingTest content change ──
+  useEffect(() => {
+    // Skip the very first load (when test is selected from list)
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      return;
+    }
+    // Clear any pending timer
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    // Debounce: save after 2 seconds of inactivity
+    autoSaveTimer.current = setTimeout(async () => {
+      try {
+        const allQs = editingTest.sections.flatMap(s => s.questions);
+        await saveTest({
+          code: editingTest.code,
+          title: editingTest.title,
+          subject: editingTest.subject,
+          duration: editingTest.duration,
+          teacher: editingTest.teacher,
+          passage: editingTest.sections[0]?.passage || '',
+          sections: editingTest.sections,
+          questions_json: allQs,
+        });
+        setSavedMsg('✓ Đã tự động lưu');
+        setTimeout(() => setSavedMsg(''), 2500);
+      } catch (_) { /* silent fail */ }
+    }, 2000);
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingTest]);
 
   async function loadTests() {
     setLoadingList(true);
@@ -114,6 +147,7 @@ export default function TeacherView({ onSwitchStudent }) {
       ];
     }
 
+    isFirstLoad.current = true;
     setEditingTest({
       id: t.id || t.code,
       code: t.code || 'ENG2025A',

@@ -98,23 +98,25 @@ export default function LoginView({ onSwitchTeacher }) {
               Bắt Đầu Làm Bài <ArrowRight size={16} />
             </button>
 
-            {/* Footer Time info */}
-            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium pt-2">
-              <Clock size={13} className="text-gray-400" />
-              <span>Thời gian: 50 phút | Số câu hỏi: 40 câu</span>
+            {/* Footer Time info & Switch to Teacher */}
+            <div className="pt-3 border-t border-gray-100/90 space-y-2 text-center mt-2">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
+                <Clock size={13} className="text-amber-500" />
+                <span>Thời gian: 50 phút | Số câu hỏi: 40 câu</span>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50/80 hover:bg-orange-100 border border-orange-200/90 px-4 py-2 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-[0.98] w-full"
+                  onClick={onSwitchTeacher}
+                  id="switch-teacher-btn"
+                >
+                  <span className="text-sm">👨‍🏫</span>
+                  <span>Trang dành cho Giáo viên</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Switch to teacher */}
-        <div className="text-center mt-4">
-          <button
-            className="text-xs text-slate-300 hover:text-white transition-colors underline underline-offset-2 font-medium"
-            onClick={onSwitchTeacher}
-            id="switch-teacher-btn"
-          >
-            👨‍🏫 Chuyển sang giao diện Giáo viên
-          </button>
         </div>
       </div>
     </div>

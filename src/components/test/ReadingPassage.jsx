@@ -188,29 +188,46 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       return;
     }
 
-    // 3. Normal mode: Tooltip translation (positioned directly adjacent to mouse cursor)
+    // 3. Normal mode: Tooltip translation (positioned directly adjacent to selected text & cursor)
     if (text.length <= 300) {
-      const containerRect = passageRef.current?.getBoundingClientRect() || { left: 0, top: 0, width: 600 };
-      let clientX = e.clientX;
-      let clientY = e.clientY;
+      if (!passageRef.current) return;
+      const containerRect = passageRef.current.getBoundingClientRect();
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
 
-      if (clientX === undefined || clientY === undefined) {
-        const range = sel.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        clientX = rect.right;
-        clientY = rect.top;
+      // Middle top of selected text
+      let rawX = (rect.left + rect.width / 2) - containerRect.left;
+      let rawY = rect.top - containerRect.top - 10;
+      let placement = 'top';
+
+      // If selection is too close to top of passage box (< 180px available)
+      if (rect.top - containerRect.top < 180) {
+        placement = 'bottom';
+        rawY = rect.bottom - containerRect.top + 10;
       }
 
-      let x = clientX - containerRect.left + 6;
-      let y = clientY - containerRect.top - 6;
-      let alignLeft = false;
+      // Clamp x so popup card (width ~290px) stays inside passage container bounds
+      const popupWidth = 290;
+      const halfWidth = popupWidth / 2;
+      const minX = halfWidth + 8;
+      const maxX = containerRect.width - halfWidth - 8;
+      let clampedX = Math.max(minX, Math.min(maxX, rawX));
 
-      if (x + 290 > containerRect.width) {
-        x = clientX - containerRect.left - 6;
-        alignLeft = true;
-      }
+      // Calculate arrow offset relative to popup center
+      let arrowOffset = rawX - clampedX;
+      arrowOffset = Math.max(-halfWidth + 24, Math.min(halfWidth - 24, arrowOffset));
 
-      setTooltip({ visible: true, word: text, x, y, alignLeft, loading: true, text: '' });
+      setTooltip({
+        visible: true,
+        word: text,
+        x: clampedX,
+        y: rawY,
+        placement,
+        arrowOffset,
+        loading: true,
+        text: ''
+      });
+
       const translated = await translateWithGoogle(text);
       setTooltip(prev => ({ ...prev, loading: false, text: translated }));
     }
@@ -325,7 +342,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
             style={{
               left: `${tooltip.x}px`,
               top: `${tooltip.y}px`,
-              transform: tooltip.alignLeft ? 'translate(-100%, -100%)' : 'translate(0, -100%)',
+              transform: tooltip.placement === 'bottom' ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
             }}
           >
             {/* Popover Header */}
@@ -376,7 +393,12 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
             </div>
 
             {/* Arrow indicator */}
-            <div className={`rp-tooltip-arrow ${tooltip.alignLeft ? 'right-4 left-auto' : 'left-4'}`} />
+            <div
+              className={`rp-tooltip-arrow ${tooltip.placement === 'bottom' ? 'arrow-top' : 'arrow-bottom'}`}
+              style={{
+                left: `calc(50% + ${tooltip.arrowOffset || 0}px)`,
+              }}
+            />
           </div>
         )}
       </div>

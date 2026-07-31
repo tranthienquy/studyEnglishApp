@@ -3,7 +3,7 @@ import {
   Upload, FileText, Settings, Trophy, PlusCircle, Trash2,
   CheckCircle2, Loader2, BookOpen, Save, Eye, EyeOff, FileEdit, RefreshCw,
   GripVertical, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft,
-  Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet
+  Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet, LogOut, ShieldCheck
 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Leaderboard from '../components/teacher/Leaderboard';
@@ -16,12 +16,13 @@ import {
 import { parseTestContent } from '../lib/gemini';
 import { extractFileText, parseExamText } from '../lib/parser';
 import { MOCK_TESTS } from '../lib/mockData';
+import { downloadWordTemplate, SUBJECTS } from '../lib/templates';
 import useAppStore from '../stores/useAppStore';
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
-export default function TeacherView({ onSwitchStudent }) {
-  const { setTest } = useAppStore();
+  export default function TeacherView({ onSwitchStudent }) {
+  const { teacherSession, clearTeacherSession, setView } = useAppStore();
 
   // Tests list state
   const [testList, setTestList] = useState([]);
@@ -40,7 +41,7 @@ export default function TeacherView({ onSwitchStudent }) {
   const [uploadSubject, setUploadSubject] = useState('Tiếng Anh');
   const [uploadGrade, setUploadGrade] = useState('12');
   const [uploadDuration, setUploadDuration] = useState(50);
-  const [uploadTeacher, setUploadTeacher] = useState('Cô Trang');
+  const [uploadTeacher, setUploadTeacher] = useState(teacherSession?.name || 'Cô Trang');
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [parseStatus, setParseStatus] = useState(null);
@@ -119,7 +120,8 @@ export default function TeacherView({ onSwitchStudent }) {
   async function loadTests() {
     setLoadingList(true);
     try {
-      const tests = await getAllTests(true);
+      const teacherEmail = teacherSession?.email || null;
+      const tests = await getAllTests(true, teacherEmail);
       setTestList(tests || []);
       if (tests && tests.length > 0) {
         selectTest(tests[0]);
@@ -376,24 +378,42 @@ export default function TeacherView({ onSwitchStudent }) {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Teacher Profile Badge */}
+            {teacherSession && (
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
+                <div className="w-5 h-5 rounded-full bg-orange-600 text-white font-bold flex items-center justify-center text-[10px]">
+                  {teacherSession.name ? teacherSession.name.charAt(0).toUpperCase() : 'G'}
+                </div>
+                <div className="text-left">
+                  <div className="font-extrabold text-slate-900 leading-none">{teacherSession.name || 'Giáo viên'}</div>
+                  <div className="text-[9.5px] text-orange-700 font-semibold">{teacherSession.email}</div>
+                </div>
+              </div>
+            )}
+
             <button
-              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl shadow-xs"
+              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl shadow-xs cursor-pointer"
               onClick={() => setShowSupabaseModal(true)}
             >
-              <Database size={13} /> Lưu trữ Tệp
+              <Database size={13} /> CSDL
             </button>
 
             <button
-              className="btn btn-sm bg-gray-100 hover:bg-gray-200 text-gray-700 border-none font-bold text-xs gap-1.5 rounded-xl"
+              className="btn btn-sm bg-slate-100 hover:bg-slate-200 text-slate-700 border-none font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
               onClick={onSwitchStudent}
             >
-              <Users size={13} /> Học sinh ôn tập
+              <Users size={13} /> Trang Học Sinh
             </button>
 
             <button
-              className="btn btn-sm bg-amber-50 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl pointer-events-none"
+              className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
+              onClick={() => {
+                clearTeacherSession();
+                setView('teacher-auth');
+              }}
+              title="Đăng xuất khỏi cổng Giáo viên"
             >
-              <Settings size={13} /> Giáo viên quản lý
+              <LogOut size={13} /> Đăng xuất
             </button>
           </div>
         </div>
@@ -526,8 +546,9 @@ export default function TeacherView({ onSwitchStudent }) {
                     value={uploadSubject}
                     onChange={e => setUploadSubject(e.target.value)}
                   >
-                    <option>Tiếng Anh</option>
-                    <option>Ngữ Văn</option>
+                    {SUBJECTS.map(s => (
+                      <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -563,6 +584,22 @@ export default function TeacherView({ onSwitchStudent }) {
                   value={uploadTeacher}
                   onChange={e => setUploadTeacher(e.target.value)}
                 />
+              </div>
+
+              {/* Download Word Template Button */}
+              <div className="bg-amber-50/80 p-3 rounded-xl border border-amber-200/80 flex items-center justify-between gap-2">
+                <div>
+                  <div className="text-[11px] font-bold text-amber-900">File Word Mẫu Chuẩn FPT</div>
+                  <div className="text-[10px] text-amber-700 font-medium">Môn {uploadSubject}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => downloadWordTemplate(uploadSubject)}
+                  className="btn btn-xs bg-amber-600 hover:bg-amber-700 text-white border-none font-bold text-[11px] gap-1 px-2.5 py-1 rounded-lg cursor-pointer shadow-2xs"
+                >
+                  <Download size={12} />
+                  <span>Tải Template</span>
+                </button>
               </div>
 
               {/* Upload Dropzone */}

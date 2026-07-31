@@ -4,9 +4,14 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 const useAppStore = create(
   persist(
     (set, get) => ({
-      // ---- App Navigation ----
-      view: 'login', // 'login' | 'test' | 'result' | 'teacher'
+      // ---- App Navigation & Mode ----
+      view: 'login', // 'login' | 'test-select' | 'test' | 'result' | 'review' | 'teacher' | 'teacher-auth' | 'admin'
       setView: (view) => set({ view }),
+
+      // ---- Teacher Session ----
+      teacherSession: null, // { email, name, avatar } or null
+      setTeacherSession: (session) => set({ teacherSession: session }),
+      clearTeacherSession: () => set({ teacherSession: null }),
 
       // ---- Student Info ----
       student: null,

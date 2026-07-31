@@ -169,7 +169,7 @@ export async function getTestByCode(code) {
 }
 
 // ---- Get all tests ----
-export async function getAllTests(includeHidden = false) {
+export async function getAllTests(includeHidden = false, teacherEmailFilter = null) {
   const deletedIds = getDeletedTestIds();
   const isDeleted = (t) => deletedIds.includes(String(t.id)) || deletedIds.includes(String(t.code));
   const hiddenIds = getHiddenTestIds();
@@ -180,7 +180,11 @@ export async function getAllTests(includeHidden = false) {
   
   if (client) {
     try {
-      const { data, error } = await client.from('tests').select('*').order('created_at', { ascending: false });
+      let query = client.from('tests').select('*').order('created_at', { ascending: false });
+      if (teacherEmailFilter) {
+        query = query.eq('teacher_email', teacherEmailFilter);
+      }
+      const { data, error } = await query;
       if (!error && data) {
         dbTests = data.map(formatTestFromDB);
       }
@@ -199,14 +203,23 @@ export async function getAllTests(includeHidden = false) {
     }
   }
   
-  // Also include mock tests if not already present or deleted
-  for (const mt of MOCK_TESTS) {
-    if (!merged.find(t => t.code === mt.code)) {
-      merged.push(mt);
+  // Also include mock tests if not filtering by teacher email or if teacher matches
+  if (!teacherEmailFilter) {
+    for (const mt of MOCK_TESTS) {
+      if (!merged.find(t => t.code === mt.code)) {
+        merged.push(mt);
+      }
     }
   }
   
-  return merged.filter(t => !isDeleted(t) && (includeHidden || !isHidden(t)));
+  return merged.filter(t => {
+    if (isDeleted(t)) return false;
+    if (!includeHidden && isHidden(t)) return false;
+    if (teacherEmailFilter && t.teacher_email && t.teacher_email !== teacherEmailFilter) {
+      return false;
+    }
+    return true;
+  });
 }
 
 // Local storage for results log
@@ -435,13 +448,14 @@ export async function getLeaderboard(testId) {
 }
 
 // ---- Save test (teacher) ----
-export async function saveTest(testData) {
+export async function saveTest(testData, teacherEmail = null) {
   const formattedForDB = {
     code: testData.code,
     title: testData.title,
     subject: testData.subject || 'TIẾNG ANH',
     duration: parseInt(testData.duration) || 45,
     teacher: testData.teacher || 'Cô Trang',
+    teacher_email: teacherEmail || testData.teacher_email || null,
     passage: testData.passage,
     questions_json: testData.questions_json,
     sections_json: testData.sections,
@@ -519,6 +533,64 @@ export function clearAllMockTests() {
   localStorage.setItem('readingpro_deleted_tests', JSON.stringify(deleted));
 }
 
+// ---- Teacher Profiles & Student Activity Logs ----
+export async function getAllTeacherProfiles() {
+  const client = getClient();
+  if (!client) return [];
+  try {
+    const { data } = await client.from('teacher_profiles').select('*').order('last_login_at', { ascending: false });
+    return data || [];
+  } catch (e) {
+    console.warn('Fetch teacher profiles failed:', e);
+    return [];
+  }
+}
+
+export async function saveStudentLog(studentName, studentClass, testId = null, testTitle = null) {
+  const client = getClient();
+  const logData = {
+    student_name: studentName,
+    student_class: studentClass,
+    test_id: testId,
+    test_title: testTitle,
+    created_at: new Date().toISOString(),
+  };
+
+  if (client) {
+    try {
+      await client.from('student_logs').insert(logData);
+    } catch (e) {
+      console.warn('Save student log failed:', e);
+    }
+  }
+
+  // Local storage fallback
+  try {
+    const raw = localStorage.getItem('readingpro_student_logs');
+    const existing = raw ? JSON.parse(raw) : [];
+    localStorage.setItem('readingpro_student_logs', JSON.stringify([logData, ...existing]));
+  } catch {}
+}
+
+export async function getAllStudentLogs() {
+  const client = getClient();
+  if (client) {
+    try {
+      const { data } = await client.from('student_logs').select('*').order('created_at', { ascending: false }).limit(100);
+      if (data && data.length > 0) return data;
+    } catch (e) {
+      console.warn('Fetch student logs failed:', e);
+    }
+  }
+
+  try {
+    const raw = localStorage.getItem('readingpro_student_logs');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 function formatTestFromDB(dbRow) {
   const questions = dbRow.questions_json || [];
 
@@ -529,6 +601,7 @@ function formatTestFromDB(dbRow) {
     subject: dbRow.subject || 'TIẾNG ANH',
     duration: dbRow.duration || 45,
     teacher: dbRow.teacher || 'Cô Trang',
+    teacher_email: dbRow.teacher_email || null,
     created_at: dbRow.created_at,
     passage: dbRow.passage || '',
     questions,

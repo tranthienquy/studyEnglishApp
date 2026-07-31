@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles, Search, ShieldCheck, Filter, GraduationCap } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
-import { getAllTests } from '../lib/supabase';
+import { getAllTests, saveStudentLog } from '../lib/supabase';
 
 export default function TestSelectView({ onSwitchTeacher }) {
   const { student, startTest, setView } = useAppStore();
@@ -10,6 +10,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('all'); // 'all', '10', '11', '12'
   const [selectedTeacher, setSelectedTeacher] = useState('all');
+  const [selectedSubject, setSelectedSubject] = useState('all');
 
   useEffect(() => {
     setLoading(true);
@@ -24,6 +25,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
   }, []);
 
   function handleSelectTest(test) {
+    saveStudentLog(student?.name || 'Học sinh', student?.class || '12A1', test.id || test.code, test.title);
     startTest(student, test);
   }
 
@@ -34,8 +36,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
     return test.questions?.length || 0;
   }
 
-  // Extract unique teacher names
+  // Extract unique teacher names & subjects
   const teachersList = Array.from(new Set(tests.map(t => t.teacher || 'Cô Trang'))).filter(Boolean);
+  const subjectsList = Array.from(new Set(tests.map(t => t.subject || 'TIẾNG ANH'))).filter(Boolean);
 
   const filteredTests = tests.filter(t => {
     const titleLower = (t.title || '').toLowerCase();
@@ -57,7 +60,12 @@ export default function TestSelectView({ onSwitchTeacher }) {
       matchesTeacher = (t.teacher || 'Cô Trang') === selectedTeacher;
     }
 
-    return matchesSearch && matchesGrade && matchesTeacher;
+    let matchesSubject = true;
+    if (selectedSubject !== 'all') {
+      matchesSubject = (t.subject || 'TIẾNG ANH').toLowerCase() === selectedSubject.toLowerCase();
+    }
+
+    return matchesSearch && matchesGrade && matchesTeacher && matchesSubject;
   });
 
   return (
@@ -141,8 +149,23 @@ export default function TestSelectView({ onSwitchTeacher }) {
               )}
             </div>
 
-            {/* Filter Dropdowns (Khối & Giảng viên) */}
-            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+            {/* Filter Dropdowns (Môn, Khối & Giảng viên) */}
+            <div className="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap md:flex-nowrap">
+              {/* Select Môn học */}
+              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
+                <BookOpen size={14} className="text-orange-500 flex-shrink-0" />
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer max-w-[120px] truncate"
+                >
+                  <option value="all">Tất cả Môn</option>
+                  {subjectsList.map(subj => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Select Khối */}
               <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
                 <GraduationCap size={14} className="text-orange-500 flex-shrink-0" />

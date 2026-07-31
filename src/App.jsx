@@ -1,27 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useAppStore from './stores/useAppStore';
 import LoginView from './views/LoginView';
 import TestSelectView from './views/TestSelectView';
 import TestView from './views/TestView';
 import ResultView from './views/ResultView';
 import TeacherView from './views/TeacherView';
+import TeacherAuthView from './views/TeacherAuthView';
+import AdminView from './views/AdminView';
 
 export default function App() {
-  const { view } = useAppStore();
-  const [isTeacher, setIsTeacher] = useState(false);
-
-  // If teacher mode, show teacher view regardless of view state
-  if (isTeacher) {
-    return <TeacherView onSwitchStudent={() => setIsTeacher(false)} />;
-  }
+  const { view, setView } = useAppStore();
 
   return (
     <>
-      {view === 'login'       && <LoginView onSwitchTeacher={() => setIsTeacher(true)} />}
-      {view === 'test-select'  && <TestSelectView onSwitchTeacher={() => setIsTeacher(true)} />}
-      {view === 'test'         && <TestView />}
-      {view === 'review'       && <TestView isReviewMode={true} />}
-      {view === 'result'       && (
+      {view === 'login'        && <LoginView onSwitchTeacher={() => setView('teacher-auth')} />}
+      {view === 'test-select'   && <TestSelectView onSwitchTeacher={() => setView('teacher-auth')} />}
+      {view === 'test'          && <TestView />}
+      {view === 'review'        && <TestView isReviewMode={true} />}
+      {view === 'teacher-auth'  && <TeacherAuthView onSwitchStudent={() => setView('login')} />}
+      {view === 'teacher'       && <TeacherView onSwitchStudent={() => setView('login')} />}
+      {view === 'admin'         && <AdminView onExit={() => setView('login')} />}
+      {view === 'result'        && (
         <div className="relative min-h-screen overflow-hidden">
           <div className="filter blur-[6px] pointer-events-none select-none opacity-75">
             <TestView />

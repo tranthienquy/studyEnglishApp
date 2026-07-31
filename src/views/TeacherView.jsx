@@ -257,6 +257,45 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     }
   }
 
+  function handleCreateNewTest() {
+    const timestamp = Date.now();
+    const newCode = `TEST-${timestamp.toString().slice(-4)}`;
+    const blankTest = {
+      id: `custom-${timestamp}`,
+      code: newCode,
+      title: uploadTitle.trim() || 'BÀI THI MỚI CHƯA ĐẶT TÊN',
+      subject: uploadSubject || 'Tiếng Anh',
+      grade: uploadGrade || '12',
+      duration: parseInt(uploadDuration) || 50,
+      teacher: teacherSession?.name || uploadTeacher || 'Cô Trang',
+      sections: [
+        {
+          id: `sec-${timestamp}-1`,
+          title: 'Phần 1: Bài đọc hiểu & Câu hỏi trắc nghiệm',
+          instruction: 'Read the following passage and answer the questions below.',
+          passage: 'Nhập nội dung đoạn văn đọc hiểu tại đây...',
+          questions: [
+            {
+              id: `q-${timestamp}-1`,
+              no: 1,
+              question: 'Nhập nội dung câu hỏi số 1 tại đây...',
+              options: ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'],
+              correct: 'A',
+              explanation: 'Nhập lời giải chi tiết cho câu hỏi tại đây...',
+            }
+          ],
+        }
+      ],
+    };
+
+    isFirstLoad.current = true;
+    setEditingTest(blankTest);
+    setSelectedTestId(blankTest.id);
+    setMainTab('edit');
+    setSavedMsg('✨ Đã tạo mới bài thi trống! Vui lòng điền nội dung đề thi.');
+    setTimeout(() => setSavedMsg(''), 4000);
+  }
+
   function handleDrop(e) {
     e.preventDefault();
     setIsDragging(false);
@@ -446,17 +485,12 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 <p className="text-[10px] text-gray-400 mt-0.5">Bao gồm đề đã tải lên &amp; đề mẫu demo</p>
               </div>
               <button
-                className="text-[10px] font-bold text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 transition-colors flex-shrink-0 flex items-center gap-1 cursor-pointer"
-                title="Xóa 2 đề mẫu demo mặc định khỏi danh sách"
-                onClick={() => {
-                  if (window.confirm('Bạn có muốn xóa toàn bộ 2 đề thi mẫu mặc định (Demo) khỏi hệ thống?')) {
-                    clearAllMockTests();
-                    loadTests();
-                  }
-                }}
+                className="text-xs font-extrabold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 px-3 py-1.5 rounded-xl transition-all flex-shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm shadow-orange-500/20 active:scale-[0.98]"
+                title="Tạo mới bài thi trống để thầy cô tự soạn nội dung"
+                onClick={handleCreateNewTest}
               >
-                <Trash2 size={12} className="text-red-500" />
-                <span>Xóa đề mẫu</span>
+                <PlusCircle size={14} className="text-white" />
+                <span>Tạo mới</span>
               </button>
             </div>
 

@@ -35,12 +35,9 @@ export default function LoginView({ onSwitchTeacher }) {
           </div>
 
           {/* Main Title */}
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase mb-1">
-            KỲ THI THỬ NGHIỆM THPT 2026
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase mb-6">
+            HỆ THỐNG ÔN TẬP FPT SCHOOLS
           </h1>
-          <p className="text-xs text-orange-600 font-semibold mb-6">
-            Giáo viên hướng dẫn: <span className="text-gray-500 font-normal">Ms. Trang - FSC3DN</span>
-          </p>
 
           {/* Form */}
           <div className="space-y-4 text-left">
@@ -98,23 +95,16 @@ export default function LoginView({ onSwitchTeacher }) {
               Bắt Đầu Làm Bài <ArrowRight size={16} />
             </button>
 
-            {/* Footer Time info & Switch to Teacher */}
-            <div className="pt-3 border-t border-gray-100/90 space-y-2 text-center mt-2">
-              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
-                <Clock size={13} className="text-amber-500" />
-                <span>Thời gian: 50 phút | Số câu hỏi: 40 câu</span>
-              </div>
-
-              <div className="pt-1">
-                <button
-                  className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50/80 hover:bg-orange-100 border border-orange-200/90 px-4 py-2 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-[0.98] w-full"
-                  onClick={onSwitchTeacher}
-                  id="switch-teacher-btn"
-                >
-                  <span className="text-sm">👨‍🏫</span>
-                  <span>Trang dành cho Giáo viên</span>
-                </button>
-              </div>
+            {/* Footer Switch to Teacher */}
+            <div className="pt-3 border-t border-gray-100/90 text-center mt-3">
+              <button
+                className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50/80 hover:bg-orange-100 border border-orange-200/90 px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-[0.98] w-full"
+                onClick={onSwitchTeacher}
+                id="switch-teacher-btn"
+              >
+                <span className="text-sm">👨‍🏫</span>
+                <span>Trang dành cho Giáo viên</span>
+              </button>
             </div>
           </div>
         </div>

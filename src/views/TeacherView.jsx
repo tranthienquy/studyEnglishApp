@@ -695,7 +695,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                   ) : (
                     <>
                       <Upload size={28} className="text-amber-400 mx-auto mb-2" strokeWidth={1.5} />
-                      <p className="text-xs font-bold text-gray-700">Tải lên file Word (.doc, .docx), PDF hoặc .txt</p>
+                      <p className="text-xs font-bold text-gray-700">Tải lên file Word (.doc, .docx)</p>
                       <p className="text-[10px] text-gray-400 mt-1">Kéo thả hoặc nhấn vào để chọn tệp</p>
                     </>
                   )}

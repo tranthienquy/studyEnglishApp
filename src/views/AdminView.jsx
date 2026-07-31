@@ -281,7 +281,7 @@ export default function AdminView({ onExit }) {
                 >
                   <option value="all">Tất cả môn học</option>
                   {SUBJECTS.map(s => (
-                    <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                    <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
                 </select>
               </div>

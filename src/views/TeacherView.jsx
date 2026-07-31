@@ -536,7 +536,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                     onChange={e => setUploadSubject(e.target.value)}
                   >
                     {SUBJECTS.map(s => (
-                      <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                      <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
                   </select>
                 </div>

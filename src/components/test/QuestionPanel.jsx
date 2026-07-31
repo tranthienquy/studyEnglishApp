@@ -96,7 +96,7 @@ export function QuestionTrackerSidebar({ sections }) {
       <div className="qp-header">
         <div className="qp-header-left">
           <div className="qp-header-icon">
-            <LayoutGrid size={14} className="text-orange-600" />
+            <LayoutGrid size={14} className="text-indigo-600" />
           </div>
           <h2 className="qp-title-text">BẢNG CÂU HỎI</h2>
         </div>
@@ -149,7 +149,7 @@ export function QuestionTrackerSidebar({ sections }) {
         </div>
         <div className="qts-progress-info">
           <span>{answered}/{total} câu đã làm</span>
-          <span className="font-bold text-orange-600">{pct}%</span>
+          <span className="font-bold text-indigo-600">{pct}%</span>
         </div>
         {flaggedCount > 0 && (
           <p className="qts-flagged-hint">⚑ {flaggedCount} câu đã đánh dấu</p>
@@ -203,7 +203,7 @@ function SingleQuestion({ q, isReview = false }) {
     <div
       id={`q-card-${q.id}`}
       className={`bg-white rounded-xl p-3.5 border shadow-2xs transition-all ${
-        chosen ? 'border-orange-400 bg-orange-50/30 shadow-xs' : 'border-gray-200/90'
+        chosen ? 'border-indigo-400 bg-indigo-50/20 shadow-xs' : 'border-gray-200/90'
       }`}
     >
       {/* ── Question Header (Dark Navy Square Number Badge + Prompt Text) ── */}
@@ -246,8 +246,8 @@ function SingleQuestion({ q, isReview = false }) {
             else if (isSelected)        cardStyle += "border-red-400 bg-red-50/60";
             else                        cardStyle += "border-gray-200 opacity-60";
           } else {
-            if (isSelected)             cardStyle += "border-orange-500 bg-orange-50/60 ring-1 ring-orange-500 shadow-xs";
-            else                        cardStyle += "border-gray-200/90 hover:border-orange-300 hover:bg-amber-50/40";
+            if (isSelected)             cardStyle += "border-indigo-600 bg-indigo-50/50 ring-1 ring-indigo-600 shadow-xs";
+            else                        cardStyle += "border-gray-200/90 hover:border-indigo-300 hover:bg-slate-50/60";
           }
 
           return (
@@ -263,13 +263,13 @@ function SingleQuestion({ q, isReview = false }) {
               <div className={`w-7 h-7 min-w-[28px] rounded-full flex items-center justify-center text-[11px] font-bold transition-all border ${
                 isReview
                   ? (isCorrect ? 'bg-emerald-600 text-white border-emerald-600' : isSelected ? 'bg-red-500 text-white border-red-500' : 'bg-gray-100 text-gray-500 border-gray-200')
-                  : (isSelected ? 'bg-gradient-to-tr from-orange-500 to-amber-500 text-white border-orange-500 shadow-2xs' : 'bg-white text-gray-700 border-gray-300 group-hover:border-orange-400')
+                  : (isSelected ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs' : 'bg-white text-gray-700 border-gray-300 group-hover:border-indigo-400')
               }`}>
                 {letter}
               </div>
 
               {/* Option Text */}
-              <span className={`flex-1 text-xs sm:text-sm ${isSelected ? 'font-bold text-orange-950' : 'font-medium text-gray-800'}`}>
+              <span className={`flex-1 text-xs sm:text-sm ${isSelected ? 'font-bold text-indigo-950' : 'font-medium text-gray-800'}`}>
                 {text}
               </span>
 
@@ -291,10 +291,10 @@ function SingleQuestion({ q, isReview = false }) {
 
       {/* ── Explanation Section (Always visible in Review mode) ── */}
       {isReview && q.explanation && (
-        <div className="mt-5 p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
+        <div className="mt-5 p-4 bg-slate-50 border border-indigo-100/80 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <BookOpen size={15} className="text-orange-600" />
-            <h4 className="text-[11px] font-extrabold text-orange-900 uppercase tracking-wider">
+            <BookOpen size={15} className="text-indigo-600" />
+            <h4 className="text-[11px] font-extrabold text-indigo-900 uppercase tracking-wider">
               Học liệu & giải thích sư phạm chi tiết
             </h4>
           </div>
@@ -323,7 +323,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
       <div className="qp-header">
         <div className="qp-header-left">
           <div className="qp-header-icon">
-            <GraduationCap size={14} className="text-orange-600" />
+            <GraduationCap size={14} className="text-indigo-600" />
           </div>
           <h2 className="qp-title-text">CÂU HỎI TRẮC NGHIỆM</h2>
         </div>
@@ -341,7 +341,7 @@ export default function QuestionPanel({ sections, activeTab, onSubmit, isReview 
       {!isReview && (
         <div className="qp-footer">
           <p className="qp-footer-label">
-            Đã trả lời <strong className="text-orange-600">{answeredInSection}</strong>/{questions.length} câu trong phần này
+            Đã trả lời <strong className="text-indigo-600">{answeredInSection}</strong>/{questions.length} câu trong phần này
           </p>
           <button
             className="qp-submit-btn cursor-pointer flex items-center justify-center gap-2"

@@ -51,21 +51,21 @@ export default function ResultView() {
           <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase mb-1">
             KẾT QUẢ BÀI THI CỦA BẠN
           </h1>
-          <p className="text-xs text-orange-600 font-semibold mb-6">
+          <p className="text-xs text-indigo-600 font-semibold mb-6">
             {result.studentName} – Lớp {result.studentClass}
           </p>
 
           {/* 3 Column Metrics Cards */}
-          <div className="grid grid-cols-3 gap-2 bg-orange-50/50 p-3 rounded-2xl border border-orange-100 mb-5">
+          <div className="grid grid-cols-3 gap-2 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 mb-5">
             {/* Score */}
             <div className="text-center p-2">
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">ĐIỂM SỐ</span>
-              <p className="text-2xl font-black text-orange-600 my-0.5">{result.score.toFixed(2)}</p>
+              <p className="text-2xl font-black text-indigo-600 my-0.5">{result.score.toFixed(2)}</p>
               <span className="text-[10px] text-gray-400 font-medium">Thang điểm 10</span>
             </div>
 
             {/* Correct count */}
-            <div className="text-center p-2 border-x border-orange-100/60">
+            <div className="text-center p-2 border-x border-indigo-100/60">
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">SỐ CÂU ĐÚNG</span>
               <p className="text-2xl font-black text-emerald-600 my-0.5">{result.correctCount}/{result.totalCount}</p>
               <span className="text-[10px] text-gray-400 font-medium">Đúng hoàn toàn</span>
@@ -74,7 +74,7 @@ export default function ResultView() {
             {/* Time spent */}
             <div className="text-center p-2">
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">THỜI GIAN LÀM</span>
-              <p className="text-2xl font-black text-amber-500 my-0.5">{formatTime(result.timeSpent)}</p>
+              <p className="text-2xl font-black text-orange-500 my-0.5">{formatTime(result.timeSpent)}</p>
               <span className="text-[10px] text-gray-400 font-medium">Thời gian thực tế</span>
             </div>
           </div>
@@ -83,25 +83,25 @@ export default function ResultView() {
           <div className="mb-6">
             <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
               <span>Tỷ lệ làm đúng</span>
-              <span className="text-orange-600 font-bold">{pct}%</span>
+              <span className="text-indigo-600 font-bold">{pct}%</span>
             </div>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-500"
+                className="h-full bg-indigo-600 rounded-full transition-all duration-500"
                 style={{ width: `${pct}%` }}
               />
             </div>
           </div>
 
           {/* Teacher AI Feedback Box */}
-          <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 text-left mb-6">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">
-              <MessageSquare size={14} className="text-amber-600" />
+          <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 text-left mb-6">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 uppercase tracking-wider mb-2">
+              <MessageSquare size={14} className="text-indigo-600" />
               <span>NHẬN XÉT TỪ GIÁO VIÊN (MS. TRANG)</span>
             </div>
             {loadingFeedback ? (
               <div className="flex items-center gap-2 text-gray-400 text-xs py-1">
-                <Loader2 size={13} className="animate-spin text-orange-500" /> Đang tổng hợp nhận xét...
+                <Loader2 size={13} className="animate-spin text-indigo-500" /> Đang tổng hợp nhận xét...
               </div>
             ) : (
               <p className="text-xs text-gray-700 leading-relaxed italic">
@@ -120,7 +120,7 @@ export default function ResultView() {
                 <Eye size={14} /> Xem lại bài làm chi tiết
               </button>
               <button
-                className="btn bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 shadow-md shadow-orange-500/25 cursor-pointer"
+                className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 gap-1.5 shadow-md shadow-indigo-500/25 cursor-pointer"
                 onClick={handleRetry}
               >
                 <RefreshCw size={14} /> Thi lại đề này

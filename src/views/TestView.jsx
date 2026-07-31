@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GraduationCap, User, Send, Trophy, Menu, X, Info, Clock, BookOpen, Highlighter, Eraser, ZoomIn, ZoomOut, BookMarked } from 'lucide-react';
+import { GraduationCap, User, Send, Trophy, Menu, X, Info, Clock, BookOpen, Highlighter, Eraser, ZoomIn, ZoomOut, BookMarked, FileText, Type } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 import { saveResult } from '../lib/supabase';
 import Timer from '../components/ui/Timer';
@@ -22,6 +22,10 @@ export default function TestView({ isReviewMode = false }) {
   const [zoom, setZoom] = useState(100);
   const [activeColor, setActiveColor] = useState('yellow');
   const [showVocab, setShowVocab] = useState(false);
+  const [highlightPassage, setHighlightPassage] = useState(true);
+  const [fontSize, setFontSize] = useState('normal');
+  const toggleHighlight = () => setHighlightPassage(prev => !prev);
+  const toggleFontSize = () => setFontSize(prev => (prev === 'lg' ? 'normal' : 'lg'));
   const HIGHLIGHT_COLORS = { yellow: '#FDE68A', green: '#A7F3D0', blue: '#BFDBFE', pink: '#FBCFE8', orange: '#FED7AA' };
   const clampZoom = (v) => Math.max(80, Math.min(130, v));
 

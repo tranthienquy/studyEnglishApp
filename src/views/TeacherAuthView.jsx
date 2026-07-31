@@ -83,8 +83,12 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
       <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-orange-100/90 relative z-10 animate-slide-up">
         {/* Header Branding */}
         <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 mx-auto mb-3 shadow-sm">
-            <ShieldCheck size={36} strokeWidth={1.5} />
+          <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
+            <img
+              src="/bg-illustration.png"
+              alt="FPT Mascot"
+              className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform"
+            />
           </div>
           <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
             CỔNG GIÁO VIÊN FPT
@@ -166,6 +170,15 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
             <span>Quay lại trang Học sinh</span>
           </button>
         </div>
+      </div>
+
+      {/* Bottom-Right Mascot Illustration */}
+      <div className="fixed bottom-0 right-0 pointer-events-none z-0 opacity-90 select-none overflow-hidden">
+        <img
+          src="/bg-illustration.png"
+          alt="Illustration Background"
+          className="w-56 sm:w-72 md:w-80 max-w-[40vw] object-contain drop-shadow-md"
+        />
       </div>
     </div>
   );

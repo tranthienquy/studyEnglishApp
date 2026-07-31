@@ -232,7 +232,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         });
 
         setParseStatus('done');
-        setParseMsg(`✅ Đã nhận diện 1 ĐỀ ÔN TẬP ("${newTitle}") gồm ${newTestObj.sections.length} phần & ${parsed.questions.length} câu hỏi!`);
+        setParseMsg(`Đã nhận diện 1 ĐỀ ÔN TẬP ("${newTitle}") gồm ${newTestObj.sections.length} phần & ${parsed.questions.length} câu hỏi!`);
         await loadTests();
         selectTest(newTestObj);
       } else {
@@ -704,13 +704,15 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
               {/* Status indicator */}
               {parseStatus === 'done' && !uploading && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold flex items-center gap-2">
-                  <CheckCircle2 size={14} /> {parseMsg}
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] leading-snug text-emerald-800 font-semibold flex items-center gap-2 shadow-2xs">
+                  <CheckCircle2 size={14} className="flex-shrink-0 text-emerald-600" />
+                  <span>{parseMsg}</span>
                 </div>
               )}
               {parseStatus === 'error' && (
-                <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-semibold flex items-center gap-2">
-                  <AlertTriangle size={14} /> {parseMsg}
+                <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-[11px] leading-snug text-red-700 font-semibold flex items-center gap-2 shadow-2xs">
+                  <AlertTriangle size={14} className="flex-shrink-0 text-red-500" />
+                  <span>{parseMsg}</span>
                 </div>
               )}
             </div>

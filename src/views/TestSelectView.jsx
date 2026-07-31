@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, Clock, FileText, User, Play, LogOut, Loader2, Sparkles, Search, ShieldCheck, Filter, GraduationCap } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 import { getAllTests, saveStudentLog } from '../lib/supabase';
+import CustomSelect from '../components/ui/CustomSelect';
 
 export default function TestSelectView({ onSwitchTeacher }) {
   const { student, startTest, setView } = useAppStore();
@@ -146,49 +147,39 @@ export default function TestSelectView({ onSwitchTeacher }) {
             {/* Filter Dropdowns (Môn, Khối & Giảng viên) */}
             <div className="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap md:flex-nowrap">
               {/* Select Môn học */}
-              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <BookOpen size={14} className="text-orange-500 flex-shrink-0" />
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer max-w-[120px] truncate"
-                >
-                  <option value="all">Tất cả Môn</option>
-                  {subjectsList.map(subj => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))}
-                </select>
-              </div>
+              <CustomSelect
+                value={selectedSubject}
+                onChange={setSelectedSubject}
+                icon={BookOpen}
+                options={[
+                  { value: 'all', label: 'Tất cả Môn' },
+                  ...subjectsList.map(subj => ({ value: subj, label: subj }))
+                ]}
+              />
 
               {/* Select Khối */}
-              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <GraduationCap size={14} className="text-orange-500 flex-shrink-0" />
-                <select
-                  value={selectedGrade}
-                  onChange={(e) => setSelectedGrade(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
-                >
-                  <option value="all">Tất cả Khối</option>
-                  <option value="10">Khối 10</option>
-                  <option value="11">Khối 11</option>
-                  <option value="12">Khối 12</option>
-                </select>
-              </div>
+              <CustomSelect
+                value={selectedGrade}
+                onChange={setSelectedGrade}
+                icon={GraduationCap}
+                options={[
+                  { value: 'all', label: 'Tất cả Khối' },
+                  { value: '10', label: 'Khối 10' },
+                  { value: '11', label: 'Khối 11' },
+                  { value: '12', label: 'Khối 12' }
+                ]}
+              />
 
               {/* Select Giảng viên */}
-              <div className="flex items-center gap-1.5 bg-white/90 border border-orange-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all flex-1 md:flex-none">
-                <User size={14} className="text-amber-600 flex-shrink-0" />
-                <select
-                  value={selectedTeacher}
-                  onChange={(e) => setSelectedTeacher(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer max-w-[130px] truncate"
-                >
-                  <option value="all">Tất cả Giảng viên</option>
-                  {teachersList.map(tName => (
-                    <option key={tName} value={tName}>{tName}</option>
-                  ))}
-                </select>
-              </div>
+              <CustomSelect
+                value={selectedTeacher}
+                onChange={setSelectedTeacher}
+                icon={User}
+                options={[
+                  { value: 'all', label: 'Tất cả Giảng viên' },
+                  ...teachersList.map(tName => ({ value: tName, label: tName }))
+                ]}
+              />
             </div>
           </div>
         </div>

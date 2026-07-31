@@ -10,6 +10,8 @@ import AdminView from './views/AdminView';
 
 import { getTestByCode } from './lib/supabase';
 
+import Footer from './components/ui/Footer';
+
 export default function App() {
   const { view, setView, setCurrentTest, student } = useAppStore();
 
@@ -38,23 +40,27 @@ export default function App() {
 
   return (
     <>
-      {view === 'login'        && <LoginView onSwitchTeacher={() => setView('teacher-auth')} />}
-      {view === 'test-select'   && <TestSelectView onSwitchTeacher={() => setView('teacher-auth')} />}
-      {view === 'test'          && <TestView />}
-      {view === 'review'        && <TestView isReviewMode={true} />}
-      {view === 'teacher-auth'  && <TeacherAuthView onSwitchStudent={() => setView('login')} />}
-      {view === 'teacher'       && <TeacherView onSwitchStudent={() => setView('login')} />}
-      {view === 'admin'         && <AdminView onExit={() => setView('login')} />}
-      {view === 'result'        && (
-        <div className="relative min-h-screen overflow-hidden">
-          <div className="filter blur-[6px] pointer-events-none select-none opacity-75">
-            <TestView />
+      <div className="pb-10">
+        {view === 'login'        && <LoginView onSwitchTeacher={() => setView('teacher-auth')} />}
+        {view === 'test-select'   && <TestSelectView onSwitchTeacher={() => setView('teacher-auth')} />}
+        {view === 'test'          && <TestView />}
+        {view === 'review'        && <TestView isReviewMode={true} />}
+        {view === 'teacher-auth'  && <TeacherAuthView onSwitchStudent={() => setView('login')} />}
+        {view === 'teacher'       && <TeacherView onSwitchStudent={() => setView('login')} />}
+        {view === 'admin'         && <AdminView onExit={() => setView('login')} />}
+        {view === 'result'        && (
+          <div className="relative min-h-screen overflow-hidden">
+            <div className="filter blur-[6px] pointer-events-none select-none opacity-75">
+              <TestView />
+            </div>
+            <div className="fixed inset-0 z-50 overflow-y-auto">
+              <ResultView />
+            </div>
           </div>
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <ResultView />
-          </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      <Footer />
     </>
   );
 }

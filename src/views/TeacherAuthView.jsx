@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, LogIn, ArrowLeft, Lock, Mail, AlertCircle, CheckCircle2, UserCheck, KeyRound } from 'lucide-react';
+import { ShieldCheck, LogIn, ArrowLeft, Lock, Mail, AlertCircle, UserCheck, KeyRound } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 import { signInWithGoogle, getCurrentTeacher, isValidTeacherEmail, upsertTeacherProfile } from '../lib/auth';
 import { isRealSupabaseConfigured } from '../lib/supabase';
@@ -70,38 +70,38 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-950 flex items-center justify-center p-4 text-slate-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/40 via-[#F8FAFC] to-amber-50/40 flex items-center justify-center p-4 text-gray-800 relative overflow-hidden">
       {/* Background blobs */}
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
       <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse delay-500" />
 
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-700/80 rounded-3xl p-8 shadow-2xl relative z-10 animate-slide-up">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl border border-orange-100/90 relative z-10 animate-slide-up">
         {/* Header Branding */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-orange-500/30">
-            <ShieldCheck size={36} />
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 mx-auto mb-3 shadow-sm">
+            <ShieldCheck size={36} strokeWidth={1.5} />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight uppercase">
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
             CỔNG GIÁO VIÊN FPT
           </h1>
-          <p className="text-xs text-orange-400 font-semibold mt-1">
-            Hệ Thống Quản Lý & Tải Đề Ôn Tập Trực Tuyến
+          <p className="text-xs text-orange-600 font-semibold mt-1">
+            Hệ Thống Quản Lý &amp; Tải Đề Ôn Tập Trực Tuyến
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-3.5 bg-red-950/80 border border-red-800 text-red-300 rounded-xl text-xs flex items-start gap-2 animate-slide-down">
-            <AlertCircle size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 p-3.5 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs flex items-start gap-2 animate-slide-down">
+            <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Google OAuth Login Section */}
-        <div className="space-y-4">
+        <div className="space-y-4 text-left">
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm rounded-2xl shadow-lg transition-all duration-200 flex items-center justify-center gap-3 cursor-pointer group active:scale-[0.98]"
+            className="w-full py-3.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/90 font-extrabold text-sm rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-3 cursor-pointer group active:scale-[0.98]"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -112,74 +112,74 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
             <span>Đăng Nhập Bằng Email Google FPT</span>
           </button>
 
-          <div className="text-[11px] text-center text-slate-400 font-medium px-2 flex items-center justify-center gap-1">
-            <Lock size={12} className="text-orange-400" />
-            <span>Chỉ chấp nhận tài khoản có đuôi <strong>@fpt.edu.vn</strong></span>
+          <div className="text-[11px] text-center text-gray-500 font-medium px-2 flex items-center justify-center gap-1">
+            <Lock size={12} className="text-orange-500" />
+            <span>Chỉ chấp nhận tài khoản có đuôi <strong className="text-gray-800">@fpt.edu.vn</strong></span>
           </div>
 
           <div className="relative my-6 text-center">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-700"></div></div>
-            <span className="relative bg-slate-900 px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hoặc Nhập Thủ Công (Thử Nghiệm)</span>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+            <span className="relative bg-white px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Hoặc Nhập Thủ Công (Thử Nghiệm)</span>
           </div>
 
           {/* Manual Email Input Fallback */}
           <div className="space-y-3">
             <div>
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Email Giảng Viên (@fpt.edu.vn)</label>
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Email Giảng Viên (@fpt.edu.vn)</label>
               <div className="relative">
                 <input
                   type="email"
-                  className="w-full bg-slate-800 border border-slate-700 focus:border-orange-500 text-white text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-orange-500 focus:bg-white text-gray-900 text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none transition-all"
                   placeholder="nguyenvana@fpt.edu.vn"
                   value={manualEmail}
                   onChange={e => { setManualEmail(e.target.value); setError(''); }}
                   onKeyDown={e => e.key === 'Enter' && handleManualLogin()}
                 />
-                <Mail size={15} className="absolute left-3 top-3.5 text-slate-400" />
+                <Mail size={15} className="absolute left-3 top-3.5 text-gray-400" />
               </div>
             </div>
 
             <div>
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Họ Và Tên Giảng Viên</label>
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Họ Và Tên Giảng Viên</label>
               <div className="relative">
                 <input
                   type="text"
-                  className="w-full bg-slate-800 border border-slate-700 focus:border-orange-500 text-white text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-orange-500 focus:bg-white text-gray-900 text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none transition-all"
                   placeholder="Cô Nguyễn Thị Lan"
                   value={manualName}
                   onChange={e => setManualName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleManualLogin()}
                 />
-                <UserCheck size={15} className="absolute left-3 top-3.5 text-slate-400" />
+                <UserCheck size={15} className="absolute left-3 top-3.5 text-gray-400" />
               </div>
             </div>
 
             <button
               onClick={handleManualLogin}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-md shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <LogIn size={14} />
+              <LogIn size={15} />
               <span>Vào Trang Quản Lý Đề Ôn Tập</span>
             </button>
           </div>
 
           {/* Admin Login Toggle */}
-          <div className="pt-4 border-t border-slate-800 text-center">
+          <div className="pt-4 border-t border-slate-100 text-center">
             {!showAdminPass ? (
               <button
                 onClick={() => setShowAdminPass(true)}
-                className="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center justify-center gap-1.5 mx-auto transition-colors"
+                className="text-xs text-orange-600 hover:text-orange-700 font-bold flex items-center justify-center gap-1.5 mx-auto transition-colors"
               >
                 <KeyRound size={13} />
                 <span>Đăng nhập dành cho Quản trị viên (Web Admin)</span>
               </button>
             ) : (
               <div className="space-y-2 animate-slide-down">
-                <label className="text-[11px] font-bold text-orange-400 uppercase tracking-wider block">Mật khẩu Web Admin</label>
+                <label className="text-[11px] font-bold text-orange-600 uppercase tracking-wider block">Mật khẩu Web Admin</label>
                 <div className="flex gap-2">
                   <input
                     type="password"
-                    className="flex-1 bg-slate-800 border border-orange-500/50 text-white text-xs h-9 px-3 rounded-xl focus:outline-none"
+                    className="flex-1 bg-slate-50 border border-orange-300 text-gray-900 text-xs h-9 px-3 rounded-xl focus:border-orange-500 focus:outline-none font-medium"
                     placeholder="Nhập mật khẩu Admin..."
                     value={adminPass}
                     onChange={e => setAdminPass(e.target.value)}
@@ -187,7 +187,7 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
                   />
                   <button
                     onClick={handleAdminLogin}
-                    className="px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                    className="px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
                   >
                     Vào Admin
                   </button>
@@ -201,7 +201,7 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
         <div className="mt-6 text-center">
           <button
             onClick={onSwitchStudent}
-            className="text-xs text-slate-400 hover:text-white transition-colors flex items-center justify-center gap-1.5 mx-auto font-medium"
+            className="text-xs text-gray-500 hover:text-orange-600 transition-colors flex items-center justify-center gap-1.5 mx-auto font-bold"
           >
             <ArrowLeft size={13} />
             <span>Quay lại trang Học sinh</span>

@@ -374,13 +374,16 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
                 HỆ THỐNG ÔN TẬP FPT SCHOOLS
               </h1>
+              <p className="text-[11px] text-orange-600 font-bold tracking-wide">
+                Trang dành cho Giáo viên
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Teacher Profile Badge */}
             {teacherSession && (
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
                 <div className="w-5 h-5 rounded-full bg-orange-600 text-white font-bold flex items-center justify-center text-[10px]">
                   {teacherSession.name ? teacherSession.name.charAt(0).toUpperCase() : 'G'}
                 </div>
@@ -390,20 +393,6 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 </div>
               </div>
             )}
-
-            <button
-              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl shadow-xs cursor-pointer"
-              onClick={() => setShowSupabaseModal(true)}
-            >
-              <Database size={13} /> CSDL
-            </button>
-
-            <button
-              className="btn btn-sm bg-slate-100 hover:bg-slate-200 text-slate-700 border-none font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
-              onClick={onSwitchStudent}
-            >
-              <Users size={13} /> Trang Học Sinh
-            </button>
 
             <button
               className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"

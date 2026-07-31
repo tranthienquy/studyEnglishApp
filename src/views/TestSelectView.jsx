@@ -69,22 +69,33 @@ export default function TestSelectView({ onSwitchTeacher }) {
       {/* ── Top Header Navigation Bar (Synchronized with Teacher View) ── */}
       <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-xs sticky top-0 z-30 mb-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Left: Brand Icon + Gradient Title */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-500/20">
-              {student?.name ? student.name.charAt(0).toUpperCase() : 'H'}
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+              <BookOpen size={20} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <p className="font-bold text-gray-900 text-sm">{student?.name || 'Học sinh'}</p>
+              <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
+                HỆ THỐNG ÔN TẬP FPT SCHOOLS
+              </h1>
+            </div>
+          </div>
+
+          {/* Right: Student Info + Change Info Button + Switch Role */}
+          <div className="flex items-center gap-3">
+            {/* Student Info Badge */}
+            <div className="hidden sm:flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-1.5 text-xs font-semibold">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold flex items-center justify-center text-xs">
+                {student?.name ? student.name.charAt(0).toUpperCase() : 'H'}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-gray-900 font-bold text-xs">{student?.name || 'Học sinh'}</span>
                 <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100">
                   Lớp {student?.class || '12A1'}
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400">Hệ thống ôn luyện trực tuyến</p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
             <button
               className="btn btn-xs sm:btn-sm bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 font-bold text-xs gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
               onClick={() => setView('login')}

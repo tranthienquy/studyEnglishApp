@@ -109,13 +109,6 @@ export default function TestSelectView({ onSwitchTeacher }) {
               <LogOut size={13} />
               <span className="hidden sm:inline">Đổi thông tin</span>
             </button>
-            <button
-              className="btn btn-xs sm:btn-sm bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200/80 font-bold text-xs gap-1.5 px-3.5 py-1.5 rounded-xl cursor-pointer transition-colors shadow-2xs"
-              onClick={onSwitchTeacher}
-            >
-              <ShieldCheck size={14} className="text-orange-600" />
-              <span>Giáo viên</span>
-            </button>
           </div>
         </div>
       </header>

@@ -684,7 +684,7 @@ export default function TeacherView({ onSwitchStudent }) {
 
           {/* 3. Navigation Tabs Bar (Chỉnh sửa trực tiếp, Xem trước & Bảng kết quả) */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="flex border-b border-gray-200 bg-gray-50/50 px-2 pt-2 flex-wrap">
+            <div className="flex border-b border-gray-200 bg-gray-50/50 px-2 pt-2 flex-wrap items-center">
               <button
                 className={`px-5 py-3 text-xs font-bold transition-all border-b-2 gap-2 flex items-center cursor-pointer ${
                   mainTab === 'edit'
@@ -720,6 +720,21 @@ export default function TeacherView({ onSwitchStudent }) {
                 <FileSpreadsheet size={14} className="text-emerald-600" />
                 <span>Tải Excel ({submissions.length})</span>
               </button>
+
+              {/* Save button — pinned to the right of the tab bar */}
+              {mainTab === 'edit' && (
+                <div className="ml-auto flex items-center gap-2 pb-1 pr-1">
+                  {savedMsg && <span className="text-xs font-bold text-emerald-600">{savedMsg}</span>}
+                  <button
+                    className="btn btn-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs px-4 gap-1.5 shadow-md shadow-orange-500/20"
+                    onClick={handleSaveTest}
+                    disabled={saving}
+                  >
+                    {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+                    Lưu chỉnh sửa
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* TAB 1: CHỈNH SỬA TRỰC TIẾP ĐỀ THI */}
@@ -863,25 +878,13 @@ export default function TeacherView({ onSwitchStudent }) {
                 </div>
 
                 {/* Action Controls Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-start pt-4 border-t border-gray-200">
                   <button
                     className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold rounded-xl text-xs gap-1.5"
                     onClick={addNewSection}
                   >
                     <PlusCircle size={14} /> Thêm phần đọc mới (Section)
                   </button>
-
-                  <div className="flex items-center gap-3">
-                    {savedMsg && <span className="text-xs font-bold text-emerald-600">{savedMsg}</span>}
-                    <button
-                      className="btn btn-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs px-6 gap-1.5 shadow-md shadow-orange-500/20"
-                      onClick={handleSaveTest}
-                      disabled={saving}
-                    >
-                      {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                      Lưu bài thi lên hệ thống
-                    </button>
-                  </div>
                 </div>
               </div>
             )}

@@ -61,16 +61,16 @@ export default function TestSelectView({ onSwitchTeacher }) {
   });
 
   return (
-    <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 relative z-10 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/30 via-[#F8FAFC] to-amber-50/40 text-gray-800 font-sans pb-12 relative z-10">
       {/* Animated Background Glow Blobs */}
       <div className="absolute top-10 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000" />
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000 delay-500" />
 
-      <div className="max-w-6xl mx-auto">
-        {/* Top Header / Profile Bar */}
-        <div className="bg-white/80 backdrop-blur-xl border border-white/80 shadow-xs rounded-2xl p-3.5 sm:px-5 flex items-center justify-between mb-8 transition-all hover:shadow-md">
+      {/* ── Top Header Navigation Bar (Synchronized with Teacher View) ── */}
+      <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-xs sticky top-0 z-30 mb-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-500/20">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-500/20">
               {student?.name ? student.name.charAt(0).toUpperCase() : 'H'}
             </div>
             <div>
@@ -101,7 +101,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
             </button>
           </div>
         </div>
+      </header>
 
+      <main className="max-w-7xl mx-auto px-6">
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
@@ -266,7 +268,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
             })}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

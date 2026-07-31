@@ -45,10 +45,15 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
     }
   }, [showVocab]);
 
-  // Close tooltip on outside click
+  // Close tooltip on outside click (outside both tooltip popup and passage container)
   useEffect(() => {
     const handleClick = (e) => {
-      if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(e.target) &&
+        passageRef.current &&
+        !passageRef.current.contains(e.target)
+      ) {
         setTooltip(t => ({ ...t, visible: false }));
       }
     };
@@ -189,19 +194,23 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
     }
 
     // 3. Normal mode: Tooltip translation (positioned directly adjacent to selected text & cursor)
-    if (text.length <= 300) {
+    const cleanWord = text.replace(/^[\(\[\{\s\d.,;:'"!?-]+|[\)\]\}\s.,;:'"!?-]+$/g, '').trim() || text;
+
+    if (cleanWord.length <= 300) {
       if (!passageRef.current) return;
       const containerRect = passageRef.current.getBoundingClientRect();
       const range = sel.getRangeAt(0);
       const rect = range.getBoundingClientRect();
+
+      if (rect.width === 0 && rect.height === 0) return;
 
       // Middle top of selected text
       let rawX = (rect.left + rect.width / 2) - containerRect.left;
       let rawY = rect.top - containerRect.top - 10;
       let placement = 'top';
 
-      // If selection is too close to top of passage box (< 180px available)
-      if (rect.top - containerRect.top < 180) {
+      // If selection is too close to top of passage box (< 160px available)
+      if (rect.top - containerRect.top < 160) {
         placement = 'bottom';
         rawY = rect.bottom - containerRect.top + 10;
       }
@@ -219,7 +228,8 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
 
       setTooltip({
         visible: true,
-        word: text,
+        word: cleanWord,
+        rawText: text,
         x: clampedX,
         y: rawY,
         placement,
@@ -228,8 +238,13 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
         text: ''
       });
 
-      const translated = await translateWithGoogle(text);
-      setTooltip(prev => ({ ...prev, loading: false, text: translated }));
+      const translated = await translateWithGoogle(cleanWord);
+      setTooltip(prev => {
+        if (prev.word === cleanWord && prev.visible) {
+          return { ...prev, loading: false, text: translated };
+        }
+        return prev;
+      });
     }
   }, [activeTool, activeColor, activeTab]);
 

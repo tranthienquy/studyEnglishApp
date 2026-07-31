@@ -83,14 +83,15 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
           {/* Right: Student Info + Change Info Button + Switch Role */}
           <div className="flex items-center gap-3">
-            {/* Student Info Badge */}
-            <div className="hidden sm:flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-1.5 text-xs font-semibold">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold flex items-center justify-center text-xs">
+            {/* Student Info */}
+            <div className="hidden sm:flex items-center gap-2 text-xs">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold flex items-center justify-center text-xs flex-shrink-0 shadow-2xs">
                 {student?.name ? student.name.charAt(0).toUpperCase() : 'H'}
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-gray-900 font-bold text-xs">{student?.name || 'Học sinh'}</span>
-                <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100">
+                <span className="text-gray-500 font-medium">Xin chào,</span>
+                <span className="text-gray-900 font-extrabold">{student?.name || 'Học sinh'}</span>
+                <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100/90 ml-0.5">
                   Lớp {student?.class || '12A1'}
                 </span>
               </div>

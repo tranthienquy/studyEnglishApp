@@ -450,7 +450,7 @@ function isQuestionStart(plain) {
 /**
  * FORMAT 2: Single line with all 4 options inline
  * "Question 7: A. range   B. share   C. level   D. number"
- * Returns parsed question or null if can't find ≥2 options on this line
+ * Returns parsed question ONLY if all 4 options are found on this single line.
  */
 function tryParseInlineLine(lineObj, defaultNo) {
   const plain = lineObj?.plain;
@@ -460,17 +460,16 @@ function tryParseInlineLine(lineObj, defaultNo) {
   const optMatches = plain.match(/\b[A-D][\.\)\:]\s*/g) || [];
   if (optMatches.length < 2) return null;
 
-  const qNoMatch = plain.match(/(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]/i);
   const qMatch = plain.match(/^(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]\s*(.*)/i);
   if (!qMatch) return null;
 
   const qNo = parseInt(qMatch[1], 10);
   const rest = qMatch[2].trim();
-  // inline line means it has at least A. and B. (or A) / B) / A: / B:)
+
   if (/(?:^|\s|\t)A[\.\)\:]/i.test(rest) && /(?:^|\s|\t)B[\.\)\:]/i.test(rest)) {
     const { options, correct } = extractOptionsFromLine(lineObj.html);
-    if (options.length >= 2) {
-      // Find the prompt text before A.
+    // Only accept as complete single-line inline question if ALL 4 options (A,B,C,D) are present on this line!
+    if (options.length === 4) {
       let promptText = rest;
       const firstOptMatch = rest.match(/(?:^|\s|\t)A[\.\)\:]/i);
       if (firstOptMatch) {
@@ -481,7 +480,7 @@ function tryParseInlineLine(lineObj, defaultNo) {
         id: `q-${qNo}-${Date.now()}`,
         no: qNo,
         text: promptText || `Question ${qNo}.`,
-        options: options.slice(0, 4),
+        options,
         correct,
         explanation: `Đáp án đúng là ${correct}.`,
       };
@@ -491,74 +490,67 @@ function tryParseInlineLine(lineObj, defaultNo) {
 }
 
 /**
- * FORMAT 1 / FORMAT 3: Question block = question line + following option lines
- * Question 18:
- * A. because it deepens trust...
- * B. so it proves screen time...  (plain text, not inline)
- * C. although trust...
- * D. but it often reflects...   ← <mark>highlighted</mark>
+ * FORMAT 1 / FORMAT 3 / Multi-line inline: Question block = question line + following option lines
+ * Handles:
+ * - Options on separate lines (1 option per line)
+ * - 2 options per line (A & B on line 1, C & D on line 2)
+ * - Dialogue arrangement sub-items (a., b., c.)
  */
 function parseQuestionBlock(blockLines, defaultNo) {
   if (blockLines.length === 0) return null;
 
   const firstPlain = blockLines[0].plain;
+  const firstHtml  = blockLines[0].html || firstPlain;
+
   const qNoMatch   = firstPlain.match(/(?:Question|Câu|Q)\s*(\d+)\s*[:\.\)]/i);
   const qNo        = qNoMatch ? parseInt(qNoMatch[1], 10) : defaultNo;
 
   // Question text = everything after "Question N:" before first option
   let questionText = firstPlain.replace(/^(?:Question|Câu|Q)\s*\d+\s*[:\.\)]\s*/i, '').trim();
+  const firstOptMatch = questionText.match(/(?:^|\s|\t)[A-D][\.\)\:]\s*/i);
+  if (firstOptMatch) {
+    questionText = questionText.substring(0, firstOptMatch.index).trim();
+  }
 
   const options  = [];
   let correct    = 'A';
   let dialogueParts = []; // for FORMAT 3 (a. / b. / c. / d. / e. dialogue sub-lines)
   let contextParts  = []; // for context text like "Dear Olivia,..." in letter-format questions
 
+  // Check if first line itself contains options (e.g. "Question 2: A. text  B. text")
+  if (/(?:^|\s|\t)A[\.\)\:]/i.test(firstPlain)) {
+    const { options: firstLineOpts, correct: firstLineCorrect } = extractOptionsFromLine(firstHtml);
+    if (firstLineOpts.length > 0) {
+      options.push(...firstLineOpts);
+      if (isHighlightedHtml(firstHtml)) correct = firstLineCorrect;
+    }
+  }
+
   for (let i = 1; i < blockLines.length; i++) {
     const { html, plain } = blockLines[i];
 
     // FORMAT 3 dialogue/arrangement sub-item: lowercase letter + period "a. Ethan: ..."
-    // Range a-e to support questions with up to 5 sub-items (Q14-Q17)
-    // IMPORTANT: Only match lowercase a-e, NOT uppercase A-D (answer labels)
     if (/^[a-e]\.\s+/.test(plain) && /^[a-e]/.test(plain)) {
       dialogueParts.push(plain);
       continue;
     }
 
-    // Check if this line has MULTIPLE inline options (A. B. C. D. on same line)
-    // This happens for tab-separated option lines in arrangement questions:
-    //   "A. a – b – c	B. b – c – a	C. c – a – b	D. c – b – a"
-    const inlineOptCount = (plain.match(/(?:^|\s|\t)[A-D][\.\)\:]\s*/gi) || []).length;
-    if (inlineOptCount >= 2) {
-      const { options: inlineOpts, correct: inlineCorrect } = extractOptionsFromLine(html);
-      if (inlineOpts.length >= 2) {
-        options.push(...inlineOpts);
-        correct = inlineCorrect;
+    // Check if line has option markers (e.g. C. text  D. text OR single option A. text)
+    const optMatches = plain.match(/\b[A-D][\.\)\:]\s*/gi) || [];
+    if (optMatches.length >= 1) {
+      const { options: lineOpts, correct: lineCorrect } = extractOptionsFromLine(html);
+      if (lineOpts.length >= 1) {
+        options.push(...lineOpts);
+        if (isHighlightedHtml(html)) correct = lineCorrect;
         continue;
       }
     }
 
-    // Standard option line "A. text" or "A) text" (single option per line)
-    // CASE-SENSITIVE: Only match uppercase A-D to avoid confusion with
-    // lowercase dialogue items (a. b. c. d. e.) in arrangement questions
-    const optMatch = plain.trim().match(/^([A-D])[\.\)\:]\s*(.*)/);
-    if (optMatch) {
-      const letter = optMatch[1];
-      const rawText = optMatch[2].trim();
-      const isHighlighted = isHighlightedHtml(html);
-      if (isHighlighted) correct = letter;
-      options.push(rawText);
-      continue;
-    }
-
-    // Context text for arrangement questions (e.g. "Dear Olivia,...", "Best wishes, Nathan")
-    // This is text that appears between Question line and dialogue items or after them,
-    // but is NOT a dialogue item and NOT an option
+    // Context text for arrangement questions
     if (options.length === 0 && !isQuestionStart(plain)) {
       if (dialogueParts.length === 0) {
-        // Context text before dialogue items → add to question text
         contextParts.push(plain);
       } else {
-        // Context text after dialogue items (e.g. closing of a letter)
         contextParts.push(plain);
       }
       continue;
@@ -574,18 +566,15 @@ function parseQuestionBlock(blockLines, defaultNo) {
   if (dialogueParts.length > 0 && options.length > 0) {
     const allParts = [];
     if (contextParts.length > 0) {
-      // Insert context before dialogue items (e.g. "Dear Olivia,...")
-      // Split: context lines before first dialogue = prefix, after last dialogue = suffix
       allParts.push(...contextParts);
     }
     allParts.push(...dialogueParts);
     questionText += '\n' + allParts.join('\n');
   } else if (contextParts.length > 0 && options.length === 0) {
-    // Pure context text without dialogue — append to question text
     questionText += '\n' + contextParts.join('\n');
   }
 
-  // If no options found, try parsing any line in blockLines as inline options
+  // Fallback inline check if still missing options
   if (options.length < 2) {
     for (const bLine of blockLines) {
       const inlineResult = tryParseInlineLine(bLine, qNo);

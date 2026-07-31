@@ -210,58 +210,58 @@ export default function TestSelectView({ onSwitchTeacher }) {
                 <div
                   key={t.id || t.code}
                   style={{ animationDelay: `${index * 60}ms` }}
-                  className="bg-gradient-to-br from-orange-50/90 via-white to-amber-50/70 backdrop-blur-2xl rounded-3xl p-6 border border-orange-200/70 hover:border-orange-400/80 shadow-md hover:shadow-2xl hover:shadow-orange-500/15 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden animate-fade-in"
+                  className="bg-gradient-to-br from-orange-50/90 via-white to-amber-50/70 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-orange-200/70 hover:border-orange-400/80 shadow-xs hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 relative overflow-hidden animate-fade-in"
                 >
                   {/* Top Radiant Accent Bar */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-300 rounded-t-3xl opacity-90 group-hover:h-2 transition-all" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-300 rounded-t-2xl opacity-90 group-hover:h-1.5 transition-all" />
 
                   <div>
                     {/* Top Badge Tag */}
-                    <div className="flex items-center justify-between mb-3 pt-1">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100/80 border border-orange-200 text-orange-800 text-[11px] font-extrabold uppercase tracking-wider shadow-2xs">
-                        <BookOpen size={11} className="text-orange-600" />
+                    <div className="flex items-center justify-between mb-2.5 pt-0.5">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-100/80 border border-orange-200/90 text-orange-800 text-[10px] font-extrabold uppercase tracking-wider shadow-2xs">
+                        <BookOpen size={10} className="text-orange-600" />
                         <span>{t.subject || 'TIẾNG ANH'}</span>
                       </span>
                     </div>
 
                     {/* Title (Tên chủ đề radiant hover) */}
-                    <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-4">
+                    <h3 className="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-3">
                       {t.title}
                     </h3>
 
                     {/* Meta Stats Box (Radiant Cam Trắng) */}
-                    <div className="grid grid-cols-2 gap-2.5 bg-gradient-to-r from-orange-100/60 to-amber-100/50 backdrop-blur-sm p-3 rounded-2xl border border-orange-200/60 mb-4 shadow-2xs">
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                        <div className="w-6 h-6 rounded-lg bg-orange-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
-                          <Clock size={13} />
+                    <div className="grid grid-cols-2 gap-2 bg-gradient-to-r from-orange-100/60 to-amber-100/50 backdrop-blur-sm p-2.5 rounded-xl border border-orange-200/60 mb-3 shadow-2xs">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                        <div className="w-5 h-5 rounded-md bg-orange-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                          <Clock size={11} />
                         </div>
-                        <span>{t.duration || 50} phút</span>
+                        <span className="text-[11px] sm:text-xs">{t.duration || 50} phút</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                        <div className="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
-                          <FileText size={13} />
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                        <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                          <FileText size={11} />
                         </div>
-                        <span>{qCount} câu hỏi</span>
+                        <span className="text-[11px] sm:text-xs">{qCount} câu hỏi</span>
                       </div>
                     </div>
 
                     {/* Teacher & Upload Date Info */}
-                    <div className="space-y-2 mb-5">
+                    <div className="space-y-1.5 mb-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">
-                          <User size={12} />
+                        <div className="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center text-[9px] font-extrabold flex-shrink-0">
+                          <User size={11} />
                         </div>
-                        <span className="text-xs text-gray-500 font-medium truncate">
-                          Giáo viên: <strong className="text-slate-900 font-extrabold">{t.teacher || 'Cô Trang'}</strong>
+                        <span className="text-[11px] sm:text-xs text-gray-500 font-medium truncate">
+                          Giáo viên: <strong className="text-slate-900 font-bold">{t.teacher || 'Cô Trang'}</strong>
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-extrabold flex-shrink-0 border border-orange-200">
-                          <Sparkles size={12} />
+                        <div className="w-5 h-5 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[9px] font-extrabold flex-shrink-0 border border-orange-200">
+                          <Sparkles size={10} />
                         </div>
-                        <span className="text-xs text-gray-500 font-medium truncate">
-                          Ngày tải lên: <strong className="text-slate-900 font-extrabold">{dateDot}</strong>
+                        <span className="text-[11px] sm:text-xs text-gray-500 font-medium truncate">
+                          Ngày tải lên: <strong className="text-slate-900 font-bold">{dateDot}</strong>
                         </span>
                       </div>
                     </div>
@@ -269,10 +269,10 @@ export default function TestSelectView({ onSwitchTeacher }) {
 
                   {/* Primary Action Button (Radiant Orange-White) */}
                   <button
-                    className="w-full py-3.5 px-4 rounded-2xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-orange-500/30 group-hover:shadow-orange-500/50 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-2.5 px-3 rounded-xl text-xs font-black tracking-wider text-white bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 active:scale-[0.98] transition-all duration-200 shadow-md shadow-orange-500/25 group-hover:shadow-orange-500/40 flex items-center justify-center gap-1.5 cursor-pointer"
                     onClick={() => handleSelectTest(t)}
                   >
-                    <Play size={13} className="fill-white group-hover:translate-x-1 transition-transform" />
+                    <Play size={12} className="fill-white group-hover:translate-x-0.5 transition-transform" />
                     <span>VÀO LÀM BÀI THI TRỰC TUYẾN</span>
                   </button>
                 </div>

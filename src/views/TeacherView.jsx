@@ -333,12 +333,9 @@ export default function TeacherView({ onSwitchStudent }) {
               <BookOpen size={20} />
             </div>
             <div>
-              <h1 className="font-extrabold text-base tracking-tight text-gray-900 uppercase">
-                LUYỆN THI THPT QUỐC GIA
+              <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
+                HỆ THỐNG ÔN TẬP FPT SCHOOLS
               </h1>
-              <p className="text-[11px] font-semibold text-amber-600/80 tracking-wider">
-                HỆ THỐNG ĐỀ ÔN LUYỆN THÔNG MINH AI
-              </p>
             </div>
           </div>
 

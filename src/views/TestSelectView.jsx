@@ -47,9 +47,9 @@ export default function TestSelectView({ onSwitchTeacher }) {
     if (selectedGrade !== 'all') {
       const gStr = String(selectedGrade);
       matchesGrade = titleLower.includes(gStr) ||
-                     titleLower.includes(`khối ${gStr}`) ||
-                     titleLower.includes(`lớp ${gStr}`) ||
-                     String(t.grade) === gStr;
+        titleLower.includes(`khối ${gStr}`) ||
+        titleLower.includes(`lớp ${gStr}`) ||
+        String(t.grade) === gStr;
     }
 
     let matchesTeacher = true;
@@ -198,7 +198,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
             {filteredTests.map((t, index) => {
               const qCount = countTotalQuestions(t);
               const isCustom = String(t.id).startsWith('custom') || String(t.code).startsWith('TEST');
-              
+
               const d = t.created_at ? new Date(t.created_at) : new Date();
               const dateDot = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
 
@@ -221,7 +221,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-2.5">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug tracking-tight mb-2.5 uppercase">
                       {t.title}
                     </h3>
 

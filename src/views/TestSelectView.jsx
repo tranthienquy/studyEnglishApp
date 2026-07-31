@@ -103,11 +103,12 @@ export default function TestSelectView({ onSwitchTeacher }) {
             </div>
 
             <button
-              className="btn btn-xs sm:btn-sm bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 font-bold text-xs gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors"
+              className="h-7 px-2.5 rounded-lg text-[11px] font-semibold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs active:scale-[0.98]"
               onClick={() => setView('login')}
+              title="Nhấn để thay đổi tên hoặc lớp"
             >
-              <LogOut size={13} />
-              <span className="hidden sm:inline">Đổi thông tin</span>
+              <LogOut size={12} className="text-slate-500" />
+              <span>Đổi thông tin</span>
             </button>
           </div>
         </div>

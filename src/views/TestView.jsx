@@ -67,7 +67,7 @@ export default function TestView({ isReviewMode = false }) {
       <header className="bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between gap-4 flex-shrink-0">
         {/* Left: Brand Icon + Title */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0">
             <GraduationCap size={22} strokeWidth={1.5} />
           </div>
           <div className="min-w-0">
@@ -75,7 +75,7 @@ export default function TestView({ isReviewMode = false }) {
               {currentTest.title || 'Đề Thử Nghiệm Tốt Nghiệp THPT 2026'}
             </h1>
             <p className="text-xs text-gray-400 font-medium truncate">
-              Môn: <strong className="text-indigo-600">TIẾNG ANH</strong> &nbsp;•&nbsp; Giáo viên: <span className="text-gray-600">{currentTest.teacher || 'Ms. Trang - FSC3DN'}</span>
+              Môn: <strong className="text-orange-600">TIẾNG ANH</strong> &nbsp;•&nbsp; Giáo viên: <span className="text-gray-600">{currentTest.teacher || 'Ms. Trang - FSC3DN'}</span>
             </p>
           </div>
         </div>
@@ -84,11 +84,11 @@ export default function TestView({ isReviewMode = false }) {
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Candidate Tag */}
           <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-semibold">
-            <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold flex items-center justify-center text-xs">
               {student?.name ? student.name.charAt(0).toUpperCase() : 'T'}
             </div>
             <div className="text-left">
-              <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider block leading-none">THÍ SINH</span>
+              <span className="text-[10px] text-orange-600 font-bold uppercase tracking-wider block leading-none">THÍ SINH</span>
               <span className="text-gray-800 text-xs font-medium">{student?.name || 'Học sinh'} ({student?.class || 'N/A'})</span>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function TestView({ isReviewMode = false }) {
 
               {/* Submit Button (Electric Royal Blue) */}
               <button
-                className="btn btn-sm bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-indigo-500/20 gap-1.5"
+                className="btn btn-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-orange-500/20 gap-1.5"
                 onClick={() => setShowSubmitConfirm(true)}
               >
                 <span>Nộp Bài</span> <Send size={13} />
@@ -109,7 +109,7 @@ export default function TestView({ isReviewMode = false }) {
           ) : (
             <>
               {/* Static Time Spent */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-bold text-sm">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 font-bold text-sm border border-orange-100">
                 <Clock size={14} />
                 {Math.floor((useAppStore.getState().timeSpent || 0) / 60).toString().padStart(2, '0')}:
                 {((useAppStore.getState().timeSpent || 0) % 60).toString().padStart(2, '0')}
@@ -137,8 +137,8 @@ export default function TestView({ isReviewMode = false }) {
       </header>
 
       {/* ══ TOP ANNOUNCEMENT BAR ══ */}
-      <div className="bg-indigo-950 text-indigo-200 text-xs py-1.5 px-4 flex items-center justify-center gap-2 font-medium tracking-wide flex-shrink-0 text-center">
-        <Info size={14} className="text-indigo-400 flex-shrink-0" />
+      <div className="bg-slate-900 text-amber-200 text-xs py-1.5 px-4 flex items-center justify-center gap-2 font-medium tracking-wide flex-shrink-0 text-center">
+        <Info size={14} className="text-amber-400 flex-shrink-0" />
         <span>Mẹo học tập: Nhấp đúp chuột (Double-click) vào bất kỳ từ nào trong bài đọc, câu hỏi hoặc đáp án để xem nghĩa tiếng Việt ngay tức thì!</span>
       </div>
       {/* ══ FULL-WIDTH SUBNAV: Tabs (left) + Tools (right) ══ */}
@@ -281,7 +281,7 @@ function SubmitConfirmModal({ sections, onCancel, onConfirm }) {
   return (
     <div className="p-6 text-center relative overflow-hidden">
       {/* Top Send Icon Badge */}
-      <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-4 shadow-xs">
+      <div className="w-16 h-16 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 mx-auto mb-4 shadow-xs">
         <Send size={28} strokeWidth={1.75} className="translate-x-0.5" />
       </div>
 
@@ -289,13 +289,13 @@ function SubmitConfirmModal({ sections, onCancel, onConfirm }) {
       <h2 className="text-xl font-black text-gray-900 tracking-tight uppercase mb-1">
         XÁC NHẬN NỘP BÀI THI
       </h2>
-      <p className="text-xs text-indigo-600 font-semibold mb-5">
+      <p className="text-xs text-orange-600 font-semibold mb-5">
         Vui lòng kiểm tra kỹ trước khi nộp bài
       </p>
 
       {/* Metrics Summary Box */}
-      <div className="grid grid-cols-2 gap-3 bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 mb-5">
-        <div className="text-center p-2 border-r border-indigo-100/60">
+      <div className="grid grid-cols-2 gap-3 bg-orange-50/50 p-3 rounded-2xl border border-orange-100 mb-5">
+        <div className="text-center p-2 border-r border-orange-100/60">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">ĐÃ LÀM</span>
           <p className="text-2xl font-black text-emerald-600 my-0.5">{done}/{total}</p>
           <span className="text-[10px] text-gray-400 font-medium">câu hỏi</span>
@@ -311,11 +311,11 @@ function SubmitConfirmModal({ sections, onCancel, onConfirm }) {
       <div className="mb-6">
         <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
           <span>Tiến độ hoàn thành</span>
-          <span className="text-indigo-600 font-bold">{pct}%</span>
+          <span className="text-orange-600 font-bold">{pct}%</span>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -330,7 +330,7 @@ function SubmitConfirmModal({ sections, onCancel, onConfirm }) {
           Quay lại làm tiếp
         </button>
         <button
-          className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-xl text-xs font-bold py-3 shadow-md shadow-indigo-500/25 cursor-pointer flex items-center justify-center gap-1.5"
+          className="btn bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-none rounded-xl text-xs font-bold py-3 shadow-md shadow-orange-500/25 cursor-pointer flex items-center justify-center gap-1.5"
           onClick={onConfirm}
         >
           <Send size={14} /> Xác nhận Nộp bài

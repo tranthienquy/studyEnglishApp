@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraduationCap, User, Users, ArrowRight, Clock, BookOpen, Minimize2 } from 'lucide-react';
+import { GraduationCap, User, Users, ArrowRight, Clock, BookOpen, ShieldCheck } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 
 export default function LoginView({ onSwitchTeacher }) {
@@ -98,14 +98,14 @@ export default function LoginView({ onSwitchTeacher }) {
 
             {/* Footer Switch to Teacher */}
             <div className="pt-3 border-t border-gray-100/90 text-center mt-3">
-              <button
-                className="inline-flex items-center justify-center gap-2 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50/80 hover:bg-orange-100 border border-orange-200/90 px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-[0.98] w-full"
-                onClick={onSwitchTeacher}
-                id="switch-teacher-btn"
-              >
-                <Minimize2 size={14} className="text-orange-600" />
-                <span>Trang dành cho Giáo viên</span>
-              </button>
+                <button
+                  className="w-full py-2.5 px-4 rounded-xl font-extrabold text-xs bg-gradient-to-r from-orange-50 via-amber-50 to-orange-100/90 hover:from-orange-100 hover:to-amber-100 text-orange-800 border border-orange-200/90 flex items-center justify-center gap-2 shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer active:scale-[0.98]"
+                  onClick={onSwitchTeacher}
+                  id="switch-teacher-btn"
+                >
+                  <ShieldCheck size={16} className="text-orange-600" />
+                  <span>Trang dành cho Giáo viên</span>
+                </button>
             </div>
           </div>
         </div>

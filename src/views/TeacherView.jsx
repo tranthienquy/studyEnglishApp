@@ -178,7 +178,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
     if (missingFields.length > 0) {
       setParseStatus('error');
-      setParseMsg('⚠️ Vui lòng nhập đầy đủ các thông tin bắt buộc trước khi tải file lên hệ thống!');
+      setParseMsg('Vui lòng nhập đầy đủ các thông tin bắt buộc trước khi tải file lên hệ thống!');
       setWarningModal({
         title: 'THÔNG BÁO BẮT BUỘC KHAI BÁO',
         message: 'Vui lòng điền đầy đủ các thông tin bắt buộc dưới đây trước khi tải file lên hệ thống:',
@@ -653,7 +653,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               {/* Download Word Template Button */}
               <div className="bg-amber-50/80 p-3 rounded-xl border border-amber-200/80 flex items-center justify-between gap-2">
                 <div>
-                  <div className="text-[11px] font-bold text-amber-900">File Word Mẫu Chuẩn FPT</div>
+                  <div className="text-[11px] font-bold text-amber-900">File Word Mẫu</div>
                   <div className="text-[10px] text-amber-700 font-medium">Môn {uploadSubject}</div>
                 </div>
                 <button

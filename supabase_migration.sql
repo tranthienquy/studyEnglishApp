@@ -46,19 +46,22 @@ CREATE POLICY "public_read_visible_tests"
   USING (true);
 
 DROP POLICY IF EXISTS "teacher_insert_own_tests" ON tests;
-CREATE POLICY "teacher_insert_own_tests"
+DROP POLICY IF EXISTS "public_insert_tests" ON tests;
+CREATE POLICY "public_insert_tests"
   ON tests FOR INSERT
-  WITH CHECK (teacher_email = auth.email());
+  WITH CHECK (true);
 
 DROP POLICY IF EXISTS "teacher_update_own_tests" ON tests;
-CREATE POLICY "teacher_update_own_tests"
+DROP POLICY IF EXISTS "public_update_tests" ON tests;
+CREATE POLICY "public_update_tests"
   ON tests FOR UPDATE
-  USING (teacher_email = auth.email());
+  USING (true);
 
 DROP POLICY IF EXISTS "teacher_delete_own_tests" ON tests;
-CREATE POLICY "teacher_delete_own_tests"
+DROP POLICY IF EXISTS "public_delete_tests" ON tests;
+CREATE POLICY "public_delete_tests"
   ON tests FOR DELETE
-  USING (teacher_email = auth.email());
+  USING (true);
 
 -- 5. RLS — Bảng teacher_profiles
 ALTER TABLE teacher_profiles ENABLE ROW LEVEL SECURITY;

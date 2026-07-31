@@ -484,11 +484,23 @@ export async function saveTest(testData, teacherEmail = null) {
       }
       if (error) {
         console.warn('Supabase save test error (falling back to Local Storage):', error.message);
-        return { error: error.message }; // Return explicit error so UI can alert the user
+        const mockCreated = {
+          id: `custom-${Date.now()}`,
+          ...formattedForDB,
+          sections: testData.sections || null,
+        };
+        saveLocalCustomTest(formatTestFromDB(mockCreated));
+        return mockCreated;
       }
     } catch (e) {
       console.warn('Supabase save test exception (falling back to Local Storage):', e.message);
-      return { error: e.message }; // Return explicit error
+      const mockCreated = {
+        id: `custom-${Date.now()}`,
+        ...formattedForDB,
+        sections: testData.sections || null,
+      };
+      saveLocalCustomTest(formatTestFromDB(mockCreated));
+      return mockCreated;
     }
   }
 

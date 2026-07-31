@@ -24,7 +24,7 @@ export default function LoginView({ onSwitchTeacher }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md relative z-10">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white relative z-10">
       <div className="w-full max-w-md animate-slide-up">
         {/* Card Modal */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl border border-white/80 text-center relative overflow-hidden">

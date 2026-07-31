@@ -90,7 +90,7 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
             CỔNG GIÁO VIÊN FPT
           </h1>
           <p className="text-xs text-orange-600 font-semibold mt-1">
-            Hệ Thống Quản Lý &amp; Tải Đề Ôn Tập Trực Tuyến
+            Hệ thống Quản lý tài liệu ôn tập trực tuyến
           </p>
         </div>
 

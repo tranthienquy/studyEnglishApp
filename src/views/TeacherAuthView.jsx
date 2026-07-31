@@ -114,58 +114,12 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
             </svg>
-            <span>Đăng Nhập Bằng Email Google FPT</span>
+            <span>Đăng nhập bằng email FPT</span>
           </button>
 
           <div className="text-[11px] text-center text-gray-500 font-medium px-2 flex items-center justify-center gap-1">
             <Lock size={12} className="text-orange-500" />
             <span>Chỉ chấp nhận tài khoản có đuôi <strong className="text-gray-800">@fpt.edu.vn</strong></span>
-          </div>
-
-          <div className="relative my-6 text-center">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
-            <span className="relative bg-white px-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Hoặc Nhập Thủ Công (Thử Nghiệm)</span>
-          </div>
-
-          {/* Manual Email Input Fallback */}
-          <div className="space-y-3">
-            <div>
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Email Giảng Viên (@fpt.edu.vn)</label>
-              <div className="relative">
-                <input
-                  type="email"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-orange-500 focus:bg-white text-gray-900 text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none transition-all"
-                  placeholder="nguyenvana@fpt.edu.vn"
-                  value={manualEmail}
-                  onChange={e => { setManualEmail(e.target.value); setError(''); }}
-                  onKeyDown={e => e.key === 'Enter' && handleManualLogin()}
-                />
-                <Mail size={15} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Họ Và Tên Giảng Viên</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-orange-500 focus:bg-white text-gray-900 text-sm h-11 pl-9 pr-3 rounded-xl font-medium focus:outline-none transition-all"
-                  placeholder="Cô Nguyễn Thị Lan"
-                  value={manualName}
-                  onChange={e => setManualName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleManualLogin()}
-                />
-                <UserCheck size={15} className="absolute left-3 top-3.5 text-gray-400" />
-              </div>
-            </div>
-
-            <button
-              onClick={handleManualLogin}
-              className="w-full py-3 px-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-md shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <LogIn size={15} />
-              <span>Vào Trang Quản Lý Đề Ôn Tập</span>
-            </button>
           </div>
 
           {/* Admin Login Toggle */}

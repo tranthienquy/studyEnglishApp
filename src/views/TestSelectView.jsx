@@ -126,7 +126,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
           </div>
 
           {/* ── UNIFIED SEARCH & FILTER BAR (Radiant Orange-White) ── */}
-          <div className="bg-gradient-to-r from-orange-100/90 via-white to-amber-100/80 backdrop-blur-xl border border-orange-200/90 shadow-md shadow-orange-500/5 rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg hover:shadow-orange-500/15">
+          <div className="relative z-30 bg-gradient-to-r from-orange-100/90 via-white to-amber-100/80 backdrop-blur-xl border border-orange-200/90 shadow-md shadow-orange-500/5 rounded-2xl p-2 sm:p-2.5 flex flex-col md:flex-row items-center gap-2.5 max-w-3xl mx-auto transition-all hover:shadow-lg hover:shadow-orange-500/15">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-500" />

@@ -31,12 +31,15 @@ export default function CustomSelect({
   }
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={containerRef}>
+    <div
+      className={`relative inline-block text-left ${isOpen ? 'z-50' : 'z-10'} ${className}`}
+      ref={containerRef}
+    >
       {/* Trigger Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-9 px-3 rounded-xl bg-white/95 border transition-all duration-200 flex items-center justify-between gap-2 text-xs font-bold cursor-pointer shadow-2xs select-none ${
+        className={`h-9 px-3 rounded-xl bg-white border transition-all duration-200 flex items-center justify-between gap-2 text-xs font-bold cursor-pointer shadow-2xs select-none ${
           isOpen
             ? 'border-orange-500 ring-2 ring-orange-500/20 text-orange-900 bg-white'
             : 'border-orange-200/90 text-gray-700 hover:border-orange-400 hover:bg-orange-50/40'
@@ -56,8 +59,8 @@ export default function CustomSelect({
 
       {/* Popover Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-1.5 w-48 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 border border-orange-100 shadow-xl shadow-orange-950/10 z-50 animate-in fade-in zoom-in-95 duration-150">
-          <div className="max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar">
+        <div className="absolute right-0 mt-1.5 w-48 bg-white/98 backdrop-blur-xl rounded-2xl p-1.5 border border-orange-200/90 shadow-2xl shadow-orange-950/20 z-[100] animate-in fade-in zoom-in-95 duration-150">
+          <div className="max-h-60 overflow-y-auto space-y-1 custom-scrollbar">
             {options.map((opt) => {
               const isSelected = String(opt.value) === String(value);
               return (
@@ -67,12 +70,12 @@ export default function CustomSelect({
                   onClick={() => handleSelect(opt.value)}
                   className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between gap-2 cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white font-extrabold shadow-xs shadow-orange-500/20'
-                      : 'text-gray-700 font-semibold hover:bg-orange-50 hover:text-orange-950'
+                      ? 'bg-orange-100/90 text-orange-950 font-extrabold border border-orange-200/80 shadow-2xs'
+                      : 'text-slate-700 font-semibold hover:bg-orange-50/80 hover:text-orange-900'
                   }`}
                 >
                   <span className="truncate">{opt.label}</span>
-                  {isSelected && <Check size={14} className="text-white flex-shrink-0" />}
+                  {isSelected && <Check size={14} className="text-orange-600 flex-shrink-0 font-bold" />}
                 </button>
               );
             })}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { BookOpen, Globe, X, Loader2 } from 'lucide-react';
+import { BookOpen, Globe, X, Loader2, Languages, ArrowRight } from 'lucide-react';
 import useAppStore from '../../stores/useAppStore';
 import { translateWithGoogle, extractVocabulary } from '../../lib/gemini';
 
@@ -205,12 +205,12 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
       let y = clientY - containerRect.top - 6;
       let alignLeft = false;
 
-      if (x + 210 > containerRect.width) {
+      if (x + 290 > containerRect.width) {
         x = clientX - containerRect.left - 6;
         alignLeft = true;
       }
 
-      setTooltip({ visible: true, x, y, alignLeft, loading: true, text: '' });
+      setTooltip({ visible: true, word: text, x, y, alignLeft, loading: true, text: '' });
       const translated = await translateWithGoogle(text);
       setTooltip(prev => ({ ...prev, loading: false, text: translated }));
     }
@@ -317,24 +317,66 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
           </div>
         )}
 
-        {/* Floating tooltip for selected text translation right next to cursor */}
+        {/* Floating popover tooltip for quick translation */}
         {tooltip.visible && (
           <div
             ref={tooltipRef}
-            className="rp-tooltip"
+            className="rp-tooltip-modal"
             style={{
               left: `${tooltip.x}px`,
               top: `${tooltip.y}px`,
               transform: tooltip.alignLeft ? 'translate(-100%, -100%)' : 'translate(0, -100%)',
             }}
           >
-            <div className="rp-tooltip-flag">🇻🇳</div>
-            {tooltip.loading ? (
-              <div className="rp-tooltip-loading"><Loader2 size={12} className="rp-spin" /> Đang dịch...</div>
-            ) : (
-              <div className="rp-tooltip-text">{tooltip.text}</div>
-            )}
-            <div className={`rp-tooltip-arrow ${tooltip.alignLeft ? 'right-3 left-auto' : 'left-3'}`} />
+            {/* Popover Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-2.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-orange-600">
+                <Languages size={14} className="text-orange-500" />
+                <span>Bản dịch nhanh của Google</span>
+              </div>
+              <button
+                className="w-5 h-5 rounded-full bg-slate-100 hover:bg-orange-100 text-slate-400 hover:text-orange-600 flex items-center justify-center transition-colors cursor-pointer"
+                onClick={() => setTooltip(t => ({ ...t, visible: false }))}
+                title="Đóng"
+              >
+                <X size={12} />
+              </button>
+            </div>
+
+            {/* Selected Word / Phrase */}
+            <div className="text-sm font-extrabold text-gray-900 mb-2 truncate max-w-full px-0.5" title={tooltip.word}>
+              "{tooltip.word || ''}"
+            </div>
+
+            {/* Translation Result Box */}
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-2.5 min-h-[44px] flex items-center">
+              {tooltip.loading ? (
+                <div className="flex items-center gap-2 text-xs font-semibold text-orange-600">
+                  <Loader2 size={13} className="animate-spin text-orange-500" />
+                  <span>Đang dịch nhanh...</span>
+                </div>
+              ) : (
+                <div className="text-gray-700 font-medium italic text-xs sm:text-sm leading-relaxed">
+                  {tooltip.text || 'Không tìm thấy bản dịch.'}
+                </div>
+              )}
+            </div>
+
+            {/* Footer link to Laban Dictionary */}
+            <div className="flex justify-end pt-0.5">
+              <a
+                href={`https://dict.laban.vn/find?type=1&query=${encodeURIComponent(tooltip.word || '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-bold text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1 transition-colors"
+              >
+                <span>Tra cứu chi tiết trên từ điển Laban</span>
+                <ArrowRight size={11} />
+              </a>
+            </div>
+
+            {/* Arrow indicator */}
+            <div className={`rp-tooltip-arrow ${tooltip.alignLeft ? 'right-4 left-auto' : 'left-4'}`} />
           </div>
         )}
       </div>

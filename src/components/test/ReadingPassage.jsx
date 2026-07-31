@@ -62,7 +62,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
   }, []);
 
   if (!sections || sections.length === 0) {
-    return <div className="p-8 text-gray-400 text-center">Chưa có nội dung đề thi.</div>;
+    return <div className="p-8 text-gray-400 text-center">Chưa có nội dung đề ôn tập.</div>;
   }
 
   const section = sections[activeTab];

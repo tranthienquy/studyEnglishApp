@@ -47,7 +47,7 @@ export default function TestView({ isReviewMode = false }) {
       teacher: currentTest?.teacher || 'Cô Trang',
       test_id: currentTest?.id || currentTest?.code || '',
       test_code: currentTest?.code || '',
-      test_title: currentTest?.title || 'Đề thi',
+      test_title: currentTest?.title || 'Đề ôn tập',
       score: result?.score || 0,
       correct_count: `${result?.correctCount || 0}/${result?.totalQuestions || 40}`,
       time_spent: timeSpentFormatted,
@@ -57,7 +57,7 @@ export default function TestView({ isReviewMode = false }) {
 
   if (!currentTest) {
     setTimeout(() => useAppStore.getState().setView('test-select'), 0);
-    return <div className="flex h-screen items-center justify-center text-slate-500">Đang tải đề thi...</div>;
+    return <div className="flex h-screen items-center justify-center text-slate-500">Đang tải đề ôn tập...</div>;
   }
 
   return (
@@ -209,7 +209,7 @@ export default function TestView({ isReviewMode = false }) {
           className={`tv-switch-btn ${mobilePanel === 'passage' ? 'active' : ''}`}
           onClick={() => setMobilePanel('passage')}
         >
-          📄 Đề thi
+          📄 Đề ôn tập
         </button>
         <button
           className={`tv-switch-btn ${mobilePanel === 'questions' ? 'active' : ''}`}

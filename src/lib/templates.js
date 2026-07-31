@@ -83,7 +83,7 @@ function generatePassageTemplate(subject) {
 - Hệ thống sẽ tự động nhận dạng theo cấu trúc này khi upload<br>
 ════════════════════════════════════════════════════════</p>
 
-<h2>THÔNG TIN ĐỀ THI</h2>
+<h2>THÔNG TIN ĐỀ ÔN TẬP</h2>
 <table>
   <tr><th>Tiêu đề bài thi</th><td><span class="field">[VD: UNIT 1 - FAMILY LIFE (Phần 1)]</span></td></tr>
   <tr><th>Môn học</th><td>${subject}</td></tr>
@@ -178,7 +178,7 @@ function generateMCQTemplate(subject) {
 - Hệ thống sẽ tự động nhận dạng khi upload<br>
 ════════════════════════════════════════════════════════</p>
 
-<h2>THÔNG TIN ĐỀ THI</h2>
+<h2>THÔNG TIN ĐỀ ÔN TẬP</h2>
 <table>
   <tr><th>Tiêu đề bài thi</th><td><span class="field">[VD: CHƯƠNG 1 - ĐẠO HÀM (Phần 1)]</span></td></tr>
   <tr><th>Môn học</th><td>${subject}</td></tr>

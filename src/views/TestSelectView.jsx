@@ -137,7 +137,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-500" />
               <input
                 type="text"
-                placeholder="Tìm kiếm đề thi theo tên..."
+                placeholder="Tìm kiếm đề ôn tập theo tên..."
                 className="w-full bg-white/90 hover:bg-white focus:bg-white border border-orange-200/80 rounded-xl pl-9 pr-16 py-2 text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -203,11 +203,11 @@ export default function TestSelectView({ onSwitchTeacher }) {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
             <Loader2 size={32} className="animate-spin text-orange-600" />
-            <p className="text-xs font-semibold">Đang tải danh sách đề thi...</p>
+            <p className="text-xs font-semibold">Đang tải danh sách đề ôn tập...</p>
           </div>
         ) : filteredTests.length === 0 ? (
           <div className="text-center py-20 text-gray-400 space-y-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-dashed border-orange-200">
-            <p className="text-base font-bold text-gray-600">Không tìm thấy đề thi phù hợp.</p>
+            <p className="text-base font-bold text-gray-600">Không tìm thấy đề ôn tập phù hợp.</p>
             <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giảng viên hoặc tìm kiếm với từ khóa khác.</p>
             <button
               onClick={() => { setSearchTerm(''); setSelectedGrade('all'); setSelectedTeacher('all'); }}

@@ -55,7 +55,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const [editingTest, setEditingTest] = useState({
     id: 'test-10',
     code: 'ENG2025A',
-    title: 'ĐỀ THI TRÍCH XUẤT TỪ: ĐỀ 10',
+    title: 'ĐỀ ÔN TẬP TRÍCH XUẤT TỪ: ĐỀ 10',
     subject: 'TIẾNG ANH',
     duration: 50,
     teacher: 'Cô Trang',
@@ -156,7 +156,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     setEditingTest({
       id: t.id || t.code,
       code: t.code || 'ENG2025A',
-      title: t.title || 'Đề thi trích xuất từ: ĐỀ 10',
+      title: t.title || 'Đề ôn tập trích xuất từ: ĐỀ 10',
       subject: t.subject || 'TIẾNG ANH',
       duration: t.duration || 50,
       teacher: t.teacher || 'Cô Trang',
@@ -201,7 +201,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       }
 
       if (parsed && parsed.sections && parsed.sections.length > 0) {
-        const newTitle = uploadTitle.trim() || parsed.title || `Đề thi trích xuất từ ${file.name.replace(/\.[^/.]+$/, '')}`;
+        const newTitle = uploadTitle.trim() || parsed.title || `Đề ôn tập trích xuất từ ${file.name.replace(/\.[^/.]+$/, '')}`;
         const newCode = parsed.code || `TEST-${Date.now().toString().slice(-4)}`;
 
         const newTestObj = {
@@ -231,11 +231,11 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         });
 
         setParseStatus('done');
-        setParseMsg(`✅ Đã nhận diện 1 ĐỀ THI ("${newTitle}") gồm ${newTestObj.sections.length} phần & ${parsed.questions.length} câu hỏi!`);
+        setParseMsg(`✅ Đã nhận diện 1 ĐỀ ÔN TẬP ("${newTitle}") gồm ${newTestObj.sections.length} phần & ${parsed.questions.length} câu hỏi!`);
         await loadTests();
         selectTest(newTestObj);
       } else {
-        throw new Error('Không nhận diện được cấu trúc đề thi. Vui lòng kiểm tra lại file.');
+        throw new Error('Không nhận diện được cấu trúc đề ôn tập. Vui lòng kiểm tra lại file.');
       }
     } catch (e) {
       console.error(e);
@@ -247,7 +247,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   }
 
   async function handleDeleteTest(t) {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa đề thi "${t.title}" khỏi hệ thống?`)) return;
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa đề ôn tập "${t.title}" khỏi hệ thống?`)) return;
     try {
       if (t.id) await deleteTest(t.id);
       if (t.code && t.code !== t.id) await deleteTest(t.code);
@@ -357,7 +357,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
   function deleteSection(secIdx) {
     if (editingTest.sections.length <= 1) {
-      setWarningModal({ title: 'THÔNG BÁO HỆ THỐNG', message: 'Đề thi phải có ít nhất 1 phần (Section) đọc hiểu.' });
+      setWarningModal({ title: 'THÔNG BÁO HỆ THỐNG', message: 'Đề ôn tập phải có ít nhất 1 phần (Section) đọc hiểu.' });
       return;
     }
     setEditingTest(prev => ({
@@ -400,12 +400,12 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       if (result && result.error) {
         setWarningModal({ title: 'LỖI CƠ SỞ DỮ LIỆU', message: 'Lỗi kết nối từ Supabase: ' + result.error });
       } else {
-        setSavedMsg('Đã lưu đề thi thành công!');
+        setSavedMsg('Đã lưu đề ôn tập thành công!');
         setTimeout(() => setSavedMsg(''), 3000);
       }
       await loadTests();
     } catch (e) {
-      setWarningModal({ title: 'LƯU BÀI THI THẤT BẠI', message: 'Lỗi: ' + e.message });
+      setWarningModal({ title: 'LƯU ĐỀ ÔN TẬP THẤT BẠI', message: 'Lỗi: ' + e.message });
     }
     setSaving(false);
   }
@@ -474,19 +474,19 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         {/* ── LEFT COLUMN (Sidebar: Available Tests & AI Upload Zone) ── */}
         <div className="lg:col-span-4 space-y-6">
 
-          {/* 1. DANH SÁCH ĐỀ THI TRÊN HỆ THỐNG Card */}
+          {/* 1. DANH SÁCH ĐỀ ÔN TẬP TRÊN HỆ THỐNG Card */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="font-bold text-sm text-gray-900 flex items-center gap-2">
                   <BookOpen size={16} className="text-amber-600" />
-                  ĐỀ THI TRÊN HỆ THỐNG ({testList.length})
+                  ĐỀ ÔN TẬP TRÊN HỆ THỐNG ({testList.length})
                 </h2>
                 <p className="text-[10px] text-gray-400 mt-0.5">Bao gồm đề đã tải lên &amp; đề mẫu demo</p>
               </div>
               <button
                 className="text-xs font-extrabold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 px-3 py-1.5 rounded-xl transition-all flex-shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm shadow-orange-500/20 active:scale-[0.98]"
-                title="Tạo mới bài thi trống để thầy cô tự soạn nội dung"
+                title="Tạo mới đề ôn tập trống để thầy cô tự soạn nội dung"
                 onClick={handleCreateNewTest}
               >
                 <PlusCircle size={14} className="text-white" />
@@ -498,10 +498,10 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               {loadingList ? (
                 <div className="text-center py-6 text-xs text-gray-400">
                   <Loader2 size={20} className="animate-spin mx-auto mb-2 text-amber-500" />
-                  Đang tải danh sách đề thi...
+                  Đang tải danh sách đề ôn tập...
                 </div>
               ) : testList.length === 0 ? (
-                <div className="text-center py-6 text-xs text-gray-400">Chưa có đề thi nào.</div>
+                <div className="text-center py-6 text-xs text-gray-400">Chưa có đề ôn tập nào.</div>
               ) : (
                 testList.map(t => {
                   const isSelected = selectedTestId === (t.id || t.code);
@@ -537,7 +537,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                         </div>
                         <button
                           className="text-gray-300 hover:text-red-500 p-1 transition-colors"
-                          title="Xóa đề thi này"
+                          title="Xóa đề ôn tập này"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteTest(t);
@@ -560,12 +560,12 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
             </div>
           </div>
 
-          {/* 2. TẢI ĐỀ THI AI THÔNG MINH Card */}
+          {/* 2. TẢI ĐỀ ÔN TẬP AI THÔNG MINH Card */}
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 space-y-4">
             <div>
               <h2 className="font-bold text-sm text-gray-900 flex items-center gap-2">
                 <Sparkles size={16} className="text-amber-500" />
-                TẢI ĐỀ THI AI THÔNG MINH
+                TẢI ĐỀ ÔN TẬP AI THÔNG MINH
               </h2>
               <p className="text-[11px] text-gray-400 mt-0.5">AI tự động nhận diện và soạn lời giải chi tiết</p>
             </div>
@@ -574,7 +574,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-bold text-gray-700 mb-1 block">
-                  Tiêu đề đề thi đề xuất <span className="text-red-500">*</span>
+                  Tiêu đề đề ôn tập đề xuất <span className="text-red-500">*</span>
                 </label>
                 <input
                   className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl focus:bg-white"
@@ -864,7 +864,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               )}
             </div>
 
-            {/* TAB 1: CHỈNH SỬA TRỰC TIẾP ĐỀ THI */}
+            {/* TAB 1: CHỈNH SỬA TRỰC TIẾP ĐỀ ÔN TẬP */}
             {mainTab === 'edit' && (
               <div className="p-6 space-y-6">
                 {/* Meta Inputs */}
@@ -1070,7 +1070,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 ) : submissions.length === 0 ? (
                   <div className="text-center py-12 text-gray-400 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
                     <Users size={32} className="mx-auto text-gray-300 mb-2" />
-                    <p className="text-sm font-bold text-gray-600">Chưa có lượt nộp bài nào cho đề thi này.</p>
+                    <p className="text-sm font-bold text-gray-600">Chưa có lượt nộp bài nào cho đề ôn tập này.</p>
                     <p className="text-xs text-gray-400">Khi học sinh làm bài thi trực tuyến và bấm nộp bài, kết quả sẽ tự động lưu và hiển thị tại đây.</p>
                   </div>
                 ) : (

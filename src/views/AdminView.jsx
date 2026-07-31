@@ -216,7 +216,7 @@ export default function AdminView({ onExit }) {
             }`}
           >
             <BookOpen size={16} />
-            <span>KHO ĐỀ THI TRỰC TUYẾN ({tests.length})</span>
+            <span>KHO ĐỀ ÔN TẬP TRỰC TUYẾN ({tests.length})</span>
           </button>
 
           <button

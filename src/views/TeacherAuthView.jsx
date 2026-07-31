@@ -33,7 +33,12 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
     setError('');
     const res = await signInWithGoogle();
     if (res?.error) {
-      setError(res.error);
+      const errText = String(res.error);
+      if (errText.includes('provider is not enabled') || errText.includes('Unsupported provider')) {
+        setError('⚠️ Supabase chưa bật công tắc Google Provider! Vui lòng vào Supabase Dashboard > Authentication > Providers > Google > gạt công tắc "Enable Google provider" sang BẬT (ON) và bấm nút SAVE ở góc cuối trang.');
+      } else {
+        setError(res.error);
+      }
       setLoading(false);
     }
   }

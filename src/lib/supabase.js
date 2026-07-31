@@ -280,18 +280,19 @@ export async function getTestSubmissions(testId) {
   
   if (client) {
     try {
-      let query = client.from('results').select('*').order('created_at', { ascending: false });
-      if (testId) {
-        const cleanId = String(testId).replace('custom-', '');
-        query = query.or(`test_id.eq."${testId}",test_id.eq."${cleanId}",test_code.eq."${testId}"`);
-      }
-      const { data, error } = await query;
+      const { data, error } = await client.from('results').select('*').order('created_at', { ascending: false });
       if (!error && data) {
-        dbResults = data;
-      } else if (error && testId) {
-        // Fallback simple query if .or fails
-        const { data: fbData } = await client.from('results').select('*').eq('test_id', testId).order('created_at', { ascending: false });
-        if (fbData) dbResults = fbData;
+        if (testId) {
+          const cleanId = String(testId).replace('custom-', '');
+          dbResults = data.filter(r =>
+            String(r.test_id) === String(testId) ||
+            String(r.test_id) === String(cleanId) ||
+            String(r.test_code) === String(testId) ||
+            (r.test_id && String(r.test_id).includes(String(testId)))
+          );
+        } else {
+          dbResults = data;
+        }
       }
     } catch (e) {
       console.warn('Supabase get results error:', e);

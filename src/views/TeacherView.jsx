@@ -442,17 +442,19 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
           <div className="flex items-center gap-2">
             {/* Teacher Profile Badge */}
-            {teacherSession && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
-                <div className="w-5 h-5 rounded-full bg-orange-600 text-white font-bold flex items-center justify-center text-[10px]">
-                  {teacherSession.name ? teacherSession.name.charAt(0).toUpperCase() : 'G'}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50/80 border border-orange-200/90 rounded-xl text-xs">
+              <div className="w-6 h-6 rounded-full bg-orange-600 text-white font-extrabold flex items-center justify-center text-[11px] shadow-2xs">
+                {(teacherSession?.name || uploadTeacher || 'G').charAt(0).toUpperCase()}
+              </div>
+              <div className="text-left">
+                <div className="font-extrabold text-slate-900 leading-tight">
+                  {teacherSession?.name || uploadTeacher || 'Trần Thiên Quý (FE HO HCM)'}
                 </div>
-                <div className="text-left">
-                  <div className="font-extrabold text-slate-900 leading-none">{teacherSession.name || 'Giáo viên'}</div>
-                  <div className="text-[9.5px] text-orange-700 font-semibold">{teacherSession.email}</div>
+                <div className="text-[10px] text-orange-600 font-bold leading-tight">
+                  Giáo viên
                 </div>
               </div>
-            )}
+            </div>
 
             <button
               className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"

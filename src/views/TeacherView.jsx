@@ -57,15 +57,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const [copiedShare, setCopiedShare] = useState(false);
 
   // Active test editing state
-  const [editingTest, setEditingTest] = useState({
-    id: 'test-10',
-    code: 'ENG2025A',
-    title: 'ĐỀ ÔN TẬP TRÍCH XUẤT TỪ: ĐỀ 10',
-    subject: 'TIẾNG ANH',
-    duration: 50,
-    teacher: 'Cô Trang',
-    sections: [],
-  });
+  const [editingTest, setEditingTest] = useState(null);
 
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
@@ -133,6 +125,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       setTestList(tests || []);
       if (tests && tests.length > 0) {
         selectTest(tests[0]);
+      } else {
+        setSelectedTestId(null);
+        setEditingTest(null);
       }
     } catch (e) {
       console.error('Failed to load tests:', e);
@@ -422,7 +417,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         passage: editingTest.sections[0]?.passage || '',
         sections: editingTest.sections,
         questions_json: allQs,
-      });
+      }, teacherSession?.email);
 
       if (result && result.error) {
         setWarningModal({ title: 'LỖI CƠ SỞ DỮ LIỆU', message: 'Lỗi kết nối từ Supabase: ' + result.error });
@@ -752,29 +747,46 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 relative overflow-hidden">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-extrabold uppercase bg-amber-100/80 text-amber-800 px-2.5 py-0.5 rounded-md tracking-wider">
-                    {editingTest.subject || 'TIẾNG ANH'}
-                  </span>
-                  <span className="text-[10px] font-extrabold uppercase bg-orange-100/80 text-orange-800 px-2.5 py-0.5 rounded-md tracking-wider">
-                    Khối {editingTest.grade || '12'}
-                  </span>
-                  <span className="text-xs text-gray-400 font-medium">Tạo ngày: 16/7/2026</span>
+                <div className="flex items-center gap-2 mb-2 min-h-[22px]">
+                  {editingTest ? (
+                    <>
+                      <span className="text-[10px] font-extrabold uppercase bg-amber-100/80 text-amber-800 px-2.5 py-0.5 rounded-md tracking-wider">
+                        {editingTest.subject || 'TIẾNG ANH'}
+                      </span>
+                      <span className="text-[10px] font-extrabold uppercase bg-orange-100/80 text-orange-800 px-2.5 py-0.5 rounded-md tracking-wider">
+                        Khối {editingTest.grade || '12'}
+                      </span>
+                      {editingTest.created_at && (
+                        <span className="text-xs text-gray-400 font-medium">
+                          Tạo ngày: {new Date(editingTest.created_at).toLocaleDateString('vi-VN')}
+                        </span>
+                      )}
+                    </>
+                  ) : null}
                 </div>
-                <h1 className="text-xl font-extrabold text-gray-900 tracking-tight mb-2">
-                  {editingTest.title}
+                <h1 className="text-xl font-extrabold text-gray-900 tracking-tight mb-2 min-h-[28px]">
+                  {editingTest?.title || ''}
                 </h1>
-                <p className="text-xs text-gray-500 font-medium">
-                  Người phụ trách: <strong className="text-gray-800">{editingTest.teacher}</strong> | Thời gian: <strong className="text-gray-800">{editingTest.duration} phút</strong>
+                <p className="text-xs text-gray-500 font-medium min-h-[18px]">
+                  {editingTest ? (
+                    <>
+                      Người phụ trách: <strong className="text-gray-800">{editingTest.teacher}</strong> | Thời gian: <strong className="text-gray-800">{editingTest.duration} phút</strong>
+                    </>
+                  ) : null}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
-                  className="h-9 px-4 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs min-w-[110px]"
+                  disabled={!editingTest}
+                  className={`h-9 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] ${
+                    !editingTest
+                      ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                      : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 cursor-pointer'
+                  }`}
                   onClick={() => setMainTab('preview')}
                 >
-                  <Eye size={14} className="text-amber-600" />
+                  <Eye size={14} className={!editingTest ? 'text-gray-400' : 'text-amber-600'} />
                   <span>Xem trước</span>
                 </button>
 
@@ -782,10 +794,13 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                   const isHidden = editingTest ? isTestHidden(editingTest.id || editingTest.code) : false;
                   return (
                     <button
-                      className={`h-9 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] border ${
-                        isHidden
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-emerald-500/20'
-                          : 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-amber-500/20'
+                      disabled={!editingTest}
+                      className={`h-9 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] border ${
+                        !editingTest
+                          ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                          : isHidden
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-emerald-500/20 cursor-pointer'
+                            : 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-amber-500/20 cursor-pointer'
                       }`}
                       onClick={handleToggleStudentAccess}
                       title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị (Hiện đề)!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn (Ẩn đề)!'}
@@ -806,11 +821,16 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 })()}
 
                 <button
-                  className="h-9 px-3.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-none transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs shadow-orange-500/20 active:scale-[0.98]"
+                  disabled={!editingTest}
+                  className={`h-9 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs ${
+                    !editingTest
+                      ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-none cursor-pointer shadow-orange-500/20 active:scale-[0.98]'
+                  }`}
                   onClick={handleShareTest}
                   title="Lấy liên kết chia sẻ đề thi cho học sinh"
                 >
-                  <Share2 size={14} className="text-white" />
+                  <Share2 size={14} className={!editingTest ? 'text-gray-400' : 'text-white'} />
                   <span>Share tài liệu</span>
                 </button>
               </div>
@@ -920,8 +940,10 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                     <label className="text-xs font-bold text-gray-700 mb-1 block">Tiêu đề bài thi</label>
                     <input
                       className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs font-semibold rounded-xl"
-                      value={editingTest.title}
-                      onChange={e => setEditingTest(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Chưa có tiêu đề bài thi"
+                      value={editingTest?.title || ''}
+                      onChange={e => setEditingTest(prev => (prev ? { ...prev, title: e.target.value } : null))}
+                      disabled={!editingTest}
                     />
                   </div>
                   <div>
@@ -929,15 +951,24 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                     <input
                       type="number"
                       className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs font-semibold rounded-xl"
-                      value={editingTest.duration}
-                      onChange={e => setEditingTest(prev => ({ ...prev, duration: parseInt(e.target.value) || 50 }))}
+                      placeholder="50"
+                      value={editingTest?.duration || ''}
+                      onChange={e => setEditingTest(prev => (prev ? { ...prev, duration: parseInt(e.target.value) || 50 } : null))}
+                      disabled={!editingTest}
                     />
                   </div>
                 </div>
 
                 {/* Multi-Section List (Từng phần / Từng Tab) */}
                 <div className="space-y-6">
-                  {editingTest.sections.map((sec, secIdx) => (
+                  {!editingTest || !editingTest.sections || editingTest.sections.length === 0 ? (
+                    <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-slate-50/50 space-y-2">
+                      <BookOpen size={36} className="text-gray-300 mx-auto" />
+                      <p className="text-xs font-bold text-gray-600">Chưa có đề ôn tập nào được chọn</p>
+                      <p className="text-[11px] text-gray-400">Vui lòng tải lên file Word ở khung bên trái hoặc nhấn nút "Tạo mới" để bắt đầu soạn đề thi.</p>
+                    </div>
+                  ) : (
+                    editingTest.sections.map((sec, secIdx) => (
                     <div key={sec.id || secIdx} className="border border-gray-300 rounded-2xl p-5 bg-white space-y-4 shadow-xs">
                       {/* Section Header Bar */}
                       <div className="flex items-center justify-between border-b border-gray-200 pb-3">
@@ -1048,7 +1079,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                         ))}
                       </div>
                     </div>
-                  ))}
+                  ))
+                )}
                 </div>
 
                 {/* Action Controls Footer */}

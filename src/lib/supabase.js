@@ -182,7 +182,7 @@ export async function getAllTests(includeHidden = false, teacherEmailFilter = nu
     try {
       let query = client.from('tests').select('*').order('created_at', { ascending: false });
       if (teacherEmailFilter) {
-        query = query.eq('teacher_email', teacherEmailFilter);
+        query = query.ilike('teacher_email', teacherEmailFilter);
       }
       const { data, error } = await query;
       if (!error && data) {
@@ -203,7 +203,7 @@ export async function getAllTests(includeHidden = false, teacherEmailFilter = nu
     }
   }
   
-  // Also include mock tests if not filtering by teacher email or if teacher matches
+  // Include mock tests ONLY if no teacherEmailFilter is passed (i.e. for students browsing all public tests)
   if (!teacherEmailFilter) {
     for (const mt of MOCK_TESTS) {
       if (!merged.find(t => t.code === mt.code)) {
@@ -215,8 +215,11 @@ export async function getAllTests(includeHidden = false, teacherEmailFilter = nu
   return merged.filter(t => {
     if (isDeleted(t)) return false;
     if (!includeHidden && isHidden(t)) return false;
-    if (teacherEmailFilter && t.teacher_email && t.teacher_email !== teacherEmailFilter) {
-      return false;
+    if (teacherEmailFilter) {
+      // STRICT SECURITY: If teacherEmailFilter is active, ONLY return tests matching this teacher's email!
+      if (!t.teacher_email || t.teacher_email.toLowerCase() !== teacherEmailFilter.toLowerCase()) {
+        return false;
+      }
     }
     return true;
   });

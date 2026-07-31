@@ -458,9 +458,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
               onClick={() => {
                 clearTeacherSession();
-                setView('teacher-auth');
+                setView('login');
               }}
-              title="Đăng xuất khỏi cổng Giáo viên"
+              title="Đăng xuất và quay lại trang đăng nhập"
             >
               <LogOut size={13} /> Đăng xuất
             </button>

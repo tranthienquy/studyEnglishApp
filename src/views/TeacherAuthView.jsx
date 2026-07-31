@@ -85,8 +85,8 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
         <div className="text-center mb-6">
           <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
             <img
-              src="/bg-illustration.png"
-              alt="FPT Mascot"
+              src="/fpt-logo.png"
+              alt="FPT Logo"
               className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform"
             />
           </div>

@@ -30,11 +30,11 @@ export default function LoginView({ onSwitchTeacher }) {
         {/* Card Modal */}
         <div className="bg-white rounded-3xl p-8 shadow-2xl border border-white/80 text-center relative overflow-hidden">
 
-          {/* Top Mascot Icon */}
+          {/* Top Logo Icon */}
           <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center">
             <img
-              src="/bg-illustration.png"
-              alt="FPT Mascot"
+              src="/fpt-logo.png"
+              alt="FPT Logo"
               className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform"
             />
           </div>

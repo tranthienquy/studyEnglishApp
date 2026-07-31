@@ -272,7 +272,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
                     onClick={() => handleSelectTest(t)}
                   >
                     <Play size={11} className="fill-white group-hover:translate-x-0.5 transition-transform" />
-                    <span>VÀO LÀM BÀI THI TRỰC TUYẾN</span>
+                    <span>LÀM BÀI</span>
                   </button>
                 </div>
               );

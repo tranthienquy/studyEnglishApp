@@ -90,11 +90,11 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
               className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform"
             />
           </div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
-            CỔNG GIÁO VIÊN FPT
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight uppercase bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
+            HỆ THỐNG ÔN TẬP FPT SCHOOLS
           </h1>
-          <p className="text-xs text-orange-600 font-semibold mt-1">
-            Hệ thống Quản lý tài liệu ôn tập trực tuyến
+          <p className="text-xs text-orange-600 font-bold tracking-wide mt-1">
+            Trang dành cho Giáo viên
           </p>
         </div>
 

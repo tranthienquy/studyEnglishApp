@@ -39,10 +39,13 @@ export default function LoginView({ onSwitchTeacher }) {
             />
           </div>
 
-          {/* Main Title */}
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight uppercase mb-6">
+          {/* Main Title & Subtitle */}
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight uppercase bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
             HỆ THỐNG ÔN TẬP FPT SCHOOLS
           </h1>
+          <p className="text-xs text-orange-600 font-bold tracking-wide mt-1 mb-6">
+            Trang dành cho Học sinh
+          </p>
 
           {/* Form */}
           <div className="space-y-4 text-left">

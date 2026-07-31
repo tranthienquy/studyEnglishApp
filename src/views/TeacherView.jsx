@@ -165,6 +165,21 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   async function handleFile(file) {
     if (!file) return;
 
+    // Validate required fields before uploading
+    const missingFields = [];
+    if (!uploadTitle.trim()) missingFields.push('Tiêu đề đề thi đề xuất');
+    if (!uploadGrade) missingFields.push('Khối');
+    if (!uploadDuration || parseInt(uploadDuration) <= 0) missingFields.push('Thời gian (Phút)');
+    if (!uploadTeacher.trim()) missingFields.push('Tên giáo viên upload');
+
+    if (missingFields.length > 0) {
+      setParseStatus('error');
+      const msg = `⚠️ VUI LÒNG ĐIỀN ĐẦY ĐỦ CÁC THÔNG TIN BẮT BUỘC TRƯỚC KHI TẢI FILE LÊN HỆ THỐNG:\n\n• ${missingFields.join('\n• ')}`;
+      setParseMsg(msg);
+      alert(msg);
+      return;
+    }
+
     setUploading(true);
     setParseStatus('parsing');
     setParseMsg('Đang đọc nội dung file Word/PDF...');
@@ -518,9 +533,11 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
             {/* Form controls */}
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Tiêu đề đề thi đề xuất (Tùy chọn)</label>
+                <label className="text-xs font-bold text-gray-700 mb-1 block">
+                  Tiêu đề đề thi đề xuất <span className="text-red-500">*</span>
+                </label>
                 <input
-                  className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
+                  className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl focus:bg-white"
                   placeholder="Ví dụ: Đề khảo sát Tiếng Anh 12 lần 1"
                   value={uploadTitle}
                   onChange={e => setUploadTitle(e.target.value)}
@@ -529,7 +546,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Môn học</label>
+                  <label className="text-xs font-bold text-gray-700 mb-1 block">
+                    Môn học <span className="text-red-500">*</span>
+                  </label>
                   <select
                     className="select select-bordered select-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
                     value={uploadSubject}
@@ -542,7 +561,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Khối</label>
+                  <label className="text-xs font-bold text-gray-700 mb-1 block">
+                    Khối <span className="text-red-500">*</span>
+                  </label>
                   <select
                     className="select select-bordered select-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
                     value={uploadGrade}
@@ -555,7 +576,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Thời gian (Phút)</label>
+                  <label className="text-xs font-bold text-gray-700 mb-1 block">
+                    Thời gian (Phút) <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="number"
                     className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
@@ -566,7 +589,9 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Tên giáo viên upload</label>
+                <label className="text-xs font-bold text-gray-700 mb-1 block">
+                  Tên giáo viên upload <span className="text-red-500">*</span>
+                </label>
                 <input
                   className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
                   placeholder="Ví dụ: Cô Minh Trang"

@@ -295,7 +295,7 @@ function SingleQuestion({ q, isReview = false }) {
           <div className="flex items-center gap-2 mb-2">
             <BookOpen size={15} className="text-orange-600" />
             <h4 className="text-[11px] font-extrabold text-orange-900 uppercase tracking-wider">
-              Học liệu & giải thích sư phạm chi tiết
+              Lời giải chi tiết
             </h4>
           </div>
           <div className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">

@@ -41,27 +41,36 @@ CREATE TABLE IF NOT EXISTS student_logs (
 ALTER TABLE tests ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "public_read_visible_tests" ON tests;
+DROP POLICY IF EXISTS "Enable read access for all users" ON tests;
 CREATE POLICY "public_read_visible_tests"
   ON tests FOR SELECT
   USING (true);
 
 DROP POLICY IF EXISTS "teacher_insert_own_tests" ON tests;
 DROP POLICY IF EXISTS "public_insert_tests" ON tests;
-CREATE POLICY "public_insert_tests"
+DROP POLICY IF EXISTS "Enable insert access for all users" ON tests;
+CREATE POLICY "teacher_insert_own_tests"
   ON tests FOR INSERT
-  WITH CHECK (true);
+  WITH CHECK (
+    auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+  );
 
 DROP POLICY IF EXISTS "teacher_update_own_tests" ON tests;
 DROP POLICY IF EXISTS "public_update_tests" ON tests;
-CREATE POLICY "public_update_tests"
+CREATE POLICY "teacher_update_own_tests"
   ON tests FOR UPDATE
-  USING (true);
+  USING (
+    auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+  );
 
 DROP POLICY IF EXISTS "teacher_delete_own_tests" ON tests;
 DROP POLICY IF EXISTS "public_delete_tests" ON tests;
-CREATE POLICY "public_delete_tests"
+DROP POLICY IF EXISTS "Enable delete access for all users" ON tests;
+CREATE POLICY "teacher_delete_own_tests"
   ON tests FOR DELETE
-  USING (true);
+  USING (
+    auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+  );
 
 -- 5. RLS — Bảng teacher_profiles
 ALTER TABLE teacher_profiles ENABLE ROW LEVEL SECURITY;

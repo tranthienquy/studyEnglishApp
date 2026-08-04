@@ -17,16 +17,30 @@ CREATE TABLE IF NOT EXISTS public.tests (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable RLS for 'tests' (Optional: For public read/write)
+-- Enable RLS for 'tests'
 ALTER TABLE public.tests ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Enable read access for all users" ON public.tests;
 DROP POLICY IF EXISTS "Enable insert access for all users" ON public.tests;
 DROP POLICY IF EXISTS "Enable delete access for all users" ON public.tests;
+DROP POLICY IF EXISTS "public_read_visible_tests" ON public.tests;
+DROP POLICY IF EXISTS "teacher_manage_tests" ON public.tests;
 
-CREATE POLICY "Enable read access for all users" ON public.tests FOR SELECT USING (true);
-CREATE POLICY "Enable insert access for all users" ON public.tests FOR INSERT WITH CHECK (true);
-CREATE POLICY "Enable delete access for all users" ON public.tests FOR DELETE USING (true);
+-- 1. Anyone (public/students) can read tests
+CREATE POLICY "public_read_tests" ON public.tests FOR SELECT USING (true);
+
+-- 2. Only authenticated teachers can insert/update/delete tests
+CREATE POLICY "teachers_insert_tests" ON public.tests FOR INSERT WITH CHECK (
+  auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+);
+
+CREATE POLICY "teachers_update_own_tests" ON public.tests FOR UPDATE USING (
+  auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+);
+
+CREATE POLICY "teachers_delete_own_tests" ON public.tests FOR DELETE USING (
+  auth.role() = 'authenticated' OR auth.jwt() ->> 'email' LIKE '%@fpt.edu.vn' OR auth.jwt() ->> 'email' LIKE '%@fe.edu.vn' OR auth.jwt() ->> 'email' IN ('quytt16@fpt.edu.vn', 'feexpspace@gmail.com')
+);
 
 
 -- 2. Create table 'results' (Lưu kết quả làm bài của học sinh)

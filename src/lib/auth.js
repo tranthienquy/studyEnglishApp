@@ -9,18 +9,28 @@ import { getClient } from './supabase';
 // Allowed email domains for teacher login
 const ALLOWED_DOMAINS = ['@fpt.edu.vn', '@fe.edu.vn'];
 
-// Admin emails (whitelist for admin access)
-const ADMIN_EMAILS = [
+// Admin emails (whitelist for super admin access)
+const DEFAULT_ADMIN_EMAILS = [
   'admin@fpt.edu.vn',
-  // Add more admin emails here
+  'admin@fe.edu.vn',
+  'quytt16@fpt.edu.vn',
+  'feexpspace@gmail.com',
 ];
 
+const ENV_ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
+
+const ADMIN_EMAILS = [...DEFAULT_ADMIN_EMAILS, ...ENV_ADMIN_EMAILS];
+
 /**
- * Check if an email belongs to an allowed teacher domain
+ * Check if an email belongs to an allowed teacher domain or admin whitelist
  */
 export function isValidTeacherEmail(email) {
   if (!email) return false;
-  return ALLOWED_DOMAINS.some(domain => email.toLowerCase().endsWith(domain));
+  const clean = email.toLowerCase();
+  return ALLOWED_DOMAINS.some(domain => clean.endsWith(domain)) || isAdminEmail(clean);
 }
 
 /**

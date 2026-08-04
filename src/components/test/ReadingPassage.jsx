@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BookOpen, Globe, X, Loader2, Languages, ArrowRight } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import useAppStore from '../../stores/useAppStore';
 import { translateWithGoogle, extractVocabulary } from '../../lib/gemini';
 
@@ -290,7 +291,7 @@ export default function ReadingPassage({ sections, activeTab, onTabChange, zoom 
         <div
           className="rp-body"
           style={{ fontSize: `${zoom}%` }}
-          dangerouslySetInnerHTML={{ __html: currentPassageHtml }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(currentPassageHtml || '') }}
         />
 
         {/* Translated passage block */}

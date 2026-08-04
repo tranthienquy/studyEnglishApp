@@ -20,7 +20,12 @@ export function saveSupabaseConfig(url, key) {
   if (!url || !key) {
     localStorage.removeItem('readingpro_supabase_config');
   } else {
-    localStorage.setItem('readingpro_supabase_config', JSON.stringify({ url: url.trim(), key: key.trim() }));
+    const trimmedKey = key.trim();
+    // Prevent user from saving service_role key into browser localStorage
+    if (trimmedKey.includes('service_role') || (trimmedKey.length > 50 && trimmedKey.toLowerCase().includes('secret'))) {
+      throw new Error('CẢNH BÁO BẢO MẬT: Không được lưu Service Role / Secret Key vào trình duyệt! Chỉ sử dụng Anon (Public) Key.');
+    }
+    localStorage.setItem('readingpro_supabase_config', JSON.stringify({ url: url.trim(), key: trimmedKey }));
   }
   // Reset client so it re-initializes
   supabaseClient = null;

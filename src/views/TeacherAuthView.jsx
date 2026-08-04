@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, LogIn, ArrowLeft, Lock, Mail, AlertCircle, UserCheck, KeyRound } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
-import { signInWithGoogle, getCurrentTeacher, isValidTeacherEmail, upsertTeacherProfile } from '../lib/auth';
+import { signInWithGoogle, getCurrentTeacher, isValidTeacherEmail, isAdminEmail, upsertTeacherProfile } from '../lib/auth';
 import { isRealSupabaseConfigured } from '../lib/supabase';
 
 export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
-  const { setTeacherSession, setView } = useAppStore();
+  const { teacherSession, setTeacherSession, setView } = useAppStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [manualEmail, setManualEmail] = useState('');
   const [manualName, setManualName] = useState('');
   const [showAdminPass, setShowAdminPass] = useState(false);
-  const [adminPass, setAdminPass] = useState('');
+  const [adminEmailInput, setAdminEmailInput] = useState('');
 
   // Check if session already exists
   useEffect(() => {
@@ -67,10 +67,30 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
   }
 
   function handleAdminLogin() {
-    if (adminPass.trim() === 'fptadmin2026' || adminPass.trim() === 'admin') {
+    setError('');
+    // Check currently logged in teacher session first
+    if (teacherSession?.email && isAdminEmail(teacherSession.email)) {
+      setView('admin');
+      return;
+    }
+
+    // Otherwise check admin email input
+    const targetEmail = adminEmailInput.trim().toLowerCase();
+    if (!targetEmail) {
+      setError('Vui lòng nhập Email Quản trị viên (Admin).');
+      return;
+    }
+
+    if (isAdminEmail(targetEmail)) {
+      const session = {
+        email: targetEmail,
+        name: 'System Admin',
+        avatar: null,
+      };
+      setTeacherSession(session);
       setView('admin');
     } else {
-      setError('Mật khẩu quản trị viên (Admin) không đúng!');
+      setError(`Email "${targetEmail}" không thuộc danh sách Admin whitelist! Vui lòng liên hệ Quản trị hệ thống.`);
     }
   }
 
@@ -138,14 +158,14 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
               </button>
             ) : (
               <div className="space-y-2 animate-slide-down">
-                <label className="text-[11px] font-bold text-orange-600 uppercase tracking-wider block">Mật khẩu Web Admin</label>
+                <label className="text-[11px] font-bold text-orange-600 uppercase tracking-wider block">Xác thực Email Web Admin</label>
                 <div className="flex gap-2">
                   <input
-                    type="password"
+                    type="email"
                     className="flex-1 bg-slate-50 border border-orange-300 text-gray-900 text-xs h-9 px-3 rounded-xl focus:border-orange-500 focus:outline-none font-medium"
-                    placeholder="Nhập mật khẩu Admin..."
-                    value={adminPass}
-                    onChange={e => setAdminPass(e.target.value)}
+                    placeholder="Nhập email admin@fpt.edu.vn..."
+                    value={adminEmailInput}
+                    onChange={e => setAdminEmailInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}
                   />
                   <button

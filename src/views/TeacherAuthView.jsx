@@ -17,10 +17,19 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
   useEffect(() => {
     async function checkExisting() {
       const teacher = await getCurrentTeacher();
-      if (teacher && isValidTeacherEmail(teacher.email)) {
+      if (teacher) {
+        if (!isValidTeacherEmail(teacher.email)) {
+          setError(`Tài khoản Google "${teacher.email}" không được quyền truy cập. Vui lòng sử dụng Email FPT (@fpt.edu.vn) hoặc Email Admin đã được cấp quyền.`);
+          await signOut();
+          return;
+        }
         setTeacherSession(teacher);
         await upsertTeacherProfile(teacher);
-        setView('teacher');
+        if (isAdminEmail(teacher.email)) {
+          setView('admin');
+        } else {
+          setView('teacher');
+        }
       }
     }
     if (isRealSupabaseConfigured()) {
@@ -40,57 +49,6 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
         setError(res.error);
       }
       setLoading(false);
-    }
-  }
-
-  // Manual Demo Login (for offline or local testing)
-  async function handleManualLogin() {
-    if (!manualEmail.trim()) {
-      setError('Vui lòng nhập Email giáo viên.');
-      return;
-    }
-    const cleanEmail = manualEmail.trim().toLowerCase();
-    if (!isValidTeacherEmail(cleanEmail)) {
-      setError('Email bắt buộc phải có đuôi @fpt.edu.vn (hoặc @fe.edu.vn).');
-      return;
-    }
-
-    const session = {
-      email: cleanEmail,
-      name: manualName.trim() || cleanEmail.split('@')[0],
-      avatar: null,
-    };
-
-    setTeacherSession(session);
-    await upsertTeacherProfile(session);
-    setView('teacher');
-  }
-
-  function handleAdminLogin() {
-    setError('');
-    // Check currently logged in teacher session first
-    if (teacherSession?.email && isAdminEmail(teacherSession.email)) {
-      setView('admin');
-      return;
-    }
-
-    // Otherwise check admin email input
-    const targetEmail = adminEmailInput.trim().toLowerCase();
-    if (!targetEmail) {
-      setError('Vui lòng nhập Email Quản trị viên (Admin).');
-      return;
-    }
-
-    if (isAdminEmail(targetEmail)) {
-      const session = {
-        email: targetEmail,
-        name: 'System Admin',
-        avatar: null,
-      };
-      setTeacherSession(session);
-      setView('admin');
-    } else {
-      setError(`Email "${targetEmail}" không thuộc danh sách Admin whitelist! Vui lòng liên hệ Quản trị hệ thống.`);
     }
   }
 
@@ -138,45 +96,12 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
             </svg>
-            <span>Đăng nhập bằng email FPT</span>
+            <span>Đăng nhập bằng Google SSO</span>
           </button>
 
           <div className="text-[11px] text-center text-gray-500 font-medium px-2 flex items-center justify-center gap-1">
             <Lock size={12} className="text-orange-500" />
-            <span>Chỉ chấp nhận tài khoản có đuôi <strong className="text-gray-800">@fpt.edu.vn</strong></span>
-          </div>
-
-          {/* Admin Login Toggle */}
-          <div className="pt-4 border-t border-slate-100 text-center">
-            {!showAdminPass ? (
-              <button
-                onClick={() => setShowAdminPass(true)}
-                className="text-xs text-orange-600 hover:text-orange-700 font-bold flex items-center justify-center gap-1.5 mx-auto transition-colors"
-              >
-                <KeyRound size={13} />
-                <span>Đăng nhập dành cho Quản trị viên (Web Admin)</span>
-              </button>
-            ) : (
-              <div className="space-y-2 animate-slide-down">
-                <label className="text-[11px] font-bold text-orange-600 uppercase tracking-wider block">Xác thực Email Web Admin</label>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    className="flex-1 bg-slate-50 border border-orange-300 text-gray-900 text-xs h-9 px-3 rounded-xl focus:border-orange-500 focus:outline-none font-medium"
-                    placeholder="Nhập email admin@fpt.edu.vn..."
-                    value={adminEmailInput}
-                    onChange={e => setAdminEmailInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAdminLogin()}
-                  />
-                  <button
-                    onClick={handleAdminLogin}
-                    className="px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
-                  >
-                    Vào Admin
-                  </button>
-                </div>
-              </div>
-            )}
+            <span>Chấp nhận email Giáo viên (<strong className="text-gray-800">@fpt.edu.vn</strong>) & Email Super Admin</span>
           </div>
         </div>
 

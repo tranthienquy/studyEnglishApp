@@ -55,9 +55,6 @@ export async function signInWithGoogle() {
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
-      queryParams: {
-        hd: 'fpt.edu.vn', // Google hd param: restrict to FPT domain
-      },
     },
   });
 

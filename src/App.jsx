@@ -47,7 +47,7 @@ export default function App() {
         {view === 'review'        && <TestView isReviewMode={true} />}
         {view === 'teacher-auth'  && <TeacherAuthView onSwitchStudent={() => setView('login')} />}
         {view === 'teacher'       && <TeacherView onSwitchStudent={() => setView('login')} />}
-        {view === 'admin'         && <AdminView onExit={() => setView('login')} />}
+        {view === 'admin'         && <AdminView onExit={() => setView('teacher-auth')} />}
         {view === 'result'        && (
           <div className="relative min-h-screen overflow-hidden">
             <div className="filter blur-[6px] pointer-events-none select-none opacity-75">

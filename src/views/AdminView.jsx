@@ -4,11 +4,12 @@ import {
   Search, RefreshCw, FileSpreadsheet, Lock, AlertCircle, BarChart3, Key, Download, CheckCircle2
 } from 'lucide-react';
 import { getAllTests, deleteTest, toggleHideTest, isTestHidden, getAllTeacherProfiles, getAllStudentLogs, exportResultsToExcel } from '../lib/supabase';
+import { signOut } from '../lib/auth';
 import { SUBJECTS } from '../lib/templates';
 import useAppStore from '../stores/useAppStore';
 
 export default function AdminView({ onExit }) {
-  const { setView } = useAppStore();
+  const { setTeacherSession, setView } = useAppStore();
   const [activeTab, setActiveTab] = useState('tests'); // 'tests' | 'teachers' | 'students' | 'settings'
 
   // Tests repository state
@@ -147,7 +148,7 @@ export default function AdminView({ onExit }) {
             </button>
 
             <button
-              onClick={() => setView('login')}
+              onClick={handleExitAdmin}
               className="btn btn-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs gap-1.5 rounded-xl cursor-pointer border-none shadow-md shadow-orange-500/20"
             >
               <ArrowLeft size={13} />

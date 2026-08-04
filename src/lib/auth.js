@@ -24,21 +24,60 @@ const ENV_ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '')
 
 const ADMIN_EMAILS = [...DEFAULT_ADMIN_EMAILS, ...ENV_ADMIN_EMAILS];
 
+// Allowed specific teacher emails (whitelist)
+const ALLOWED_TEACHER_EMAILS = [
+  'tranthienquy98@gmail.com',
+];
+
 /**
- * Check if an email belongs to an allowed teacher domain or admin whitelist
+ * Check if an email is allowed to log in as Teacher/Admin:
+ * Must be @fpt.edu.vn / @fe.edu.vn OR added by Super Admin in system profiles
  */
 export function isValidTeacherEmail(email) {
   if (!email) return false;
   const clean = email.toLowerCase();
-  return ALLOWED_DOMAINS.some(domain => clean.endsWith(domain)) || isAdminEmail(clean);
+
+  // 1. Allow @fpt.edu.vn & @fe.edu.vn domains
+  if (ALLOWED_DOMAINS.some(domain => clean.endsWith(domain))) return true;
+
+  // 2. Allow whitelisted static super admin & teacher emails
+  if (ADMIN_EMAILS.includes(clean) || ALLOWED_TEACHER_EMAILS.includes(clean)) return true;
+
+  // 3. Allow any email explicitly created/added by Super Admin in teacher_profiles
+  try {
+    const raw = localStorage.getItem('readingpro_teacher_profiles');
+    if (raw) {
+      const profiles = JSON.parse(raw);
+      const found = profiles.find(p => p.email?.toLowerCase() === clean);
+      if (found && found.is_active !== false) {
+        return true;
+      }
+    }
+  } catch {}
+
+  return false;
 }
 
 /**
- * Check if a user is an admin
+ * Check if a user is an admin (checks whitelist and dynamic teacher_profiles)
  */
 export function isAdminEmail(email) {
   if (!email) return false;
-  return ADMIN_EMAILS.includes(email.toLowerCase());
+  const clean = email.toLowerCase();
+  if (ADMIN_EMAILS.includes(clean)) return true;
+
+  try {
+    const raw = localStorage.getItem('readingpro_teacher_profiles');
+    if (raw) {
+      const profiles = JSON.parse(raw);
+      const found = profiles.find(p => p.email?.toLowerCase() === clean);
+      if (found && found.role === 'admin' && found.is_active !== false) {
+        return true;
+      }
+    }
+  } catch {}
+
+  return false;
 }
 
 /**

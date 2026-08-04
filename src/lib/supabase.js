@@ -563,12 +563,97 @@ export function clearAllMockTests() {
 // ---- Teacher Profiles & Student Activity Logs ----
 export async function getAllTeacherProfiles() {
   const client = getClient();
-  if (!client) return [];
+  if (!client) return getLocalTeacherProfiles();
   try {
-    const { data } = await client.from('teacher_profiles').select('*').order('last_login_at', { ascending: false });
-    return data || [];
+    const { data } = await client.from('teacher_profiles').select('*').order('created_at', { ascending: false });
+    if (data && data.length > 0) return data;
+    return getLocalTeacherProfiles();
   } catch (e) {
     console.warn('Fetch teacher profiles failed:', e);
+    return getLocalTeacherProfiles();
+  }
+}
+
+export async function createTeacherProfile({ email, name, role = 'teacher', subject_default = 'Tiếng Anh' }) {
+  const client = getClient();
+  const profile = {
+    email: email.trim().toLowerCase(),
+    name: name.trim(),
+    role: role || 'teacher',
+    subject_default: subject_default || 'Tiếng Anh',
+    is_active: true,
+    created_at: new Date().toISOString(),
+    last_login_at: new Date().toISOString(),
+  };
+
+  if (client) {
+    try {
+      await client.from('teacher_profiles').upsert(profile, { onConflict: 'email' });
+    } catch (e) {
+      console.warn('Supabase createTeacherProfile failed:', e);
+    }
+  }
+
+  // Local Storage Sync
+  try {
+    const profiles = getLocalTeacherProfiles();
+    const existingIdx = profiles.findIndex(p => p.email === profile.email);
+    if (existingIdx >= 0) {
+      profiles[existingIdx] = { ...profiles[existingIdx], ...profile };
+    } else {
+      profiles.unshift(profile);
+    }
+    localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(profiles));
+  } catch {}
+
+  return profile;
+}
+
+export async function updateTeacherProfile(email, updates) {
+  const client = getClient();
+  const cleanEmail = email.trim().toLowerCase();
+
+  if (client) {
+    try {
+      await client.from('teacher_profiles').update(updates).eq('email', cleanEmail);
+    } catch (e) {
+      console.warn('Supabase updateTeacherProfile failed:', e);
+    }
+  }
+
+  // Local Storage Sync
+  try {
+    const profiles = getLocalTeacherProfiles();
+    const updated = profiles.map(p => p.email === cleanEmail ? { ...p, ...updates } : p);
+    localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(updated));
+  } catch {}
+}
+
+export async function deleteTeacherProfile(email) {
+  const client = getClient();
+  const cleanEmail = email.trim().toLowerCase();
+
+  if (client) {
+    try {
+      await client.from('teacher_profiles').delete().eq('email', cleanEmail);
+    } catch (e) {
+      console.warn('Supabase deleteTeacherProfile failed:', e);
+    }
+  }
+
+  // Local Storage Sync
+  try {
+    const profiles = getLocalTeacherProfiles();
+    const updated = profiles.filter(p => p.email !== cleanEmail);
+    localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(updated));
+  } catch {}
+}
+
+function getLocalTeacherProfiles() {
+  try {
+    const raw = localStorage.getItem('readingpro_teacher_profiles');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
     return [];
   }
 }

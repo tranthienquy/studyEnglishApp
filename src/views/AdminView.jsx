@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck, Users, BookOpen, GraduationCap, ArrowLeft, Trash2, Eye, EyeOff,
-  Search, RefreshCw, FileSpreadsheet, Lock, AlertCircle, BarChart3, Key, Download, CheckCircle2
+  Search, RefreshCw, FileSpreadsheet, Lock, AlertCircle, BarChart3, Key, Download, CheckCircle2,
+  UserPlus, Shield, UserCheck, UserX, Plus, X, Edit3, User
 } from 'lucide-react';
-import { getAllTests, deleteTest, toggleHideTest, isTestHidden, getAllTeacherProfiles, getAllStudentLogs, exportResultsToExcel } from '../lib/supabase';
+import {
+  getAllTests, deleteTest, toggleHideTest, isTestHidden,
+  getAllTeacherProfiles, createTeacherProfile, updateTeacherProfile, deleteTeacherProfile,
+  getAllStudentLogs, exportResultsToExcel
+} from '../lib/supabase';
 import { signOut } from '../lib/auth';
 import { SUBJECTS } from '../lib/templates';
 import useAppStore from '../stores/useAppStore';
@@ -21,6 +26,15 @@ export default function AdminView({ onExit }) {
   // Teachers profiles state
   const [teachers, setTeachers] = useState([]);
   const [loadingTeachers, setLoadingTeachers] = useState(true);
+
+  // New Teacher Modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAccount, setNewAccount] = useState({ name: '', email: '', role: 'teacher', subject_default: 'Tiếng Anh' });
+  const [accountMsg, setAccountMsg] = useState('');
+
+  // Edit Teacher Modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editAccountData, setEditAccountData] = useState({ originalEmail: '', email: '', name: '', role: 'teacher', subject_default: 'Tiếng Anh' });
 
   // Student logs state
   const [students, setStudents] = useState([]);
@@ -76,6 +90,90 @@ export default function AdminView({ onExit }) {
     setPassMsg('✓ Đã cập nhật mật khẩu Admin mới thành công!');
     setNewPass('');
     setTimeout(() => setPassMsg(''), 3000);
+  }
+
+  // ── Account Management Handlers ──
+  async function handleCreateAccount(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    setAccountMsg('');
+    if (!newAccount.email || !newAccount.name) {
+      setAccountMsg('⚠️ Vui lòng nhập đầy đủ Email và Họ tên.');
+      return;
+    }
+    const created = await createTeacherProfile(newAccount);
+    setTeachers(prev => [created, ...prev.filter(p => p.email !== created.email)]);
+    setAccountMsg('🟢 Tạo tài khoản thành công!');
+    setShowAddModal(false);
+    setNewAccount({ name: '', email: '', role: 'teacher', subject_default: 'Tiếng Anh' });
+    setTimeout(() => setAccountMsg(''), 3000);
+  }
+
+  async function handleToggleRole(email, currentRole) {
+    const newRole = currentRole === 'admin' ? 'teacher' : 'admin';
+    await updateTeacherProfile(email, { role: newRole });
+    setTeachers(prev => prev.map(p => p.email === email ? { ...p, role: newRole } : p));
+  }
+
+  async function handleToggleActive(email, currentActive) {
+    const nextActive = currentActive === false ? true : false;
+    await updateTeacherProfile(email, { is_active: nextActive });
+    setTeachers(prev => prev.map(p => p.email === email ? { ...p, is_active: nextActive } : p));
+  }
+
+  async function handleDeleteTeacher(email) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa tài khoản giáo viên (${email}) khỏi hệ thống?`)) return;
+    await deleteTeacherProfile(email);
+    setTeachers(prev => prev.filter(p => p.email !== email));
+  }
+
+  function handleOpenEditModal(prof) {
+    setEditAccountData({
+      originalEmail: prof.email,
+      email: prof.email,
+      name: prof.name || '',
+      role: prof.role || 'teacher',
+      subject_default: prof.subject_default || 'Tiếng Anh',
+    });
+    setShowEditModal(true);
+  }
+
+  async function handleSaveEditAccount(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    setAccountMsg('');
+    if (!editAccountData.name) {
+      setAccountMsg('⚠️ Vui lòng nhập Họ và tên.');
+      return;
+    }
+    await updateTeacherProfile(editAccountData.originalEmail, {
+      name: editAccountData.name,
+      role: editAccountData.role,
+      subject_default: editAccountData.subject_default,
+    });
+
+    setTeachers(prev => prev.map(p => p.email === editAccountData.originalEmail ? {
+      ...p,
+      name: editAccountData.name,
+      role: editAccountData.role,
+      subject_default: editAccountData.subject_default,
+    } : p));
+
+    setAccountMsg('🟢 Cập nhật thông tin tài khoản thành công!');
+    setShowEditModal(false);
+    setTimeout(() => setAccountMsg(''), 3000);
+  }
+
+  async function handleExitAdmin() {
+    try {
+      await signOut();
+    } catch (e) {
+      console.error(e);
+    }
+    setTeacherSession(null);
+    if (onExit) {
+      onExit();
+    } else {
+      setView('teacher-auth');
+    }
   }
 
   // Export Master Report to Excel
@@ -360,52 +458,297 @@ export default function AdminView({ onExit }) {
           </div>
         )}
 
-        {/* ── TAB 2: QUẢN LÝ DỮ LIỆU ĐĂNG NHẬP GIÁO VIÊN ── */}
+        {/* ── TAB 2: QUẢN LÝ DỮ LIỆU & PHÂN QUYỀN TÀI KHOẢN GIÁO VIÊN ── */}
         {activeTab === 'teachers' && (
           <div className="space-y-6 animate-slide-up">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-              <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Users size={16} className="text-orange-500" />
-                <span>Danh sách Giáo viên được phép đăng nhập qua Google (@fpt.edu.vn)</span>
-              </h2>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                    <Users size={16} className="text-orange-500" />
+                    <span>Quản lý Tài Khoản &amp; Cấp Quyền Truy Cập</span>
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1 font-medium">Tạo mới, thăng quyền Super Admin hoặc tạm khóa tài khoản Giáo viên</p>
+                </div>
+
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <UserPlus size={15} />
+                  <span>Thêm Tài Khoản Mới</span>
+                </button>
+              </div>
+
+              {accountMsg && (
+                <div className="mb-4 p-3 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold rounded-xl animate-slide-down">
+                  {accountMsg}
+                </div>
+              )}
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-gray-700">
                   <thead className="bg-slate-50 text-gray-500 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200">
                     <tr>
                       <th className="p-4">STT</th>
-                      <th className="p-4">Họ và Tên Giáo Viên</th>
-                      <th className="p-4">Email Google (@fpt.edu.vn)</th>
-                      <th className="p-4">Môn giảng dạy</th>
-                      <th className="p-4">Đăng nhập gần nhất</th>
+                      <th className="p-4">Họ và Tên</th>
+                      <th className="p-4">Email</th>
+                      <th className="p-4">Môn dạy</th>
+                      <th className="p-4 text-center">Vai trò / Phân quyền</th>
                       <th className="p-4 text-center">Trạng thái</th>
+                      <th className="p-4 text-center">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {loadingTeachers ? (
-                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Đang tải danh sách giáo viên...</td></tr>
+                      <tr><td colSpan="7" className="text-center py-12 text-gray-400">Đang tải danh sách tài khoản...</td></tr>
                     ) : teachers.length === 0 ? (
-                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Chưa có dữ liệu giáo viên. Tất cả tài khoản có đuôi @fpt.edu.vn đều có thể đăng nhập.</td></tr>
+                      <tr><td colSpan="7" className="text-center py-12 text-gray-400">Chưa có dữ liệu tài khoản giáo viên.</td></tr>
                     ) : (
-                      teachers.map((prof, idx) => (
-                        <tr key={prof.email} className="hover:bg-orange-50/30 transition-colors">
-                          <td className="p-4 text-gray-400 font-bold">{idx + 1}</td>
-                          <td className="p-4 font-bold text-gray-900">{prof.name || 'Giáo viên'}</td>
-                          <td className="p-4 font-mono font-bold text-orange-600">{prof.email}</td>
-                          <td className="p-4">{prof.subject_default || 'Tiếng Anh'}</td>
-                          <td className="p-4 text-gray-500">{prof.last_login_at ? new Date(prof.last_login_at).toLocaleString('vi-VN') : 'Mới khởi tạo'}</td>
-                          <td className="p-4 text-center">
-                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold">
-                              Đang hoạt động
-                            </span>
-                          </td>
-                        </tr>
-                      ))
+                      teachers.map((prof, idx) => {
+                        const isAdmin = prof.role === 'admin' || prof.email === 'quytt16@fpt.edu.vn' || prof.email === 'feexpspace@gmail.com';
+                        const isActive = prof.is_active !== false;
+
+                        return (
+                          <tr key={prof.email} className="hover:bg-orange-50/30 transition-colors">
+                            <td className="p-4 text-gray-400 font-bold">{idx + 1}</td>
+                            <td className="p-4 font-bold text-gray-900 flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs">
+                                {(prof.name || prof.email)[0].toUpperCase()}
+                              </div>
+                              <span>{prof.name || 'Giáo viên'}</span>
+                            </td>
+                            <td className="p-4 font-mono font-bold text-orange-600">{prof.email}</td>
+                            <td className="p-4">{prof.subject_default || 'Tiếng Anh'}</td>
+                            
+                            {/* Role Column & Toggle */}
+                            <td className="p-4 text-center">
+                              <button
+                                onClick={() => handleToggleRole(prof.email, prof.role)}
+                                className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border cursor-pointer transition-all inline-flex items-center gap-1.5 ${
+                                  isAdmin
+                                    ? 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100'
+                                    : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                                }`}
+                                title="Bấm để đổi vai trò (Super Admin / Giáo viên)"
+                              >
+                                <Shield size={11} />
+                                <span>{isAdmin ? 'Super Admin' : 'Giáo viên'}</span>
+                              </button>
+                            </td>
+
+                            {/* Active Status Column & Toggle */}
+                            <td className="p-4 text-center">
+                              <button
+                                onClick={() => handleToggleActive(prof.email, prof.is_active)}
+                                className={`px-2.5 py-1 rounded-full text-[10px] font-bold border cursor-pointer transition-all inline-flex items-center gap-1 ${
+                                  isActive
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                    : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                }`}
+                                title="Bấm để Kích hoạt / Tạm khóa tài khoản"
+                              >
+                                {isActive ? <UserCheck size={11} /> : <UserX size={11} />}
+                                <span>{isActive ? 'Đang hoạt động' : 'Đã bị khóa'}</span>
+                              </button>
+                            </td>
+
+                            {/* Actions Column */}
+                            <td className="p-4 text-center">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => handleOpenEditModal(prof)}
+                                  className="w-8 h-8 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-600 flex items-center justify-center transition-colors cursor-pointer"
+                                  title="Chỉnh sửa tài khoản"
+                                >
+                                  <Edit3 size={13} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTeacher(prof.email)}
+                                  className="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors cursor-pointer"
+                                  title="Xóa tài khoản"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
               </div>
             </div>
+
+            {/* ── MODAL TẠO TÀI KHOẢN MỚI ── */}
+            {showAddModal && (
+              <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+                <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-orange-100 space-y-5 animate-scale-up">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2 text-orange-600 font-black text-base">
+                      <UserPlus size={20} />
+                      <span>Thêm Tài Khoản Mới</span>
+                    </div>
+                    <button
+                      onClick={() => setShowAddModal(false)}
+                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-orange-100 text-slate-400 hover:text-orange-600 flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleCreateAccount} className="space-y-4 text-left">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Email Đăng Nhập *</label>
+                      <input
+                        type="email"
+                        required
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-medium focus:border-orange-500 focus:outline-none"
+                        placeholder="Ví dụ: teacher@fpt.edu.vn hoặc gmail.com..."
+                        value={newAccount.email}
+                        onChange={e => setNewAccount({ ...newAccount, email: e.target.value })}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Họ và Tên *</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-medium focus:border-orange-500 focus:outline-none"
+                        placeholder="Ví dụ: Cô Nguyễn Thị Trang..."
+                        value={newAccount.name}
+                        onChange={e => setNewAccount({ ...newAccount, name: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Phân quyền</label>
+                        <select
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold focus:border-orange-500 focus:outline-none"
+                          value={newAccount.role}
+                          onChange={e => setNewAccount({ ...newAccount, role: e.target.value })}
+                        >
+                          <option value="teacher">Giáo viên</option>
+                          <option value="admin">Super Admin</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Môn giảng dạy</label>
+                        <input
+                          type="text"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium focus:border-orange-500 focus:outline-none"
+                          value={newAccount.subject_default}
+                          onChange={e => setNewAccount({ ...newAccount, subject_default: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddModal(false)}
+                        className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl transition-colors shadow-md shadow-orange-500/20 cursor-pointer"
+                      >
+                        Tạo Tài Khoản
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* ── MODAL CHỈNH SỬA TÀI KHOẢN ── */}
+            {showEditModal && (
+              <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+                <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-orange-100 space-y-5 animate-scale-up">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2 text-orange-600 font-black text-base">
+                      <Edit3 size={20} />
+                      <span>Chỉnh Sửa Tài Khoản</span>
+                    </div>
+                    <button
+                      onClick={() => setShowEditModal(false)}
+                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-orange-100 text-slate-400 hover:text-orange-600 flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSaveEditAccount} className="space-y-4 text-left">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Email Đăng Nhập</label>
+                      <input
+                        type="email"
+                        disabled
+                        className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-500 font-mono font-bold cursor-not-allowed"
+                        value={editAccountData.email}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Họ và Tên *</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-medium focus:border-orange-500 focus:outline-none"
+                        value={editAccountData.name}
+                        onChange={e => setEditAccountData({ ...editAccountData, name: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Phân quyền</label>
+                        <select
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold focus:border-orange-500 focus:outline-none"
+                          value={editAccountData.role}
+                          onChange={e => setEditAccountData({ ...editAccountData, role: e.target.value })}
+                        >
+                          <option value="teacher">Giáo viên</option>
+                          <option value="admin">Super Admin</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Môn giảng dạy</label>
+                        <input
+                          type="text"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-medium focus:border-orange-500 focus:outline-none"
+                          value={editAccountData.subject_default}
+                          onChange={e => setEditAccountData({ ...editAccountData, subject_default: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowEditModal(false)}
+                        className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl transition-colors shadow-md shadow-orange-500/20 cursor-pointer"
+                      >
+                        Lưu Thay Đổi
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

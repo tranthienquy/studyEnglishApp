@@ -19,12 +19,18 @@ CREATE TABLE IF NOT EXISTS teacher_profiles (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           TEXT UNIQUE NOT NULL,
   name            TEXT,
+  role            TEXT DEFAULT 'teacher',
   subject_default TEXT DEFAULT 'Tiếng Anh',
   avatar_url      TEXT,
   is_active       BOOLEAN DEFAULT TRUE,
   created_at      TIMESTAMPTZ DEFAULT NOW(),
-  last_login_at   TIMESTAMPTZ
+  last_login_at   TIMESTAMPTZ,
+  login_count     INT DEFAULT 1
 );
+
+-- Đảm bảo các cột mới tồn tại nếu bảng đã được tạo trước đó
+ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'teacher';
+ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS login_count INT DEFAULT 1;
 
 -- 3. Tạo bảng log học sinh sử dụng hệ thống
 CREATE TABLE IF NOT EXISTS student_logs (
@@ -76,9 +82,12 @@ CREATE POLICY "teacher_delete_own_tests"
 ALTER TABLE teacher_profiles ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "teacher_manage_own_profile" ON teacher_profiles;
-CREATE POLICY "teacher_manage_own_profile"
+DROP POLICY IF EXISTS "public_teacher_profiles" ON teacher_profiles;
+
+CREATE POLICY "public_teacher_profiles"
   ON teacher_profiles FOR ALL
-  USING (email = auth.email());
+  USING (true)
+  WITH CHECK (true);
 
 -- 6. RLS — Bảng student_logs
 ALTER TABLE student_logs ENABLE ROW LEVEL SECURITY;

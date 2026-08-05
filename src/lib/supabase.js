@@ -608,7 +608,8 @@ export async function createTeacherProfile({ email, name, role = 'teacher', subj
 
   if (client) {
     try {
-      await client.from('teacher_profiles').upsert(profile, { onConflict: 'email' });
+      const { error } = await client.from('teacher_profiles').upsert(profile, { onConflict: 'email' });
+      if (error) console.warn('Supabase createTeacherProfile notice:', error.message);
     } catch (e) {
       console.warn('Supabase createTeacherProfile failed:', e);
     }
@@ -635,7 +636,8 @@ export async function updateTeacherProfile(email, updates) {
 
   if (client) {
     try {
-      await client.from('teacher_profiles').update(updates).eq('email', cleanEmail);
+      const { error } = await client.from('teacher_profiles').update(updates).eq('email', cleanEmail);
+      if (error) console.warn('Supabase updateTeacherProfile notice:', error.message);
     } catch (e) {
       console.warn('Supabase updateTeacherProfile failed:', e);
     }
@@ -655,7 +657,8 @@ export async function deleteTeacherProfile(email) {
 
   if (client) {
     try {
-      await client.from('teacher_profiles').delete().eq('email', cleanEmail);
+      const { error } = await client.from('teacher_profiles').delete().eq('email', cleanEmail);
+      if (error) console.warn('Supabase deleteTeacherProfile notice:', error.message);
     } catch (e) {
       console.warn('Supabase deleteTeacherProfile failed:', e);
     }

@@ -221,7 +221,10 @@ export async function upsertTeacherProfile(teacher) {
         name: existingProfile?.name || defaultName,
         role: existingProfile?.role || role,
       };
-      await client.from('teacher_profiles').upsert(dbPayload, { onConflict: 'email' });
+      const { error } = await client.from('teacher_profiles').upsert(dbPayload, { onConflict: 'email' });
+      if (error) {
+        console.warn('Supabase teacher_profiles sync notice:', error.message);
+      }
     } catch (e) {
       console.warn('Could not sync teacher profile to Supabase:', e);
     }

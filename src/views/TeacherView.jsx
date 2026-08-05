@@ -4,7 +4,7 @@ import {
   CheckCircle2, Loader2, BookOpen, Save, Eye, EyeOff, FileEdit, RefreshCw,
   GripVertical, ChevronDown, ChevronUp, AlertTriangle, ArrowLeft,
   Users, Sparkles, Database, ExternalLink, Download, FileSpreadsheet, LogOut, ShieldCheck,
-  Share2, Copy, Check
+  Share2, Copy, Check, UserCircle, X, Calendar, Venus, Mars, GraduationCap
 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Leaderboard from '../components/teacher/Leaderboard';
@@ -46,11 +46,21 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const [uploadSubject, setUploadSubject] = useState('Tiếng Anh');
   const [uploadGrade, setUploadGrade] = useState('12');
   const [uploadDuration, setUploadDuration] = useState(50);
-  const [uploadTeacher, setUploadTeacher] = useState(teacherSession?.name || 'Cô Trang');
+  const [uploadTeacher, setUploadTeacher] = useState(teacherSession?.email || teacherSession?.name || '');
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [parseStatus, setParseStatus] = useState(null);
+  const [parseMsg, setParseMsg] = useState('');
   const fileInputRef = useRef(null);
+
+  // Teacher profile modal state
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    birth_year: '',
+    gender: '',
+    subjects: [],
+  });
 
   // Share test modal state
   const [shareModalUrl, setShareModalUrl] = useState('');
@@ -68,6 +78,84 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   useEffect(() => {
     loadTests();
   }, []);
+
+  // Sync uploadTeacher with current session email when session loads/changes
+  useEffect(() => {
+    if (teacherSession?.email) {
+      setUploadTeacher(teacherSession.email);
+    }
+  }, [teacherSession?.email]);
+
+  // Load teacher profile from localStorage when modal opens
+  function openProfileModal() {
+    const email = teacherSession?.email || '';
+    try {
+      const raw = localStorage.getItem('readingpro_teacher_profiles');
+      if (raw) {
+        const profiles = JSON.parse(raw);
+        const found = profiles.find(p => p.email?.toLowerCase() === email.toLowerCase());
+        if (found) {
+          setProfileForm({
+            name: found.name || teacherSession?.name || '',
+            birth_year: found.birth_year || '',
+            gender: found.gender || '',
+            subjects: found.subjects || [],
+          });
+          setShowProfileModal(true);
+          return;
+        }
+      }
+    } catch {}
+    setProfileForm({
+      name: teacherSession?.name || '',
+      birth_year: '',
+      gender: '',
+      subjects: [],
+    });
+    setShowProfileModal(true);
+  }
+
+  function saveProfileForm() {
+    const email = teacherSession?.email || '';
+    if (!email) return;
+    try {
+      const raw = localStorage.getItem('readingpro_teacher_profiles');
+      const profiles = raw ? JSON.parse(raw) : [];
+      const idx = profiles.findIndex(p => p.email?.toLowerCase() === email.toLowerCase());
+      const updated = {
+        ...(idx >= 0 ? profiles[idx] : {}),
+        email,
+        name: profileForm.name || teacherSession?.name || email,
+        birth_year: profileForm.birth_year,
+        gender: profileForm.gender,
+        subjects: profileForm.subjects,
+        updated_at: new Date().toISOString(),
+      };
+      if (idx >= 0) {
+        profiles[idx] = updated;
+      } else {
+        profiles.unshift(updated);
+      }
+      localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(profiles));
+      // Also update uploadTeacher name display
+      if (profileForm.name) setUploadTeacher(profileForm.name);
+      setShowProfileModal(false);
+    } catch (e) {
+      console.error('Save profile error:', e);
+    }
+  }
+
+  function toggleSubject(subjectValue) {
+    setProfileForm(prev => {
+      const exists = prev.subjects.includes(subjectValue);
+      return {
+        ...prev,
+        subjects: exists
+          ? prev.subjects.filter(s => s !== subjectValue)
+          : [...prev.subjects, subjectValue],
+      };
+    });
+  }
 
   const [hiddenVersion, setHiddenVersion] = useState(0);
 
@@ -478,15 +566,24 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Teacher Info Text (Minimal, No Avatar, No Chip) */}
+            {/* Teacher Info Text */}
             <div className="text-right sm:text-left mr-1">
               <div className="font-extrabold text-xs text-slate-900 leading-tight">
-                {teacherSession?.name || uploadTeacher || 'Trần Thiên Quý (FE HO HCM)'}
+                {teacherSession?.name || uploadTeacher || teacherSession?.email || 'Giáo viên'}
               </div>
               <div className="text-[11px] text-orange-600 font-bold leading-tight">
-                Giáo viên
+                {teacherSession?.email || 'Giáo viên'}
               </div>
             </div>
+
+            {/* Profile Button */}
+            <button
+              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
+              onClick={openProfileModal}
+              title="Chỉnh sửa thông tin hồ sơ giáo viên"
+            >
+              <UserCircle size={13} /> Hồ sơ GV
+            </button>
 
             <button
               className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
@@ -1299,6 +1396,148 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
           </div>
         </div>
       </Modal>
+
+      {/* ── MODAL HỒ SƠ GIÁO VIÊN ── */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60] animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl border border-amber-100 w-full max-w-lg overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2.5 text-white">
+                <UserCircle size={22} />
+                <div>
+                  <div className="font-black text-base leading-tight">HỒ SƠ GIÁO VIÊN</div>
+                  <div className="text-[11px] font-semibold opacity-80">Thông tin hiển thị trên hệ thống</div>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowProfileModal(false)}
+                className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* Email (readonly) */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Email đăng nhập</label>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-500 font-mono font-medium">
+                  {teacherSession?.email || '—'}
+                </div>
+              </div>
+
+              {/* Họ tên */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">
+                  Họ và tên <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
+                  placeholder="Ví dụ: Nguyễn Thị Minh Trang"
+                  value={profileForm.name}
+                  onChange={e => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+
+              {/* Năm sinh & Giới tính */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">
+                    <Calendar size={11} className="inline mr-1" />Năm sinh
+                  </label>
+                  <input
+                    type="number"
+                    min="1960"
+                    max="2005"
+                    placeholder="VD: 1990"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
+                    value={profileForm.birth_year}
+                    onChange={e => setProfileForm(prev => ({ ...prev, birth_year: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Giới tính</label>
+                  <div className="flex gap-2 mt-1.5">
+                    {[
+                      { value: 'Nam', label: 'Nam', icon: <Mars size={13} /> },
+                      { value: 'Nữ', label: 'Nữ', icon: <Venus size={13} /> },
+                      { value: 'Khác', label: 'Khác', icon: null },
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setProfileForm(prev => ({ ...prev, gender: opt.value }))}
+                        className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                          profileForm.gender === opt.value
+                            ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-amber-300'
+                        }`}
+                      >
+                        {opt.icon}{opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Môn giảng dạy (multi-select) */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-2">
+                  <GraduationCap size={12} className="inline mr-1" />Môn giảng dạy
+                  <span className="ml-1 text-slate-400 font-normal normal-case">(có thể chọn nhiều môn)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {SUBJECTS.map(s => {
+                    const selected = profileForm.subjects.includes(s.value);
+                    return (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => toggleSubject(s.value)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                          selected
+                            ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-amber-300 hover:bg-amber-50'
+                        }`}
+                      >
+                        <span>{s.icon}</span>
+                        <span>{s.label}</span>
+                        {selected && <Check size={11} />}
+                      </button>
+                    );
+                  })}
+                </div>
+                {profileForm.subjects.length > 0 && (
+                  <p className="text-[11px] text-amber-600 font-semibold mt-1.5">
+                    ✓ Đã chọn: {profileForm.subjects.join(', ')}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-100 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={saveProfileForm}
+                className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
+              >
+                <Save size={14} /> Lưu hồ sơ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

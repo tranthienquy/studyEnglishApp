@@ -166,6 +166,7 @@ const useAppStore = create(
       partialize: (state) => ({
         view: state.view,
         student: state.student,
+        teacherSession: state.teacherSession,
         currentTest: state.currentTest,
         answers: state.answers,
         flaggedArray: state.flaggedArray || Array.from(state.flagged || []),

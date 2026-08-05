@@ -52,7 +52,7 @@ export default function ResultView() {
             KẾT QUẢ BÀI THI CỦA BẠN
           </h1>
           <p className="text-xs text-orange-600 font-semibold mb-6">
-            {result.studentName} – Lớp {result.studentClass}
+            {result.studentName} {student?.studentId ? `(Mã: ${student.studentId})` : ''} – Lớp {result.studentClass}
           </p>
 
           {/* 3 Column Metrics Cards */}

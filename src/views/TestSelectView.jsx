@@ -26,7 +26,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
   }, []);
 
   function handleSelectTest(test) {
-    saveStudentLog(student?.name || 'Học sinh', student?.class || '12A1', test.id || test.code, test.title);
+    saveStudentLog(student?.name || 'Học sinh', student?.class || '12A1', test.id || test.code, test.title, student?.studentId);
     startTest(student, test);
   }
 
@@ -98,6 +98,11 @@ export default function TestSelectView({ onSwitchTeacher }) {
             <div className="hidden sm:flex items-center gap-1.5 text-xs">
               <span className="text-gray-500 font-medium">Xin chào,</span>
               <span className="text-gray-900 font-extrabold">{student?.name || 'Học sinh'}</span>
+              {student?.studentId && (
+                <span className="text-[10px] font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200 font-mono">
+                  Mã: {student.studentId}
+                </span>
+              )}
               <span className="text-[10px] font-bold bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full border border-orange-100/90 ml-0.5">
                 Lớp {student?.class || '12A1'}
               </span>

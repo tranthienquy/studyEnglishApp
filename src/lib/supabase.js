@@ -678,15 +678,119 @@ function getLocalTeacherProfiles() {
   }
 }
 
-export async function saveStudentLog(studentName, studentClass, testId = null, testTitle = null) {
+// ---- Student Account & Activity Log Management ----
+export async function upsertStudentAccount({ studentId, name, studentClass }) {
+  if (!studentId) return;
+
+  const cleanId = studentId.trim().toUpperCase();
+  const cleanName = name?.trim() || 'Học sinh';
+  const cleanClass = studentClass?.trim().toUpperCase() || 'N/A';
+  const now = new Date().toISOString();
+
+  // Read existing from local storage to calculate login_count & created_at
+  let existingAccount = null;
+  try {
+    const raw = localStorage.getItem('readingpro_student_accounts');
+    if (raw) {
+      const accounts = JSON.parse(raw);
+      existingAccount = accounts.find(a => a.student_id?.toUpperCase() === cleanId) || null;
+    }
+  } catch {}
+
+  const loginCount = (existingAccount?.login_count || 0) + 1;
+  const createdAt = existingAccount?.created_at || now;
+
+  const accountData = {
+    student_id: cleanId,
+    name: cleanName,
+    class: cleanClass,
+    created_at: createdAt,
+    last_login_at: now,
+    login_count: loginCount,
+  };
+
+  // 1. Save to Supabase DB if available
+  const client = getClient();
+  if (client) {
+    try {
+      await client.from('student_accounts').upsert(accountData, { onConflict: 'student_id' });
+    } catch (e) {
+      console.warn('Supabase upsertStudentAccount failed:', e);
+    }
+  }
+
+  // 2. Sync to LocalStorage (deduplicate by student_id)
+  try {
+    const raw = localStorage.getItem('readingpro_student_accounts');
+    const accounts = raw ? JSON.parse(raw) : [];
+    const idx = accounts.findIndex(a => a.student_id?.toUpperCase() === cleanId);
+    if (idx >= 0) {
+      accounts[idx] = {
+        ...accounts[idx],
+        name: cleanName || accounts[idx].name,
+        class: cleanClass || accounts[idx].class,
+        last_login_at: now,
+        login_count: loginCount,
+      };
+    } else {
+      accounts.unshift(accountData);
+    }
+    localStorage.setItem('readingpro_student_accounts', JSON.stringify(accounts));
+  } catch (e) {
+    console.warn('LocalStorage sync student account failed:', e);
+  }
+}
+
+export async function getAllStudentAccounts() {
+  const client = getClient();
+  let dbAccounts = [];
+  if (client) {
+    try {
+      const { data } = await client.from('student_accounts').select('*').order('last_login_at', { ascending: false });
+      if (data && data.length > 0) dbAccounts = data;
+    } catch (e) {
+      console.warn('Fetch student accounts failed:', e);
+    }
+  }
+
+  let localAccounts = [];
+  try {
+    const raw = localStorage.getItem('readingpro_student_accounts');
+    localAccounts = raw ? JSON.parse(raw) : [];
+  } catch {}
+
+  const mergedMap = new Map();
+  for (const la of localAccounts) {
+    if (la?.student_id) mergedMap.set(la.student_id.toUpperCase(), la);
+  }
+  for (const da of dbAccounts) {
+    if (da?.student_id) {
+      const existing = mergedMap.get(da.student_id.toUpperCase()) || {};
+      mergedMap.set(da.student_id.toUpperCase(), { ...existing, ...da });
+    }
+  }
+
+  return Array.from(mergedMap.values()).sort((a, b) => {
+    const timeA = new Date(a.last_login_at || a.created_at || 0).getTime();
+    const timeB = new Date(b.last_login_at || b.created_at || 0).getTime();
+    return timeB - timeA;
+  });
+}
+
+export async function saveStudentLog(studentName, studentClass, testId = null, testTitle = null, studentId = null) {
   const client = getClient();
   const logData = {
+    student_id: studentId ? String(studentId).trim().toUpperCase() : null,
     student_name: studentName,
     student_class: studentClass,
     test_id: testId,
     test_title: testTitle,
     created_at: new Date().toISOString(),
   };
+
+  if (studentId) {
+    await upsertStudentAccount({ studentId, name: studentName, studentClass });
+  }
 
   if (client) {
     try {

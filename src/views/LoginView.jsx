@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { GraduationCap, User, Users, ArrowRight, Clock, BookOpen, ShieldCheck } from 'lucide-react';
+import { GraduationCap, User, Users, ArrowRight, Clock, BookOpen, ShieldCheck, CreditCard } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
 
 export default function LoginView({ onSwitchTeacher }) {
   const { setStudent, setView } = useAppStore();
   const [form, setForm] = useState({
     name: '',
+    studentId: '',
     class: '',
   });
   const [error, setError] = useState('');
@@ -17,8 +18,10 @@ export default function LoginView({ onSwitchTeacher }) {
 
   function handleStart() {
     if (!form.name.trim()) { setError('Vui lòng nhập họ và tên học sinh.'); return; }
+    if (!form.studentId.trim()) { setError('Vui lòng nhập mã số học sinh.'); return; }
     if (!form.class.trim()) { setError('Vui lòng nhập lớp học.'); return; }
 
+    const cleanStudentId = form.studentId.trim().toUpperCase();
     const cleanClass = form.class.trim().toUpperCase();
     const isClassValid = cleanClass.startsWith('10') || cleanClass.startsWith('11') || cleanClass.startsWith('12');
     if (!isClassValid) {
@@ -26,7 +29,11 @@ export default function LoginView({ onSwitchTeacher }) {
       return;
     }
 
-    setStudent({ name: form.name.trim(), class: cleanClass });
+    setStudent({
+      name: form.name.trim(),
+      studentId: cleanStudentId,
+      class: cleanClass,
+    });
     setView('test-select');
   }
 
@@ -74,6 +81,30 @@ export default function LoginView({ onSwitchTeacher }) {
                 <User size={15} className="absolute left-3 top-3.5 text-gray-400" />
               </div>
             </div>
+
+            {/* Student ID (Mã số học sinh) */}
+            <div>
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <CreditCard size={13} className="text-orange-500" />  MÃ SỐ HỌC SINH <span className="text-red-500">*</span>
+                </span>
+                <span className="text-[10px] text-gray-400 font-normal normal-case">(Mã định danh HS)</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="student-id"
+                  type="text"
+                  className="input input-bordered w-full bg-slate-50 border-slate-200 focus:border-orange-500 focus:bg-white text-sm h-11 pl-9 rounded-xl font-medium font-mono uppercase"
+                  placeholder="Ví dụ: HS123456..."
+                  value={form.studentId}
+                  onChange={e => update('studentId', e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleStart()}
+                />
+                <CreditCard size={15} className="absolute left-3 top-3.5 text-gray-400" />
+              </div>
+            </div>
+
+            {/* Class */}
 
             {/* Class */}
             <div>

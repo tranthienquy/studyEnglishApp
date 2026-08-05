@@ -7,7 +7,7 @@ import {
 import {
   getAllTests, deleteTest, toggleHideTest, isTestHidden,
   getAllTeacherProfiles, createTeacherProfile, updateTeacherProfile, deleteTeacherProfile,
-  getAllStudentLogs, exportResultsToExcel
+  getAllStudentLogs, getAllStudentAccounts, exportResultsToExcel
 } from '../lib/supabase';
 import { signOut } from '../lib/auth';
 import { SUBJECTS } from '../lib/templates';
@@ -36,8 +36,9 @@ export default function AdminView({ onExit }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editAccountData, setEditAccountData] = useState({ originalEmail: '', email: '', name: '', role: 'teacher', subject_default: 'Tiếng Anh' });
 
-  // Student logs state
+  // Student logs & student accounts state
   const [students, setStudents] = useState([]);
+  const [studentAccounts, setStudentAccounts] = useState([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
 
   // Admin password change state
@@ -54,10 +55,11 @@ export default function AdminView({ onExit }) {
     setLoadingTeachers(true);
     setLoadingStudents(true);
 
-    const [allTestsData, profilesData, logsData] = await Promise.all([
+    const [allTestsData, profilesData, logsData, accountsData] = await Promise.all([
       getAllTests(true), // include hidden tests
       getAllTeacherProfiles(),
       getAllStudentLogs(),
+      getAllStudentAccounts(),
     ]);
 
     setTests(allTestsData || []);
@@ -67,6 +69,7 @@ export default function AdminView({ onExit }) {
     setLoadingTeachers(false);
 
     setStudents(logsData || []);
+    setStudentAccounts(accountsData || []);
     setLoadingStudents(false);
   }
 
@@ -339,7 +342,7 @@ export default function AdminView({ onExit }) {
             }`}
           >
             <GraduationCap size={16} />
-            <span>DANH SÁCH HỌC SINH SỬ DỤNG ({students.length})</span>
+            <span>TÀI KHOẢN HỌC SINH ({studentAccounts.length})</span>
           </button>
 
           <button
@@ -766,10 +769,65 @@ export default function AdminView({ onExit }) {
         {/* ── TAB 3: DANH SÁCH HỌC SINH SỬ DỤNG ── */}
         {activeTab === 'students' && (
           <div className="space-y-6 animate-slide-up">
+            {/* CARD 1: TÀI KHOẢN HỌC SINH ĐÃ GHI NHẬN (THEO MÃ SỐ HS) */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                    <GraduationCap size={16} className="text-orange-500" />
+                    <span>Tài Khoản Học Sinh Đã Ghi Nhận ({studentAccounts.length})</span>
+                  </h2>
+                  <p className="text-xs text-gray-400 font-medium mt-0.5">Tự động tích lũy và hợp nhất theo Mã số học sinh (Không trùng lặp)</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-gray-700">
+                  <thead className="bg-slate-50 text-gray-500 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200">
+                    <tr>
+                      <th className="p-4">STT</th>
+                      <th className="p-4">Mã số Học sinh</th>
+                      <th className="p-4">Họ và Tên</th>
+                      <th className="p-4">Lớp học</th>
+                      <th className="p-4 text-center">Số lần truy cập</th>
+                      <th className="p-4 text-center">Đăng nhập gần nhất</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 font-medium">
+                    {loadingStudents ? (
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Đang tải danh sách tài khoản học sinh...</td></tr>
+                    ) : studentAccounts.length === 0 ? (
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Chưa có tài khoản học sinh nào đăng nhập.</td></tr>
+                    ) : (
+                      studentAccounts.map((acc, idx) => (
+                        <tr key={acc.student_id || idx} className="hover:bg-orange-50/30 transition-colors">
+                          <td className="p-4 text-gray-400 font-bold">{idx + 1}</td>
+                          <td className="p-4 font-mono font-extrabold text-orange-600 bg-orange-50/50 px-3 py-1 rounded-lg inline-block my-2">
+                            {acc.student_id}
+                          </td>
+                          <td className="p-4 font-bold text-gray-900">{acc.name || 'Học sinh'}</td>
+                          <td className="p-4 font-bold text-slate-700">{acc.class || 'N/A'}</td>
+                          <td className="p-4 text-center">
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-[10px] font-black">
+                              {acc.login_count ? `${acc.login_count} lần` : '1 lần'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-center text-gray-500">
+                            {acc.last_login_at ? new Date(acc.last_login_at).toLocaleString('vi-VN') : 'N/A'}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* CARD 2: NHẬT KÝ CHI TIẾT TRUY CẬP & BÀI THI */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
               <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <GraduationCap size={16} className="text-orange-500" />
-                <span>Nhật ký truy cập &amp; lượt làm bài của Học sinh</span>
+                <BookOpen size={16} className="text-orange-500" />
+                <span>Nhật ký truy cập &amp; lượt làm bài chi tiết ({students.length})</span>
               </h2>
 
               <div className="overflow-x-auto">
@@ -777,6 +835,7 @@ export default function AdminView({ onExit }) {
                   <thead className="bg-slate-50 text-gray-500 font-bold uppercase tracking-wider text-[11px] border-b border-gray-200">
                     <tr>
                       <th className="p-4">STT</th>
+                      <th className="p-4">Mã số HS</th>
                       <th className="p-4">Họ tên Học sinh</th>
                       <th className="p-4">Lớp học</th>
                       <th className="p-4">Bài thi chọn làm</th>
@@ -785,13 +844,14 @@ export default function AdminView({ onExit }) {
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {loadingStudents ? (
-                      <tr><td colSpan="5" className="text-center py-12 text-gray-400">Đang tải nhật ký học sinh...</td></tr>
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Đang tải nhật ký học sinh...</td></tr>
                     ) : students.length === 0 ? (
-                      <tr><td colSpan="5" className="text-center py-12 text-gray-400">Chưa có dữ liệu truy cập của học sinh.</td></tr>
+                      <tr><td colSpan="6" className="text-center py-12 text-gray-400">Chưa có dữ liệu truy cập của học sinh.</td></tr>
                     ) : (
                       students.map((log, idx) => (
                         <tr key={log.id || idx} className="hover:bg-orange-50/30 transition-colors">
                           <td className="p-4 text-gray-400 font-bold">{idx + 1}</td>
+                          <td className="p-4 font-mono font-bold text-slate-500">{log.student_id || 'N/A'}</td>
                           <td className="p-4 font-bold text-gray-900">{log.student_name}</td>
                           <td className="p-4 font-bold text-orange-600">{log.student_class}</td>
                           <td className="p-4 font-medium text-gray-700">{log.test_title || 'Truy cập hệ thống'}</td>

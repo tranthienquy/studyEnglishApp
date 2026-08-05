@@ -44,6 +44,7 @@ export default function TestView({ isReviewMode = false }) {
     saveResult({
       student_name: student?.name || 'Học sinh',
       student_class: student?.class || '12A1',
+      student_id: student?.studentId || null,
       teacher: currentTest?.teacher || 'Cô Trang',
       test_id: currentTest?.id || currentTest?.code || '',
       test_code: currentTest?.code || '',

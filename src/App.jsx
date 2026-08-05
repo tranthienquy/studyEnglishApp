@@ -16,13 +16,18 @@ import Footer from './components/ui/Footer';
 export default function App() {
   const { view, setView, setCurrentTest, student, setTeacherSession, teacherSession } = useAppStore();
 
+  const hasSyncedAuth = React.useRef(false);
+
   // 1. Auth Listener & Initial Teacher Session Sync
   React.useEffect(() => {
     async function handleAuthUser(email, name, avatar) {
       if (!email || !isValidTeacherEmail(email)) return;
       const teacherObj = { email, name: name || email.split('@')[0], avatar };
       setTeacherSession(teacherObj);
-      await upsertTeacherProfile(teacherObj);
+      if (!hasSyncedAuth.current) {
+        hasSyncedAuth.current = true;
+        await upsertTeacherProfile(teacherObj);
+      }
     }
 
     // Subscribe to auth changes (handles Google SSO redirect return)
@@ -37,9 +42,10 @@ export default function App() {
 
     // Initial session check
     async function checkInitialSession() {
-      if (isRealSupabaseConfigured()) {
+      if (isRealSupabaseConfigured() && !hasSyncedAuth.current) {
         const teacher = await getCurrentTeacher();
         if (teacher && isValidTeacherEmail(teacher.email)) {
+          hasSyncedAuth.current = true;
           setTeacherSession(teacher);
           await upsertTeacherProfile(teacher);
         }

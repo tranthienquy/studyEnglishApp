@@ -175,36 +175,18 @@ export async function upsertTeacherProfile(teacher) {
   const loginCount = (existingProfile?.login_count || 0) + 1;
   const createdAt = existingProfile?.created_at || now;
 
-  // DB payload: send ONLY standard columns present in teacher_profiles schema
-  const dbPayload = {
+  const localProfileData = {
     email: cleanEmail,
     name: existingProfile?.name || defaultName,
+    avatar_url: teacher.avatar || existingProfile?.avatar_url || null,
     role: existingProfile?.role || role,
     is_active: existingProfile?.is_active !== false,
-    last_login_at: now,
-  };
-
-  const localProfileData = {
-    ...dbPayload,
-    avatar_url: teacher.avatar || existingProfile?.avatar_url || null,
     created_at: createdAt,
+    last_login_at: now,
     login_count: loginCount,
   };
 
-  // 1. Save to Supabase DB if available (update first, insert if not existing)
-  const client = getClient();
-  if (client) {
-    try {
-      const { data, error } = await client.from('teacher_profiles').update(dbPayload).eq('email', cleanEmail).select();
-      if (error || !data || data.length === 0) {
-        await client.from('teacher_profiles').insert(dbPayload);
-      }
-    } catch (e) {
-      console.warn('Could not sync teacher profile to Supabase:', e);
-    }
-  }
-
-  // 2. Sync to LocalStorage for immediate display in Admin portal
+  // 1. Sync to LocalStorage for immediate, 100% reliable display in Super Admin portal
   try {
     const raw = localStorage.getItem('readingpro_teacher_profiles');
     const profiles = raw ? JSON.parse(raw) : [];
@@ -228,5 +210,20 @@ export async function upsertTeacherProfile(teacher) {
     localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(profiles));
   } catch (e) {
     console.warn('Could not sync teacher profile to localStorage:', e);
+  }
+
+  // 2. Safely sync to Supabase DB if available (single clean upsert call)
+  const client = getClient();
+  if (client) {
+    try {
+      const dbPayload = {
+        email: cleanEmail,
+        name: existingProfile?.name || defaultName,
+        role: existingProfile?.role || role,
+      };
+      await client.from('teacher_profiles').upsert(dbPayload, { onConflict: 'email' });
+    } catch (e) {
+      console.warn('Could not sync teacher profile to Supabase:', e);
+    }
   }
 }

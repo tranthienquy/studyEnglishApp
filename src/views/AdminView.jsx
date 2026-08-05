@@ -494,6 +494,7 @@ export default function AdminView({ onExit }) {
                       <th className="p-4">Họ và Tên</th>
                       <th className="p-4">Email</th>
                       <th className="p-4">Môn dạy</th>
+                      <th className="p-4 text-center">Đăng nhập gần nhất</th>
                       <th className="p-4 text-center">Vai trò / Phân quyền</th>
                       <th className="p-4 text-center">Trạng thái</th>
                       <th className="p-4 text-center">Thao tác</th>
@@ -501,9 +502,9 @@ export default function AdminView({ onExit }) {
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {loadingTeachers ? (
-                      <tr><td colSpan="7" className="text-center py-12 text-gray-400">Đang tải danh sách tài khoản...</td></tr>
+                      <tr><td colSpan="8" className="text-center py-12 text-gray-400">Đang tải danh sách tài khoản...</td></tr>
                     ) : teachers.length === 0 ? (
-                      <tr><td colSpan="7" className="text-center py-12 text-gray-400">Chưa có dữ liệu tài khoản giáo viên.</td></tr>
+                      <tr><td colSpan="8" className="text-center py-12 text-gray-400">Chưa có dữ liệu tài khoản giáo viên.</td></tr>
                     ) : (
                       teachers.map((prof, idx) => {
                         const isAdmin = prof.role === 'admin' || prof.email === 'quytt16@fpt.edu.vn' || prof.email === 'feexpspace@gmail.com';
@@ -521,6 +522,16 @@ export default function AdminView({ onExit }) {
                             <td className="p-4 font-mono font-bold text-orange-600">{prof.email}</td>
                             <td className="p-4">{prof.subject_default || 'Tiếng Anh'}</td>
                             
+                            {/* Last Login & Count */}
+                            <td className="p-4 text-center text-[11px]">
+                              <div className="font-bold text-slate-800">
+                                {prof.last_login_at ? new Date(prof.last_login_at).toLocaleString('vi-VN') : 'Mới khởi tạo'}
+                              </div>
+                              <div className="text-[10px] text-amber-600 font-semibold mt-0.5">
+                                {prof.login_count ? `${prof.login_count} lần đăng nhập` : '1 lần đăng nhập'}
+                              </div>
+                            </td>
+
                             {/* Role Column & Toggle */}
                             <td className="p-4 text-center">
                               <button

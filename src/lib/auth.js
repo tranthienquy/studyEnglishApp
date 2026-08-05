@@ -152,25 +152,41 @@ export function onAuthStateChange(callback) {
 
 /**
  * Upsert teacher profile in DB & LocalStorage after successful login
+ * Ensures accounts are recorded for Super Admin and 2nd+ logins do not create duplicate records
  */
 export async function upsertTeacherProfile(teacher) {
   if (!teacher?.email) return;
 
   const cleanEmail = teacher.email.trim().toLowerCase();
-  const name = teacher.name || cleanEmail.split('@')[0];
+  const defaultName = teacher.name || cleanEmail.split('@')[0];
   const role = isAdminEmail(cleanEmail) ? 'admin' : 'teacher';
   const now = new Date().toISOString();
 
+  // Read existing profiles from LocalStorage first to preserve user profile edits and count logins
+  let existingProfile = null;
+  try {
+    const raw = localStorage.getItem('readingpro_teacher_profiles');
+    if (raw) {
+      const profiles = JSON.parse(raw);
+      existingProfile = profiles.find(p => p.email?.toLowerCase() === cleanEmail) || null;
+    }
+  } catch {}
+
+  const loginCount = (existingProfile?.login_count || 0) + 1;
+  const createdAt = existingProfile?.created_at || now;
+
   const profileData = {
     email: cleanEmail,
-    name,
-    avatar_url: teacher.avatar || null,
-    role,
-    is_active: true,
+    name: existingProfile?.name || defaultName,
+    avatar_url: teacher.avatar || existingProfile?.avatar_url || null,
+    role: existingProfile?.role || role,
+    is_active: existingProfile?.is_active !== false,
+    created_at: createdAt,
     last_login_at: now,
+    login_count: loginCount,
   };
 
-  // 1. Save to Supabase DB if available
+  // 1. Save to Supabase DB if available (upsert with onConflict: 'email' prevents duplicate records)
   const client = getClient();
   if (client) {
     try {
@@ -186,17 +202,19 @@ export async function upsertTeacherProfile(teacher) {
     const profiles = raw ? JSON.parse(raw) : [];
     const idx = profiles.findIndex(p => p.email?.toLowerCase() === cleanEmail);
     if (idx >= 0) {
+      // 2nd+ Login: Update existing record without creating duplicates
       profiles[idx] = {
         ...profiles[idx],
-        name: name || profiles[idx].name,
-        avatar_url: teacher.avatar || profiles[idx].avatar_url,
+        name: profiles[idx].name || profileData.name,
+        avatar_url: profileData.avatar_url || profiles[idx].avatar_url,
         last_login_at: now,
+        login_count: loginCount,
       };
     } else {
+      // 1st Login: Record new account for Super Admin
       profiles.unshift({
         ...profileData,
         subject_default: 'Tiếng Anh',
-        created_at: now,
       });
     }
     localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(profiles));

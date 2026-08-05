@@ -8,13 +8,51 @@ import TeacherView from './views/TeacherView';
 import TeacherAuthView from './views/TeacherAuthView';
 import AdminView from './views/AdminView';
 
-import { getTestByCode } from './lib/supabase';
+import { getTestByCode, isRealSupabaseConfigured } from './lib/supabase';
+import { onAuthStateChange, getCurrentTeacher, isValidTeacherEmail, isAdminEmail, upsertTeacherProfile } from './lib/auth';
 
 import Footer from './components/ui/Footer';
 
 export default function App() {
-  const { view, setView, setCurrentTest, student } = useAppStore();
+  const { view, setView, setCurrentTest, student, setTeacherSession, teacherSession } = useAppStore();
 
+  // 1. Auth Listener & Initial Teacher Session Sync
+  React.useEffect(() => {
+    async function handleAuthUser(email, name, avatar) {
+      if (!email || !isValidTeacherEmail(email)) return;
+      const teacherObj = { email, name: name || email.split('@')[0], avatar };
+      setTeacherSession(teacherObj);
+      await upsertTeacherProfile(teacherObj);
+    }
+
+    // Subscribe to auth changes (handles Google SSO redirect return)
+    const unsubscribe = onAuthStateChange(async (session) => {
+      if (session?.user?.email) {
+        const email = session.user.email;
+        const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || email.split('@')[0];
+        const avatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null;
+        await handleAuthUser(email, name, avatar);
+      }
+    });
+
+    // Initial session check
+    async function checkInitialSession() {
+      if (isRealSupabaseConfigured()) {
+        const teacher = await getCurrentTeacher();
+        if (teacher && isValidTeacherEmail(teacher.email)) {
+          setTeacherSession(teacher);
+          await upsertTeacherProfile(teacher);
+        }
+      }
+    }
+    checkInitialSession();
+
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
+  }, []);
+
+  // 2. Check Shared Links
   React.useEffect(() => {
     async function checkSharedLink() {
       try {

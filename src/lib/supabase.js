@@ -563,15 +563,35 @@ export function clearAllMockTests() {
 // ---- Teacher Profiles & Student Activity Logs ----
 export async function getAllTeacherProfiles() {
   const client = getClient();
-  if (!client) return getLocalTeacherProfiles();
-  try {
-    const { data } = await client.from('teacher_profiles').select('*').order('created_at', { ascending: false });
-    if (data && data.length > 0) return data;
-    return getLocalTeacherProfiles();
-  } catch (e) {
-    console.warn('Fetch teacher profiles failed:', e);
-    return getLocalTeacherProfiles();
+  let dbProfiles = [];
+  if (client) {
+    try {
+      const { data } = await client.from('teacher_profiles').select('*').order('last_login_at', { ascending: false });
+      if (data && data.length > 0) dbProfiles = data;
+    } catch (e) {
+      console.warn('Fetch teacher profiles failed:', e);
+    }
   }
+
+  const localProfiles = getLocalTeacherProfiles();
+
+  // Deduplicate by email
+  const mergedMap = new Map();
+  for (const lp of localProfiles) {
+    if (lp?.email) mergedMap.set(lp.email.toLowerCase(), lp);
+  }
+  for (const dp of dbProfiles) {
+    if (dp?.email) {
+      const existing = mergedMap.get(dp.email.toLowerCase()) || {};
+      mergedMap.set(dp.email.toLowerCase(), { ...existing, ...dp });
+    }
+  }
+
+  return Array.from(mergedMap.values()).sort((a, b) => {
+    const timeA = new Date(a.last_login_at || a.created_at || 0).getTime();
+    const timeB = new Date(b.last_login_at || b.created_at || 0).getTime();
+    return timeB - timeA;
+  });
 }
 
 export async function createTeacherProfile({ email, name, role = 'teacher', subject_default = 'Tiếng Anh' }) {

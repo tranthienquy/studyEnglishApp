@@ -22,7 +22,7 @@ export default function LoginView({ onSwitchTeacher }) {
     const cleanClass = form.class.trim().toUpperCase();
     const isClassValid = cleanClass.startsWith('10') || cleanClass.startsWith('11') || cleanClass.startsWith('12');
     if (!isClassValid) {
-      setError('Tên lớp không hợp lệ! Lớp phải bắt đầu bằng 10, 11 hoặc 12 (Ví dụ: 10A1, 11A2, 12A1...).');
+      setError('Tên lớp không hợp lệ!');
       return;
     }
 
@@ -100,7 +100,7 @@ export default function LoginView({ onSwitchTeacher }) {
             {/* Error Message */}
             {error && (
               <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-medium animate-slide-down">
-                ⚠️ {error}
+                {error}
               </div>
             )}
 

@@ -570,57 +570,59 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-[#F8FAFC] to-orange-50/30 text-gray-800 font-sans pb-12 pt-20">
       {/* ── Top Header Navigation Bar ── */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-amber-200/80 px-6 py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="bg-white/95 backdrop-blur-md border-b border-amber-200/80 px-3 sm:px-6 py-2.5 sm:py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <img
               src="/fpt-logo.png"
               alt="FPT Schools Logo"
-              className="w-10 h-10 object-contain rounded-xl shadow-2xs"
+              className="w-8 h-8 sm:w-10 sm:h-10 object-contain rounded-xl shadow-2xs flex-shrink-0"
             />
-            <div>
-              <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="font-extrabold text-xs sm:text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent truncate">
                 HỆ THỐNG ÔN TẬP FPT SCHOOLS
               </h1>
-              <p className="text-[11px] text-orange-600 font-bold tracking-wide">
+              <p className="text-[10px] sm:text-[11px] text-orange-600 font-bold tracking-wide hidden sm:block">
                 Trang dành cho Giáo viên
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Teacher Info Text */}
-            <div className="text-right sm:text-left mr-1">
-              <div className="font-extrabold text-xs text-slate-900 leading-tight">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            {/* Teacher Info Text — hidden on very small screens */}
+            <div className="text-right mr-0.5 sm:mr-1 hidden md:block">
+              <div className="font-extrabold text-xs text-slate-900 leading-tight truncate max-w-[180px]">
                 {teacherSession?.name || uploadTeacher || teacherSession?.email || 'Giáo viên'}
               </div>
-              <div className="text-[11px] text-orange-600 font-bold leading-tight">
+              <div className="text-[11px] text-orange-600 font-bold leading-tight truncate max-w-[180px]">
                 {teacherSession?.email || 'Giáo viên'}
               </div>
             </div>
 
             {/* Profile Button */}
             <button
-              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
+              className="btn btn-sm bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl cursor-pointer px-2 sm:px-3"
               onClick={openProfileModal}
               title="Chỉnh sửa thông tin hồ sơ giáo viên"
             >
-              <UserCircle size={13} /> Hồ sơ GV
+              <UserCircle size={13} />
+              <span className="hidden sm:inline">Hồ sơ GV</span>
             </button>
 
             <button
-              className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs gap-1.5 rounded-xl cursor-pointer"
+              className="btn btn-sm bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl cursor-pointer px-2 sm:px-3"
               onClick={handleLogout}
               title="Đăng xuất và quay lại trang đăng nhập"
             >
-              <LogOut size={13} /> Đăng xuất
+              <LogOut size={13} />
+              <span className="hidden sm:inline">Đăng xuất</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* ── Main 2-Column Content ── */}
-      <main className="max-w-7xl mx-auto px-6 mt-2 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 mt-2 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
 
         {/* ── LEFT COLUMN (Sidebar: Available Tests & AI Upload Zone) ── */}
         <div className="lg:col-span-4 space-y-6">
@@ -871,8 +873,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         <div className="lg:col-span-8 space-y-6">
 
           {/* 1. Header Overview Banner */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 relative overflow-hidden">
-            <div className="flex items-start justify-between">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 mb-2 min-h-[22px]">
                   {editingTest ? (
@@ -903,10 +905,10 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   disabled={!editingTest}
-                  className={`h-9 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] ${
+                  className={`h-8 sm:h-9 px-3 sm:px-4 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 shadow-2xs min-w-0 sm:min-w-[110px] ${
                     !editingTest
                       ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
                       : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 cursor-pointer'
@@ -922,7 +924,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                   return (
                     <button
                       disabled={!editingTest}
-                      className={`h-9 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs min-w-[110px] border ${
+                      className={`h-8 sm:h-9 px-3 sm:px-4 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 shadow-2xs min-w-0 sm:min-w-[110px] border ${
                         !editingTest
                           ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                           : isHidden
@@ -949,7 +951,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
                 <button
                   disabled={!editingTest}
-                  className={`h-9 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs ${
+                  className={`h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 shadow-2xs ${
                     !editingTest
                       ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
                       : 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-none cursor-pointer shadow-orange-500/20 active:scale-[0.98]'

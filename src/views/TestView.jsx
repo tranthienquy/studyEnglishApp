@@ -64,24 +64,24 @@ export default function TestView({ isReviewMode = false }) {
     <div className="tv-root">
 
       {/* ══ MAIN TOP HEADER ══ */}
-      <header className="bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between gap-4 flex-shrink-0">
+      <header className="bg-white border-b border-gray-200 px-2.5 sm:px-4 py-2 flex items-center justify-between gap-2 sm:gap-4 flex-shrink-0">
         {/* Left: Brand Icon + Title */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0">
-            <GraduationCap size={22} strokeWidth={1.5} />
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0">
+            <GraduationCap size={18} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-sm font-extrabold text-gray-900 truncate">
+            <h1 className="text-xs sm:text-sm font-extrabold text-gray-900 truncate">
               {currentTest.title || 'Đề Thử Nghiệm Tốt Nghiệp THPT 2026'}
             </h1>
-            <p className="text-xs text-gray-400 font-medium truncate">
+            <p className="text-[10px] sm:text-xs text-gray-400 font-medium truncate hidden sm:block">
               Môn: <strong className="text-orange-600">TIẾNG ANH</strong> &nbsp;•&nbsp; Giáo viên: <span className="text-gray-600">{currentTest.teacher || 'Ms. Trang - FSC3DN'}</span>
             </p>
           </div>
         </div>
 
         {/* Center/Right: Candidate Tag + Timer + Buttons */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
           {/* Candidate Tag */}
           <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-semibold">
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold flex items-center justify-center text-xs">
@@ -98,9 +98,9 @@ export default function TestView({ isReviewMode = false }) {
               {/* Timer */}
               <Timer onExpire={handleSubmit} />
 
-              {/* Submit Button (Electric Royal Blue) */}
+              {/* Submit Button */}
               <button
-                className="btn btn-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-orange-500/20 gap-1.5"
+                className="btn btn-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-none px-2.5 sm:px-4 rounded-xl font-bold shadow-md shadow-orange-500/20 text-xs gap-1 sm:gap-1.5"
                 onClick={() => setShowSubmitConfirm(true)}
               >
                 <span>Nộp Bài</span> <Send size={13} />
@@ -109,7 +109,7 @@ export default function TestView({ isReviewMode = false }) {
           ) : (
             <>
               {/* Static Time Spent */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 font-bold text-sm border border-orange-100">
+              <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 font-bold text-xs sm:text-sm border border-orange-100">
                 <Clock size={14} />
                 {Math.floor((useAppStore.getState().timeSpent || 0) / 60).toString().padStart(2, '0')}:
                 {((useAppStore.getState().timeSpent || 0) % 60).toString().padStart(2, '0')}
@@ -117,7 +117,7 @@ export default function TestView({ isReviewMode = false }) {
 
               {/* Back to Result Button */}
               <button
-                className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border-none px-4 rounded-xl font-bold shadow-md shadow-emerald-500/20 gap-1.5"
+                className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border-none px-2.5 sm:px-4 rounded-xl font-bold shadow-md shadow-emerald-500/20 text-xs gap-1 sm:gap-1.5"
                 onClick={() => useAppStore.getState().setView('result')}
               >
                 <span>Kết Quả</span> <Trophy size={13} />

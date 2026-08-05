@@ -76,24 +76,24 @@ export default function TestSelectView({ onSwitchTeacher }) {
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000 delay-500" />
 
       {/* ── Top Header Navigation Bar (Synchronized with Teacher View) ── */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 px-6 py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="bg-white/95 backdrop-blur-md border-b border-orange-100 px-3 sm:px-6 py-2.5 sm:py-3 shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           {/* Left: Logo Image + Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <img
               src="/fpt-logo.png"
               alt="FPT Schools Logo"
-              className="w-10 h-10 object-contain rounded-xl shadow-2xs"
+              className="w-8 h-8 sm:w-10 sm:h-10 object-contain rounded-xl shadow-2xs flex-shrink-0"
             />
-            <div>
-              <h1 className="font-extrabold text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="font-extrabold text-xs sm:text-base tracking-tight uppercase bg-gradient-to-r from-orange-600 to-orange-200 bg-clip-text text-transparent truncate">
                 HỆ THỐNG ÔN TẬP FPT SCHOOLS
               </h1>
             </div>
           </div>
 
           {/* Right: Student Info + Change Info Button + Switch Role */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
             {/* Student Info */}
             <div className="hidden sm:flex items-center gap-1.5 text-xs">
               <span className="text-gray-500 font-medium">Xin chào,</span>
@@ -104,18 +104,18 @@ export default function TestSelectView({ onSwitchTeacher }) {
             </div>
 
             <button
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-[0.98]"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-2xs active:scale-[0.98]"
               onClick={() => setView('login')}
               title="Nhấn để thay đổi tên hoặc lớp"
             >
               <LogOut size={13} className="text-red-600" />
-              <span>Đổi thông tin</span>
+              <span className="hidden sm:inline">Đổi thông tin</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6">
         {/* Hero Title Header */}
         <div className="text-center mb-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
@@ -196,7 +196,7 @@ export default function TestSelectView({ onSwitchTeacher }) {
             <p className="text-xs text-gray-400">Thử thay đổi bộ lọc Khối, Giáo viên hoặc tìm kiếm với từ khóa khác.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {filteredTests.map((t, index) => {
               const qCount = countTotalQuestions(t);
               const isCustom = String(t.id).startsWith('custom') || String(t.code).startsWith('TEST');

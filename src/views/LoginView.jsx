@@ -19,7 +19,14 @@ export default function LoginView({ onSwitchTeacher }) {
     if (!form.name.trim()) { setError('Vui lòng nhập họ và tên học sinh.'); return; }
     if (!form.class.trim()) { setError('Vui lòng nhập lớp học.'); return; }
 
-    setStudent({ name: form.name.trim(), class: form.class.trim().toUpperCase() });
+    const cleanClass = form.class.trim().toUpperCase();
+    const isClassValid = cleanClass.startsWith('10') || cleanClass.startsWith('11') || cleanClass.startsWith('12');
+    if (!isClassValid) {
+      setError('Tên lớp không hợp lệ! Lớp phải bắt đầu bằng 10, 11 hoặc 12 (Ví dụ: 10A1, 11A2, 12A1...).');
+      return;
+    }
+
+    setStudent({ name: form.name.trim(), class: cleanClass });
     setView('test-select');
   }
 
@@ -70,15 +77,18 @@ export default function LoginView({ onSwitchTeacher }) {
 
             {/* Class */}
             <div>
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <Users size={13} className="text-orange-500" />  LỚP HỌC <span className="text-red-500">*</span>
+              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <Users size={13} className="text-orange-500" />  LỚP HỌC <span className="text-red-500">*</span>
+                </span>
+                <span className="text-[10px] text-gray-400 font-normal normal-case">(Khối 10, 11, 12)</span>
               </label>
               <div className="relative">
                 <input
                   id="student-class"
                   type="text"
                   className="input input-bordered w-full bg-slate-50 border-slate-200 focus:border-orange-500 focus:bg-white text-sm h-11 pl-9 rounded-xl font-medium"
-                  placeholder="12A1"
+                  placeholder="Ví dụ: 12A1, 11B2, 10C3..."
                   value={form.class}
                   onChange={e => update('class', e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleStart()}

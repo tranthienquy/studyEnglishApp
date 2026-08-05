@@ -57,6 +57,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
     name: '',
+    birth_day: '',
+    birth_month: '',
     birth_year: '',
     gender: '',
     subjects: [],
@@ -97,6 +99,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         if (found) {
           setProfileForm({
             name: found.name || teacherSession?.name || '',
+            birth_day: found.birth_day || '',
+            birth_month: found.birth_month || '',
             birth_year: found.birth_year || '',
             gender: found.gender || '',
             subjects: found.subjects || [],
@@ -108,6 +112,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     } catch {}
     setProfileForm({
       name: teacherSession?.name || '',
+      birth_day: '',
+      birth_month: '',
       birth_year: '',
       gender: '',
       subjects: [],
@@ -126,6 +132,8 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
         ...(idx >= 0 ? profiles[idx] : {}),
         email,
         name: profileForm.name || teacherSession?.name || email,
+        birth_day: profileForm.birth_day,
+        birth_month: profileForm.birth_month,
         birth_year: profileForm.birth_year,
         gender: profileForm.gender,
         subjects: profileForm.subjects,
@@ -261,7 +269,6 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
     if (!uploadTitle.trim()) missingFields.push('Tiêu đề đề thi đề xuất');
     if (!uploadGrade) missingFields.push('Khối');
     if (!uploadDuration || parseInt(uploadDuration) <= 0) missingFields.push('Thời gian (Phút)');
-    if (!uploadTeacher.trim()) missingFields.push('Tên giáo viên upload');
 
     if (missingFields.length > 0) {
       setParseStatus('error');
@@ -758,14 +765,16 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
               <div>
                 <label className="text-xs font-bold text-gray-700 mb-1 block">
-                  Tên giáo viên upload <span className="text-red-500">*</span>
+                  Giáo viên upload
                 </label>
-                <input
-                  className="input input-bordered input-sm w-full bg-slate-50 border-gray-200 text-xs rounded-xl"
-                  placeholder="Ví dụ: Cô Minh Trang"
-                  value={uploadTeacher}
-                  onChange={e => setUploadTeacher(e.target.value)}
-                />
+                <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2">
+                  <UserCircle size={14} className="text-amber-500 flex-shrink-0" />
+                  <span className="text-xs font-semibold text-slate-700 flex-1 truncate">
+                    {uploadTeacher || teacherSession?.email || 'Chưa có hồ sơ'}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">(tự động)</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Ảnh hưởng khi cập nhật Hồ sơ GV.</p>
               </div>
 
               {/* Download Word Template Button */}
@@ -897,7 +906,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                           ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                           : isHidden
                             ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-emerald-500/20 cursor-pointer'
-                            : 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-amber-500/20 cursor-pointer'
+                            : 'bg-red-500 hover:bg-red-600 text-white border-red-500 shadow-red-500/20 cursor-pointer'
                       }`}
                       onClick={handleToggleStudentAccess}
                       title={isHidden ? 'Đề đang bị ẩn đối với học sinh. Bấm để hiển thị (Hiện đề)!' : 'Đề đang được hiển thị cho học sinh. Bấm để ẩn (Ẩn đề)!'}
@@ -1017,7 +1026,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 <div className="ml-auto flex items-center gap-2 pb-1 pr-1">
                   {savedMsg && <span className="text-xs font-bold text-emerald-600">{savedMsg}</span>}
                   <button
-                    className="btn btn-sm bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs px-4 gap-1.5 shadow-md shadow-orange-500/20"
+                    className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs px-4 gap-1.5 shadow-md shadow-emerald-600/20 border-none"
                     onClick={handleSaveTest}
                     disabled={saving}
                   >
@@ -1442,21 +1451,47 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                 />
               </div>
 
-              {/* Năm sinh & Giới tính */}
+              {/* Ngày tháng năm sinh & Giới tính */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">
-                    <Calendar size={11} className="inline mr-1" />Năm sinh
+                    <Calendar size={11} className="inline mr-1" />Ngày sinh
                   </label>
-                  <input
-                    type="number"
-                    min="1960"
-                    max="2005"
-                    placeholder="VD: 1990"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
-                    value={profileForm.birth_year}
-                    onChange={e => setProfileForm(prev => ({ ...prev, birth_year: e.target.value }))}
-                  />
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {/* Ngày */}
+                    <select
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
+                      value={profileForm.birth_day}
+                      onChange={e => setProfileForm(prev => ({ ...prev, birth_day: e.target.value }))}
+                    >
+                      <option value="">Ng</option>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                        <option key={d} value={String(d).padStart(2, '0')}>{String(d).padStart(2, '0')}</option>
+                      ))}
+                    </select>
+                    {/* Tháng */}
+                    <select
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
+                      value={profileForm.birth_month}
+                      onChange={e => setProfileForm(prev => ({ ...prev, birth_month: e.target.value }))}
+                    >
+                      <option value="">Th</option>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                        <option key={m} value={String(m).padStart(2, '0')}>{String(m).padStart(2, '0')}</option>
+                      ))}
+                    </select>
+                    {/* Năm */}
+                    <select
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm text-slate-800 font-medium focus:border-amber-500 focus:outline-none focus:bg-white transition-colors"
+                      value={profileForm.birth_year}
+                      onChange={e => setProfileForm(prev => ({ ...prev, birth_year: e.target.value }))}
+                    >
+                      <option value="">Năm</option>
+                      {Array.from({ length: 46 }, (_, i) => 2005 - i).map(y => (
+                        <option key={y} value={String(y)}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Giới tính</label>
@@ -1530,7 +1565,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
               <button
                 type="button"
                 onClick={saveProfileForm}
-                className="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5"
               >
                 <Save size={14} /> Lưu hồ sơ
               </button>

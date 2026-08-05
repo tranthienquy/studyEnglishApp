@@ -95,7 +95,7 @@ export default function LoginView({ onSwitchTeacher }) {
                   id="student-id"
                   type="text"
                   className="input input-bordered w-full bg-slate-50 border-slate-200 focus:border-orange-500 focus:bg-white text-sm h-11 pl-9 rounded-xl font-medium font-mono uppercase"
-                  placeholder="Ví dụ: HS123456..."
+                  placeholder=""
                   value={form.studentId}
                   onChange={e => update('studentId', e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleStart()}

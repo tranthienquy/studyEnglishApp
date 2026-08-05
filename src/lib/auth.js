@@ -151,20 +151,56 @@ export function onAuthStateChange(callback) {
 }
 
 /**
- * Upsert teacher profile in DB after successful login
+ * Upsert teacher profile in DB & LocalStorage after successful login
  */
 export async function upsertTeacherProfile(teacher) {
-  const client = getClient();
-  if (!client || !teacher?.email) return;
+  if (!teacher?.email) return;
 
+  const cleanEmail = teacher.email.trim().toLowerCase();
+  const name = teacher.name || cleanEmail.split('@')[0];
+  const role = isAdminEmail(cleanEmail) ? 'admin' : 'teacher';
+  const now = new Date().toISOString();
+
+  const profileData = {
+    email: cleanEmail,
+    name,
+    avatar_url: teacher.avatar || null,
+    role,
+    is_active: true,
+    last_login_at: now,
+  };
+
+  // 1. Save to Supabase DB if available
+  const client = getClient();
+  if (client) {
+    try {
+      await client.from('teacher_profiles').upsert(profileData, { onConflict: 'email' });
+    } catch (e) {
+      console.warn('Could not upsert teacher profile to Supabase:', e);
+    }
+  }
+
+  // 2. Sync to LocalStorage for immediate display in Admin portal
   try {
-    await client.from('teacher_profiles').upsert({
-      email: teacher.email,
-      name: teacher.name,
-      avatar_url: teacher.avatar,
-      last_login_at: new Date().toISOString(),
-    }, { onConflict: 'email' });
+    const raw = localStorage.getItem('readingpro_teacher_profiles');
+    const profiles = raw ? JSON.parse(raw) : [];
+    const idx = profiles.findIndex(p => p.email?.toLowerCase() === cleanEmail);
+    if (idx >= 0) {
+      profiles[idx] = {
+        ...profiles[idx],
+        name: name || profiles[idx].name,
+        avatar_url: teacher.avatar || profiles[idx].avatar_url,
+        last_login_at: now,
+      };
+    } else {
+      profiles.unshift({
+        ...profileData,
+        subject_default: 'Tiếng Anh',
+        created_at: now,
+      });
+    }
+    localStorage.setItem('readingpro_teacher_profiles', JSON.stringify(profiles));
   } catch (e) {
-    console.warn('Could not upsert teacher profile:', e);
+    console.warn('Could not sync teacher profile to localStorage:', e);
   }
 }

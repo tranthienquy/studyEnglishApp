@@ -135,17 +135,7 @@ export default function TeacherAuthView({ onSwitchStudent, onGoAdmin }) {
 
           <div className="text-[11px] text-center text-gray-500 font-medium px-2 flex items-center justify-center gap-1">
             <Lock size={12} className="text-orange-500" />
-            <span>Chấp nhận email Giáo viên (<strong className="text-gray-800">@fpt.edu.vn</strong>) &amp; Email Super Admin</span>
-          </div>
-
-          <div className="pt-2 text-center">
-            <button
-              onClick={handleOpenConfigModal}
-              className="text-[11px] font-bold text-orange-600 hover:text-orange-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              <Settings size={12} />
-              <span>⚙️ Đổi / Nhập URL &amp; Key Supabase</span>
-            </button>
+            <span>Giáo viên vui lòng đăng nhập email có đuôi <strong className="text-gray-800">@fpt.edu.vn</strong></span>
           </div>
         </div>
 

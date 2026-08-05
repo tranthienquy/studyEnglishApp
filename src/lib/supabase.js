@@ -680,14 +680,13 @@ function getLocalTeacherProfiles() {
     return [];
   }
 }
-
-// ---- Student Account & Activity Log Management ----
 export async function upsertStudentAccount({ studentId, name, studentClass }) {
-  if (!studentId) return;
-
-  const cleanId = studentId.trim().toUpperCase();
   const cleanName = name?.trim() || 'Học sinh';
   const cleanClass = studentClass?.trim().toUpperCase() || 'N/A';
+  const cleanId = studentId
+    ? String(studentId).trim().toUpperCase()
+    : `HS-${cleanName.toLowerCase().replace(/\s+/g, '')}-${cleanClass}`;
+
   const now = new Date().toISOString();
 
   // Read existing from local storage to calculate login_count & created_at
@@ -711,6 +710,22 @@ export async function upsertStudentAccount({ studentId, name, studentClass }) {
     last_login_at: now,
     login_count: loginCount,
   };
+
+  // Sync to Supabase DB student_accounts
+  const client = getClient();
+  if (client) {
+    try {
+      const { error } = await client.from('student_accounts').upsert({
+        student_id: cleanId,
+        name: cleanName,
+        class: cleanClass,
+        last_login_at: now,
+      }, { onConflict: 'student_id' });
+      if (error) console.warn('Supabase student_accounts upsert notice:', error.message);
+    } catch (e) {
+      console.warn('Supabase student_accounts upsert failed:', e);
+    }
+  }
 
   // Sync to LocalStorage (deduplicate by student_id)
   try {
@@ -736,14 +751,22 @@ export async function upsertStudentAccount({ studentId, name, studentClass }) {
 
 export async function getAllStudentAccounts() {
   const client = getClient();
+  let dbAccounts = [];
   let dbResults = [];
+  let dbLogs = [];
 
   if (client) {
     try {
-      const { data } = await client.from('results').select('*');
-      if (data && data.length > 0) dbResults = data;
+      const [accRes, resRes, logRes] = await Promise.all([
+        client.from('student_accounts').select('*'),
+        client.from('results').select('*'),
+        client.from('student_logs').select('*'),
+      ]);
+      if (accRes.data) dbAccounts = accRes.data;
+      if (resRes.data) dbResults = resRes.data;
+      if (logRes.data) dbLogs = logRes.data;
     } catch (e) {
-      console.warn('Fetch results table for student accounts failed:', e);
+      console.warn('Fetch DB for student accounts failed:', e);
     }
   }
 
@@ -762,16 +785,21 @@ export async function getAllStudentAccounts() {
   const mergedMap = new Map();
 
   const addOrUpdate = (studentId, name, studentClass, time) => {
-    if (!studentId) return;
-    const cleanId = String(studentId).trim().toUpperCase();
-    if (!cleanId) return;
+    const cleanName = name?.trim() || 'Học sinh';
+    const cleanClass = studentClass?.trim().toUpperCase() || 'N/A';
+    let cleanId = studentId ? String(studentId).trim().toUpperCase() : '';
+
+    if (!cleanId || cleanId === 'N/A') {
+      cleanId = `HS-${cleanName.toLowerCase().replace(/\s+/g, '')}-${cleanClass}`;
+    }
 
     const logTime = time ? new Date(time).toISOString() : new Date().toISOString();
     const existing = mergedMap.get(cleanId);
 
     if (existing) {
-      if (name && name !== 'Học sinh') existing.name = name;
-      if (studentClass && studentClass !== 'N/A') existing.class = studentClass;
+      if (cleanName && cleanName !== 'Học sinh') existing.name = cleanName;
+      if (cleanClass && cleanClass !== 'N/A') existing.class = cleanClass;
+      existing.login_count = (existing.login_count || 1) + 1;
       if (new Date(logTime) > new Date(existing.last_login_at || 0)) {
         existing.last_login_at = logTime;
       }
@@ -781,8 +809,8 @@ export async function getAllStudentAccounts() {
     } else {
       mergedMap.set(cleanId, {
         student_id: cleanId,
-        name: name || 'Học sinh',
-        class: studentClass || 'N/A',
+        name: cleanName,
+        class: cleanClass,
         created_at: logTime,
         last_login_at: logTime,
         login_count: 1,
@@ -790,30 +818,45 @@ export async function getAllStudentAccounts() {
     }
   };
 
-  // 1. Local accounts
-  for (const a of localAccounts) {
+  // 1. DB student_accounts
+  for (const a of dbAccounts) {
     if (a?.student_id) {
       const cleanId = a.student_id.toUpperCase();
-      mergedMap.set(cleanId, { ...a, student_id: cleanId });
+      mergedMap.set(cleanId, {
+        student_id: cleanId,
+        name: a.name || 'Học sinh',
+        class: a.class || 'N/A',
+        created_at: a.created_at || new Date().toISOString(),
+        last_login_at: a.last_login_at || new Date().toISOString(),
+        login_count: a.login_count || 1,
+      });
     }
   }
 
-  // 2. DB results
+  // 2. Local accounts
+  for (const a of localAccounts) {
+    if (a?.student_id) {
+      const cleanId = a.student_id.toUpperCase();
+      if (!mergedMap.has(cleanId)) {
+        mergedMap.set(cleanId, { ...a, student_id: cleanId });
+      }
+    }
+  }
+
+  // 3. DB results & student_logs
   for (const r of dbResults) {
-    const sId = r.student_id || r.studentId;
-    if (sId) addOrUpdate(sId, r.student_name, r.student_class, r.created_at);
+    addOrUpdate(r.student_id || r.studentId, r.student_name, r.student_class, r.created_at);
+  }
+  for (const l of dbLogs) {
+    addOrUpdate(l.student_id || l.studentId, l.student_name, l.student_class, l.created_at);
   }
 
-  // 3. Local logs
+  // 4. Local logs & results
   for (const l of localLogs) {
-    const sId = l.student_id || l.studentId;
-    if (sId) addOrUpdate(sId, l.student_name, l.student_class, l.created_at);
+    addOrUpdate(l.student_id || l.studentId, l.student_name || l.studentName, l.student_class || l.studentClass, l.created_at);
   }
-
-  // 4. Local results
   for (const r of localResults) {
-    const sId = r.student_id || r.studentId;
-    if (sId) addOrUpdate(sId, r.student_name || r.studentName, r.student_class || r.studentClass, r.created_at);
+    addOrUpdate(r.student_id || r.studentId, r.student_name || r.studentName, r.student_class || r.studentClass, r.created_at);
   }
 
   return Array.from(mergedMap.values()).sort((a, b) => {
@@ -824,17 +867,32 @@ export async function getAllStudentAccounts() {
 }
 
 export async function saveStudentLog(studentName, studentClass, testId = null, testTitle = null, studentId = null) {
+  const cleanName = studentName?.trim() || 'Học sinh';
+  const cleanClass = studentClass?.trim().toUpperCase() || 'N/A';
+  const cleanId = studentId
+    ? String(studentId).trim().toUpperCase()
+    : `HS-${cleanName.toLowerCase().replace(/\s+/g, '')}-${cleanClass}`;
+
   const logData = {
-    student_id: studentId ? String(studentId).trim().toUpperCase() : null,
-    student_name: studentName,
-    student_class: studentClass,
+    student_id: cleanId,
+    student_name: cleanName,
+    student_class: cleanClass,
     test_id: testId,
     test_title: testTitle,
+    action: testTitle ? `Thi: ${testTitle}` : 'login',
     created_at: new Date().toISOString(),
   };
 
-  if (studentId) {
-    await upsertStudentAccount({ studentId, name: studentName, studentClass });
+  await upsertStudentAccount({ studentId: cleanId, name: cleanName, studentClass: cleanClass });
+
+  const client = getClient();
+  if (client) {
+    try {
+      const { error } = await client.from('student_logs').insert(logData);
+      if (error) console.warn('Supabase save student log notice:', error.message);
+    } catch (e) {
+      console.warn('Supabase save student log failed:', e);
+    }
   }
 
   // Local storage fallback
@@ -848,13 +906,18 @@ export async function saveStudentLog(studentName, studentClass, testId = null, t
 export async function getAllStudentLogs() {
   const client = getClient();
   let dbResults = [];
+  let dbLogs = [];
 
   if (client) {
     try {
-      const { data } = await client.from('results').select('*').order('created_at', { ascending: false }).limit(100);
-      if (data && data.length > 0) dbResults = data;
+      const [resRes, logRes] = await Promise.all([
+        client.from('results').select('*').order('created_at', { ascending: false }).limit(100),
+        client.from('student_logs').select('*').order('created_at', { ascending: false }).limit(100),
+      ]);
+      if (resRes.data) dbResults = resRes.data;
+      if (logRes.data) dbLogs = logRes.data;
     } catch (e) {
-      console.warn('Fetch results table failed:', e);
+      console.warn('Fetch DB student logs/results failed:', e);
     }
   }
 
@@ -868,6 +931,16 @@ export async function getAllStudentLogs() {
   } catch {}
 
   const allLogs = [];
+
+  for (const l of dbLogs) {
+    allLogs.push({
+      student_id: l.student_id || 'N/A',
+      student_name: l.student_name || 'Học sinh',
+      student_class: l.student_class || 'N/A',
+      test_title: l.test_title || l.action || 'Đăng nhập hệ thống',
+      created_at: l.created_at || new Date().toISOString(),
+    });
+  }
 
   for (const l of localLogs) {
     allLogs.push({

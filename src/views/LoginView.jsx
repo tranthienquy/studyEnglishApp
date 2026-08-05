@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GraduationCap, User, Users, ArrowRight, Clock, BookOpen, ShieldCheck, CreditCard } from 'lucide-react';
 import useAppStore from '../stores/useAppStore';
+import { upsertStudentAccount, saveStudentLog } from '../lib/supabase';
 
 export default function LoginView({ onSwitchTeacher }) {
   const { setStudent, setView } = useAppStore();
@@ -21,6 +22,7 @@ export default function LoginView({ onSwitchTeacher }) {
     if (!form.studentId.trim()) { setError('Vui lòng nhập mã số học sinh.'); return; }
     if (!form.class.trim()) { setError('Vui lòng nhập lớp học.'); return; }
 
+    const cleanName = form.name.trim();
     const cleanStudentId = form.studentId.trim().toUpperCase();
     const cleanClass = form.class.trim().toUpperCase();
     const isClassValid = cleanClass.startsWith('10') || cleanClass.startsWith('11') || cleanClass.startsWith('12');
@@ -29,11 +31,22 @@ export default function LoginView({ onSwitchTeacher }) {
       return;
     }
 
-    setStudent({
-      name: form.name.trim(),
+    const studentObj = {
+      name: cleanName,
       studentId: cleanStudentId,
       class: cleanClass,
+    };
+
+    setStudent(studentObj);
+
+    // Immediately record student account & login log for Super Admin
+    upsertStudentAccount({
+      studentId: cleanStudentId,
+      name: cleanName,
+      studentClass: cleanClass,
     });
+    saveStudentLog(cleanName, cleanClass, null, 'Đăng nhập hệ thống', cleanStudentId);
+
     setView('test-select');
   }
 

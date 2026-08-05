@@ -744,30 +744,100 @@ export async function upsertStudentAccount({ studentId, name, studentClass }) {
 export async function getAllStudentAccounts() {
   const client = getClient();
   let dbAccounts = [];
+  let dbResults = [];
+
   if (client) {
     try {
-      const { data } = await client.from('student_accounts').select('*').order('last_login_at', { ascending: false });
+      const { data } = await client.from('student_accounts').select('*');
       if (data && data.length > 0) dbAccounts = data;
     } catch (e) {
-      console.warn('Fetch student accounts failed:', e);
+      console.warn('Fetch student_accounts table failed:', e);
+    }
+
+    try {
+      const { data } = await client.from('results').select('*');
+      if (data && data.length > 0) dbResults = data;
+    } catch (e) {
+      console.warn('Fetch results table for student accounts failed:', e);
     }
   }
 
   let localAccounts = [];
+  let localLogs = [];
+  let localResults = [];
   try {
-    const raw = localStorage.getItem('readingpro_student_accounts');
-    localAccounts = raw ? JSON.parse(raw) : [];
+    const rawA = localStorage.getItem('readingpro_student_accounts');
+    if (rawA) localAccounts = JSON.parse(rawA);
+    const rawL = localStorage.getItem('readingpro_student_logs');
+    if (rawL) localLogs = JSON.parse(rawL);
+    const rawR = localStorage.getItem('readingpro_results_log');
+    if (rawR) localResults = JSON.parse(rawR);
   } catch {}
 
   const mergedMap = new Map();
-  for (const la of localAccounts) {
-    if (la?.student_id) mergedMap.set(la.student_id.toUpperCase(), la);
-  }
-  for (const da of dbAccounts) {
-    if (da?.student_id) {
-      const existing = mergedMap.get(da.student_id.toUpperCase()) || {};
-      mergedMap.set(da.student_id.toUpperCase(), { ...existing, ...da });
+
+  const addOrUpdate = (studentId, name, studentClass, time) => {
+    if (!studentId) return;
+    const cleanId = String(studentId).trim().toUpperCase();
+    if (!cleanId) return;
+
+    const logTime = time ? new Date(time).toISOString() : new Date().toISOString();
+    const existing = mergedMap.get(cleanId);
+
+    if (existing) {
+      if (name && name !== 'Học sinh') existing.name = name;
+      if (studentClass && studentClass !== 'N/A') existing.class = studentClass;
+      if (new Date(logTime) > new Date(existing.last_login_at || 0)) {
+        existing.last_login_at = logTime;
+      }
+      if (new Date(logTime) < new Date(existing.created_at || logTime)) {
+        existing.created_at = logTime;
+      }
+    } else {
+      mergedMap.set(cleanId, {
+        student_id: cleanId,
+        name: name || 'Học sinh',
+        class: studentClass || 'N/A',
+        created_at: logTime,
+        last_login_at: logTime,
+        login_count: 1,
+      });
     }
+  };
+
+  // 1. Local accounts
+  for (const a of localAccounts) {
+    if (a?.student_id) {
+      const cleanId = a.student_id.toUpperCase();
+      mergedMap.set(cleanId, { ...a, student_id: cleanId });
+    }
+  }
+
+  // 2. DB accounts
+  for (const a of dbAccounts) {
+    if (a?.student_id) {
+      const cleanId = a.student_id.toUpperCase();
+      const existing = mergedMap.get(cleanId) || {};
+      mergedMap.set(cleanId, { ...existing, ...a, student_id: cleanId });
+    }
+  }
+
+  // 3. DB results
+  for (const r of dbResults) {
+    const sId = r.student_id || r.studentId;
+    if (sId) addOrUpdate(sId, r.student_name, r.student_class, r.created_at);
+  }
+
+  // 4. Local logs
+  for (const l of localLogs) {
+    const sId = l.student_id || l.studentId;
+    if (sId) addOrUpdate(sId, l.student_name, l.student_class, l.created_at);
+  }
+
+  // 5. Local results
+  for (const r of localResults) {
+    const sId = r.student_id || r.studentId;
+    if (sId) addOrUpdate(sId, r.student_name || r.studentName, r.student_class || r.studentClass, r.created_at);
   }
 
   return Array.from(mergedMap.values()).sort((a, b) => {
@@ -810,21 +880,85 @@ export async function saveStudentLog(studentName, studentClass, testId = null, t
 
 export async function getAllStudentLogs() {
   const client = getClient();
+  let dbLogs = [];
+  let dbResults = [];
+
   if (client) {
     try {
       const { data } = await client.from('student_logs').select('*').order('created_at', { ascending: false }).limit(100);
-      if (data && data.length > 0) return data;
+      if (data && data.length > 0) dbLogs = data;
     } catch (e) {
-      console.warn('Fetch student logs failed:', e);
+      console.warn('Fetch student_logs table failed:', e);
+    }
+
+    try {
+      const { data } = await client.from('results').select('*').order('created_at', { ascending: false }).limit(100);
+      if (data && data.length > 0) dbResults = data;
+    } catch (e) {
+      console.warn('Fetch results table failed:', e);
     }
   }
 
+  let localLogs = [];
+  let localResults = [];
   try {
-    const raw = localStorage.getItem('readingpro_student_logs');
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+    const rawL = localStorage.getItem('readingpro_student_logs');
+    if (rawL) localLogs = JSON.parse(rawL);
+    const rawR = localStorage.getItem('readingpro_results_log');
+    if (rawR) localResults = JSON.parse(rawR);
+  } catch {}
+
+  const allLogs = [];
+
+  for (const l of dbLogs) {
+    allLogs.push({
+      student_id: l.student_id || 'N/A',
+      student_name: l.student_name || 'Học sinh',
+      student_class: l.student_class || 'N/A',
+      test_title: l.test_title || 'Đăng nhập hệ thống',
+      created_at: l.created_at || new Date().toISOString(),
+    });
   }
+
+  for (const l of localLogs) {
+    allLogs.push({
+      student_id: l.student_id || l.studentId || 'N/A',
+      student_name: l.student_name || l.studentName || 'Học sinh',
+      student_class: l.student_class || l.studentClass || 'N/A',
+      test_title: l.test_title || l.testTitle || 'Đăng nhập hệ thống',
+      created_at: l.created_at || new Date().toISOString(),
+    });
+  }
+
+  for (const r of dbResults) {
+    allLogs.push({
+      student_id: r.student_id || r.studentId || 'N/A',
+      student_name: r.student_name || 'Học sinh',
+      student_class: r.student_class || 'N/A',
+      test_title: `Nộp bài: ${r.test_title || 'Đề ôn tập'} (${r.score?.toFixed ? r.score.toFixed(1) : r.score} điểm)`,
+      created_at: r.created_at || new Date().toISOString(),
+    });
+  }
+
+  for (const r of localResults) {
+    allLogs.push({
+      student_id: r.student_id || r.studentId || 'N/A',
+      student_name: r.student_name || r.studentName || 'Học sinh',
+      student_class: r.student_class || r.studentClass || 'N/A',
+      test_title: `Nộp bài: ${r.test_title || r.testTitle || 'Đề ôn tập'} (${r.score?.toFixed ? r.score.toFixed(1) : r.score} điểm)`,
+      created_at: r.created_at || new Date().toISOString(),
+    });
+  }
+
+  const logMap = new Map();
+  for (const item of allLogs) {
+    const key = `${item.student_id}_${item.test_title}_${item.created_at?.slice(0, 16)}`;
+    if (!logMap.has(key)) logMap.set(key, item);
+  }
+
+  return Array.from(logMap.values()).sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 }
 
 function formatTestFromDB(dbRow) {

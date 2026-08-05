@@ -709,17 +709,7 @@ export async function upsertStudentAccount({ studentId, name, studentClass }) {
     login_count: loginCount,
   };
 
-  // 1. Save to Supabase DB if available
-  const client = getClient();
-  if (client) {
-    try {
-      await client.from('student_accounts').upsert(accountData, { onConflict: 'student_id' });
-    } catch (e) {
-      console.warn('Supabase upsertStudentAccount failed:', e);
-    }
-  }
-
-  // 2. Sync to LocalStorage (deduplicate by student_id)
+  // Sync to LocalStorage (deduplicate by student_id)
   try {
     const raw = localStorage.getItem('readingpro_student_accounts');
     const accounts = raw ? JSON.parse(raw) : [];
@@ -743,17 +733,9 @@ export async function upsertStudentAccount({ studentId, name, studentClass }) {
 
 export async function getAllStudentAccounts() {
   const client = getClient();
-  let dbAccounts = [];
   let dbResults = [];
 
   if (client) {
-    try {
-      const { data } = await client.from('student_accounts').select('*');
-      if (data && data.length > 0) dbAccounts = data;
-    } catch (e) {
-      console.warn('Fetch student_accounts table failed:', e);
-    }
-
     try {
       const { data } = await client.from('results').select('*');
       if (data && data.length > 0) dbResults = data;
@@ -813,28 +795,19 @@ export async function getAllStudentAccounts() {
     }
   }
 
-  // 2. DB accounts
-  for (const a of dbAccounts) {
-    if (a?.student_id) {
-      const cleanId = a.student_id.toUpperCase();
-      const existing = mergedMap.get(cleanId) || {};
-      mergedMap.set(cleanId, { ...existing, ...a, student_id: cleanId });
-    }
-  }
-
-  // 3. DB results
+  // 2. DB results
   for (const r of dbResults) {
     const sId = r.student_id || r.studentId;
     if (sId) addOrUpdate(sId, r.student_name, r.student_class, r.created_at);
   }
 
-  // 4. Local logs
+  // 3. Local logs
   for (const l of localLogs) {
     const sId = l.student_id || l.studentId;
     if (sId) addOrUpdate(sId, l.student_name, l.student_class, l.created_at);
   }
 
-  // 5. Local results
+  // 4. Local results
   for (const r of localResults) {
     const sId = r.student_id || r.studentId;
     if (sId) addOrUpdate(sId, r.student_name || r.studentName, r.student_class || r.studentClass, r.created_at);
@@ -848,7 +821,6 @@ export async function getAllStudentAccounts() {
 }
 
 export async function saveStudentLog(studentName, studentClass, testId = null, testTitle = null, studentId = null) {
-  const client = getClient();
   const logData = {
     student_id: studentId ? String(studentId).trim().toUpperCase() : null,
     student_name: studentName,
@@ -862,14 +834,6 @@ export async function saveStudentLog(studentName, studentClass, testId = null, t
     await upsertStudentAccount({ studentId, name: studentName, studentClass });
   }
 
-  if (client) {
-    try {
-      await client.from('student_logs').insert(logData);
-    } catch (e) {
-      console.warn('Save student log failed:', e);
-    }
-  }
-
   // Local storage fallback
   try {
     const raw = localStorage.getItem('readingpro_student_logs');
@@ -880,17 +844,9 @@ export async function saveStudentLog(studentName, studentClass, testId = null, t
 
 export async function getAllStudentLogs() {
   const client = getClient();
-  let dbLogs = [];
   let dbResults = [];
 
   if (client) {
-    try {
-      const { data } = await client.from('student_logs').select('*').order('created_at', { ascending: false }).limit(100);
-      if (data && data.length > 0) dbLogs = data;
-    } catch (e) {
-      console.warn('Fetch student_logs table failed:', e);
-    }
-
     try {
       const { data } = await client.from('results').select('*').order('created_at', { ascending: false }).limit(100);
       if (data && data.length > 0) dbResults = data;
@@ -909,16 +865,6 @@ export async function getAllStudentLogs() {
   } catch {}
 
   const allLogs = [];
-
-  for (const l of dbLogs) {
-    allLogs.push({
-      student_id: l.student_id || 'N/A',
-      student_name: l.student_name || 'Học sinh',
-      student_class: l.student_class || 'N/A',
-      test_title: l.test_title || 'Đăng nhập hệ thống',
-      created_at: l.created_at || new Date().toISOString(),
-    });
-  }
 
   for (const l of localLogs) {
     allLogs.push({

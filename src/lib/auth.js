@@ -175,24 +175,32 @@ export async function upsertTeacherProfile(teacher) {
   const loginCount = (existingProfile?.login_count || 0) + 1;
   const createdAt = existingProfile?.created_at || now;
 
-  const profileData = {
+  // DB payload: send ONLY standard columns present in teacher_profiles schema
+  const dbPayload = {
     email: cleanEmail,
     name: existingProfile?.name || defaultName,
-    avatar_url: teacher.avatar || existingProfile?.avatar_url || null,
     role: existingProfile?.role || role,
     is_active: existingProfile?.is_active !== false,
-    created_at: createdAt,
     last_login_at: now,
+  };
+
+  const localProfileData = {
+    ...dbPayload,
+    avatar_url: teacher.avatar || existingProfile?.avatar_url || null,
+    created_at: createdAt,
     login_count: loginCount,
   };
 
-  // 1. Save to Supabase DB if available (upsert with onConflict: 'email' prevents duplicate records)
+  // 1. Save to Supabase DB if available (update first, insert if not existing)
   const client = getClient();
   if (client) {
     try {
-      await client.from('teacher_profiles').upsert(profileData, { onConflict: 'email' });
+      const { data, error } = await client.from('teacher_profiles').update(dbPayload).eq('email', cleanEmail).select();
+      if (error || !data || data.length === 0) {
+        await client.from('teacher_profiles').insert(dbPayload);
+      }
     } catch (e) {
-      console.warn('Could not upsert teacher profile to Supabase:', e);
+      console.warn('Could not sync teacher profile to Supabase:', e);
     }
   }
 
@@ -205,15 +213,15 @@ export async function upsertTeacherProfile(teacher) {
       // 2nd+ Login: Update existing record without creating duplicates
       profiles[idx] = {
         ...profiles[idx],
-        name: profiles[idx].name || profileData.name,
-        avatar_url: profileData.avatar_url || profiles[idx].avatar_url,
+        name: profiles[idx].name || localProfileData.name,
+        avatar_url: localProfileData.avatar_url || profiles[idx].avatar_url,
         last_login_at: now,
         login_count: loginCount,
       };
     } else {
       // 1st Login: Record new account for Super Admin
       profiles.unshift({
-        ...profileData,
+        ...localProfileData,
         subject_default: 'Tiếng Anh',
       });
     }

@@ -94,6 +94,9 @@ export async function signInWithGoogle() {
     provider: 'google',
     options: {
       redirectTo: window.location.origin,
+      queryParams: {
+        prompt: 'select_account',
+      },
     },
   });
 
@@ -108,8 +111,13 @@ export async function signInWithGoogle() {
  */
 export async function signOut() {
   const client = getClient();
-  if (!client) return;
-  await client.auth.signOut();
+  if (client) {
+    try {
+      await client.auth.signOut();
+    } catch (e) {
+      console.warn('Supabase signOut notice:', e);
+    }
+  }
 }
 
 /**

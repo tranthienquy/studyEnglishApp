@@ -97,7 +97,7 @@ export default function ResultView() {
           <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 text-left mb-6">
             <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 uppercase tracking-wider mb-2">
               <MessageSquare size={14} className="text-amber-600" />
-              <span>NHẬN XÉT TỪ GIÁO VIÊN (MS. TRANG)</span>
+              <span>NHẬN XÉT TỪ GIÁO VIÊN</span>
             </div>
             {loadingFeedback ? (
               <div className="flex items-center gap-2 text-gray-400 text-xs py-1">

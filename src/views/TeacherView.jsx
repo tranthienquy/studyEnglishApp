@@ -557,10 +557,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
       console.error(e);
     }
     clearTeacherSession();
-    if (onSwitchStudent) {
-      onSwitchStudent();
-    }
-    setView('login');
+    setView('teacher-auth');
   }
 
   const totalQuestionsCount = editingTest?.sections
@@ -1054,7 +1051,7 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'];
                     disabled={saving}
                   >
                     {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                    Lưu chỉnh sửa
+                    Lưu đề
                   </button>
                 </div>
               )}
